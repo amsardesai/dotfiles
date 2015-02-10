@@ -16,7 +16,7 @@ tput setaf 1; echo "Setting up Vim..."; tput sgr0
 tput setaf 1; echo " -> Vundle"; tput sgr0
 mkdir -p ~/.vim/bundle
 git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-vim -i NONE -c PluginInstall -c quitall 2> /dev/null
+vim -c PluginInstall -c quitall
 
 tput setaf 1; echo " -> YouCompleteMe"; tput sgr0
 ~/.vim/bundle/YouCompleteMe/install.sh
