@@ -21,6 +21,13 @@ call vundle#begin()
   Plugin 'vim-scripts/ZoomWin'
   Plugin 'terryma/vim-multiple-cursors'
   Plugin 'tpope/vim-sleuth'
+  Plugin 'flazz/vim-colorschemes'
+  Plugin 'bronson/vim-trailing-whitespace'
+  Plugin 'tpope/vim-git'
+  Plugin 'surround.vim'
+  Plugin 'SirVer/ultisnips'
+  Plugin 'honza/vim-snippets'
+  Plugin 'lervag/vim-latex'
 
   " Languages / Frameworks
   Plugin 'mattn/emmet-vim'
@@ -32,13 +39,15 @@ call vundle#begin()
   Plugin 'kchmck/vim-coffee-script'
   Plugin 'groenewege/vim-less'
   Plugin 'digitaltoad/vim-jade'
+  Plugin 'othree/html5.vim'
+  Plugin 'pangloss/vim-javascript'
 
 call vundle#end()
 
 
 " Set syntax highlighting options.
 set t_Co=256
-set background=dark 
+set background=dark
 syntax on
 colorscheme hybrid
 
@@ -99,7 +108,7 @@ set ofu=syntaxcomplete#Complete " Set omni-completion method.
 set report=0 " Show all changes.
 set ruler " Show the cursor position
 set scrolloff=3 " Start scrolling three lines before horizontal border of window.
-set shell=/bin/bash\ --rcfile\ ~/.bash_profile
+set shell=bash\ --login
 set shiftwidth=2 " The # of spaces for indenting.
 set shortmess=atI " Don't show the intro message when starting vim.
 set showmode " Show the current mode.
@@ -141,70 +150,32 @@ endif
 nnoremap <C-e> 2<C-e>
 nnoremap <C-y> 2<C-y>
 
+" Escape to remove search results
+nnoremap <silent> <CR> :noh<CR><CR>
+
 " Faster split resizing (+,-)
 if bufwinnr(1)
   map + <C-W>+
   map - <C-W>-
 endif
 
-" Better split switching (Ctrl-j, Ctrl-k, Ctrl-h, Ctrl-l)
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-H> <C-W>h
-map <C-L> <C-W>l
-
 " Sudo write (,W)
 noremap <leader>W :w !sudo tee %<CR>
 
-" Get output of shell commands
-command! -nargs=* -complete=shellcmd R new | setlocal buftype=nofile bufhidden=hide noswapfile | r !<args>
-
 " Remap :W to :w
-command W w
+command! W write
 
 " Remap :Q to :q
-command Q q
+command! Q quit
+
+" New tab
+command! T tabnew
+
+" Open file
+command! E edit
 
 " Better mark jumping (line + col)
 nnoremap ' `
-
-" Hard to type things
-" imap >> →
-" imap << ←
-" imap ^^ ↑
-" imap VV ↓
-" imap aa λ
-
-" Toggle show tabs and trailing spaces (,c)
-set lcs=tab:›\ ,trail:·,eol:¬,nbsp:_
-set fcs=fold:-
-nnoremap <silent> <leader>c :set nolist!<CR>
-
-" Clear last search (,qs)
-map <silent> <leader>qs <Esc>:noh<CR>
-" map <silent> <leader>qs <Esc>:let @/ = ""<CR>
-
-" Vim on the iPad
-if &term == "xterm-ipad"
-  nnoremap <Tab> <Esc>
-  vnoremap <Tab> <Esc>gV
-  onoremap <Tab> <Esc>
-  inoremap <Tab> <Esc>`^
-  inoremap <Leader><Tab> <Tab>
-endif
-
-" Remap keys for auto-completion menu
-inoremap <expr> <CR>   pumvisible() ? "\<C-y>" : "\<CR>"
-inoremap <expr> <Down> pumvisible() ? "\<C-n>" : "\<Down>"
-inoremap <expr> <Up>   pumvisible() ? "\<C-p>" : "\<Up>"
-
-" Indent/unident block (,]) (,[)
-nnoremap <leader>] >i{<CR>
-nnoremap <leader>[ <i{<CR>
-
-" Paste toggle (,p)
-set pastetoggle=<leader>p
-map <leader>p :set invpaste paste?<CR>
 
 " NERD Commenter
 let NERDSpaceDelims=1
@@ -212,16 +183,13 @@ let NERDCompactSexyComs=1
 let g:NERDCustomDelimiters = { 'racket': { 'left': ';', 'leftAlt': '#|', 'rightAlt': '|#' } }
 
 " Buffer navigation (,,) (,]) (,[) (,ls)
-map <Leader>, <C-^>
-" :map <Leader>] :bnext<CR>
-" :map <Leader>[ :bprev<CR>
-map <Leader>ls :buffers<CR>
+map <leader>, <C-^>
+map <leader>] :bnext<CR>
+map <leader>[ :bprev<CR>
+map <leader>ls :buffers<CR>
 
 " Close Quickfix window (,qq)
 map <leader>qq :cclose<CR>
-
-" Yank from cursor to end of line
-nnoremap Y y$
 
 " Insert newline
 map <leader><Enter> o<ESC>
@@ -229,25 +197,11 @@ map <leader><Enter> o<ESC>
 " Search and replace word under cursor (,*)
 nnoremap <leader>* :%s/\<<C-r><C-w>\>//<Left>
 
-" Strip trailing whitespace (,ss)
-function! StripWhitespace ()
-    let save_cursor = getpos(".")
-    let old_query = getreg('/')
-    :%s/\s\+$//e
-    call setpos('.', save_cursor)
-    call setreg('/', old_query)
-endfunction
-noremap <leader>ss :call StripWhitespace ()<CR>
-
-" Save and restore folds
-" :au BufWinLeave * mkview
-" :au BufWinEnter * silent loadview
+" Open ~/.vimrc
+nnoremap <leader>rc :T<CR>:e<Space>~/.vimrc<CR>
 
 " Join lines and restore cursor location (J)
 nnoremap J mjJ`j
-
-" Toggle folds (<Space>)
-nnoremap <silent> <space> :exe 'silent! normal! '.((foldclosed('.')>0)? 'zMzx' : 'zc')<CR>
 
 " Auto close html tags
 iabbrev <// </<C-X><C-O>
@@ -275,11 +229,6 @@ autocmd BufReadPost *
   \ if line("'\"") > 1 && line("'\"") <= line("$") |
   \   exe "normal! g`\"" |
   \ endif
-
-" Set relative line numbers
-"""""""""""""""""""""""""""""""""
-"set relativenumber " Use relative line numbers. Current line is still in status bar.
-"au BufReadPost,BufNewFile * set relativenumber
 
 " JSON
 au BufRead,BufNewFile *.json set ft=json syntax=javascript
@@ -311,10 +260,21 @@ autocmd BufRead,BufNewFile *.[ch] if filereadable(fname)
 autocmd BufRead,BufNewFile *.[ch]   exe 'so ' . fname
 autocmd BufRead,BufNewFile *.[ch] endif
 
-" Clojure.vim
-let g:vimclojure#ParenRainbow = 1 " Enable rainbow parens
-let g:vimclojure#DynamicHighlighting = 1 " Dynamic highlighting
-let g:vimclojure#FuzzyIndent = 1 " Names beginning in 'def' or 'with' to be indented as if they were included in the 'lispwords' option
+" Reveal file in Finder
+function! s:RevealInFinder()
+  if filereadable(expand("%"))
+    let l:command = "open -R %"
+  elseif getftype(expand("%:p:h")) == "dir"
+    let l:command = "open %:p:h"
+  else
+    let l:command = "open ."
+  endif
+  execute ":silent! !" . l:command
+ " For terminal Vim not to look messed up.
+ redraw!
+endfunction
+command! Reveal call <SID>RevealInFinder()
+nnoremap <leader>fi :Reveal<CR>
 
 " CtrlP.vim
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
@@ -343,6 +303,7 @@ filetype plugin indent on
 " Airline
 let g:airline_theme='tomorrow'
 let g:airline#extensions#hunks#enabled=0
+let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts=1
 
 " Syntastic
@@ -358,5 +319,16 @@ let g:syntastic_mode_map = { "mode": "passive" }
 " YouCompleteMe
 let g:ycm_semantic_triggers = { 'css': [ 're!^\s{4}', 're!:\s+' ] }
 
-" Emmet
-let g:user_emmet_expandabbr_key = '<Tab>'
+" NERDTree
+nmap <leader>b :NERDTreeFind<CR>
+let g:NERDTreeWinPos = "right"
+
+" UtiliSnips
+let g:UltiSnipsExpandTrigger="<C-j>"
+
+" Latex
+let g:macvim_skim_app_path = "/Applications/Skim.app"
+
+
+
+
