@@ -5,9 +5,9 @@ set -e
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   tput setaf 1; echo "Setting up Homebrew for Linux..."; tput sgr0
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
-  brew update
-  brew upgrade
-  brew install cmake vim git
+  ~/.linuxbrew/bin/brew update
+  ~/.linuxbrew/bin/brew upgrade
+  ~/.linuxbrew/bin/brew install cmake vim git
 fi
 
 # Set up Vim
