@@ -20,13 +20,13 @@ vim -c PluginInstall -c quitall
 
 tput setaf 1; echo " -> YouCompleteMe"; tput sgr0
 ~/.vim/bundle/YouCompleteMe/install.sh
-mkdir ~/tmp/ycm_build_files
+mkdir -p ~/tmp/ycm_build_files
 (
   cd ~/tmp/ycm_build_files
   cmake -G "Unix Makefiles" . ~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp
   make ycm_support_libs
 )
-
+rm -rf ~/tmp/ycm_build_files
 
 
 
