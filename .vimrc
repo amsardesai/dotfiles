@@ -1,7 +1,7 @@
 " Make vim more useful
 set nocompatible
 
-" Enabled later, after Pathogen
+" Enabled later, after Vundle
 filetype off
 
 set rtp+=~/.vim/bundle/Vundle.vim
