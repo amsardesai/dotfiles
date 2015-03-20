@@ -12,56 +12,56 @@ SVNP_HUGE_REPO_EXCLUDE_PATH="nufw-svn$|/tags$|/branches$"
 # iTerm → Profiles → Text → use 13pt Monaco with 1.1 vertical spacing.
 
 if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
-	export TERM='gnome-256color';
+  export TERM='gnome-256color';
 elif infocmp xterm-256color >/dev/null 2>&1; then
-	export TERM='xterm-256color';
+  export TERM='xterm-256color';
 fi;
 
 prompt_git() {
-	local s='';
+  local s='';
 
-	# Check if the current directory is in a Git repository.
-	if [ $(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}") == '0' ]; then
+  # Check if the current directory is in a Git repository.
+  if [ $(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}") == '0' ]; then
 
-		# check if the current directory is in .git before running git checks
-		if [ "$(git rev-parse --is-inside-git-dir 2> /dev/null)" == 'false' ]; then
+    # check if the current directory is in .git before running git checks
+    if [ "$(git rev-parse --is-inside-git-dir 2> /dev/null)" == 'false' ]; then
 
-			# Ensure the index is up to date.
-			git update-index --really-refresh -q &>/dev/null;
+      # Ensure the index is up to date.
+      git update-index --really-refresh -q &>/dev/null;
 
-			# Check for uncommitted changes in the index.
-			if ! $(git diff --quiet --ignore-submodules --cached); then
-				s+='+';
-			fi;
+      # Check for uncommitted changes in the index.
+      if ! $(git diff --quiet --ignore-submodules --cached); then
+	s+='+';
+      fi;
 
-			# Check for unstaged changes.
-			if ! $(git diff-files --quiet --ignore-submodules --); then
-				s+='!';
-			fi;
+      # Check for unstaged changes.
+      if ! $(git diff-files --quiet --ignore-submodules --); then
+	s+='!';
+      fi;
 
-			# Check for untracked files.
-			if [ -n "$(git ls-files --others --exclude-standard)" ]; then
-				s+='?';
-			fi;
+      # Check for untracked files.
+      if [ -n "$(git ls-files --others --exclude-standard)" ]; then
+	s+='?';
+      fi;
 
-			# Check for stashed files.
-			if $(git rev-parse --verify refs/stash &>/dev/null); then
-				s+='$';
-			fi;
+      # Check for stashed files.
+      if $(git rev-parse --verify refs/stash &>/dev/null); then
+	s+='$';
+      fi;
 
-		fi;
+    fi;
 
-		[ -n "${s}" ] && s=" [${s}]";
+    [ -n "${s}" ] && s=" [${s}]";
 
-		printf "$(__git_ps1)${1}${s}";
+    printf "$(__git_ps1)${1}${s}";
 
-	else
-		return;
-	fi;
+  else
+    return;
+  fi;
 }
 
 prompt_svn() {
-	local s='';
+  local s='';
 
   # Get name of current branch
   svn=$(parse_svn_branch)
@@ -72,74 +72,75 @@ prompt_svn() {
       s+='!';
     fi;
 
-		[ -n "${s}" ] && s=" [${s}]";
+    [ -n "${s}" ] && s=" [${s}]";
 
-		printf "${svn}${1}${s}";
+    printf "${svn}${1}${s}";
 
-	else
-		return;
+  else
+    return;
   fi;
 
 }
 
 if tput setaf 1 &> /dev/null; then
-	tput sgr0; # reset colors
-	bold=$(tput bold);
-	reset=$(tput sgr0);
-	# Solarized colors, taken from http://git.io/solarized-colors.
-	black=$(tput setaf 0);
-	blue=$(tput setaf 33);
-	cyan=$(tput setaf 37);
-	green=$(tput setaf 64);
-	orange=$(tput setaf 166);
-	purple=$(tput setaf 125);
-	red=$(tput setaf 124);
-	violet=$(tput setaf 61);
-	white=$(tput setaf 15);
-	yellow=$(tput setaf 136);
+  tput sgr0; # reset colors
+  bold=$(tput bold);
+  reset=$(tput sgr0);
+  # Solarized colors, taken from http://git.io/solarized-colors.
+  black=$(tput setaf 0);
+  blue=$(tput setaf 33);
+  cyan=$(tput setaf 37);
+  green=$(tput setaf 64);
+  orange=$(tput setaf 166);
+  purple=$(tput setaf 125);
+  red=$(tput setaf 124);
+  violet=$(tput setaf 61);
+  white=$(tput setaf 15);
+  yellow=$(tput setaf 136);
 else
-	bold='';
-	reset="\e[0m";
-	black="\e[1;30m";
-	blue="\e[1;34m";
-	cyan="\e[1;36m";
-	green="\e[1;32m";
-	orange="\e[1;33m";
-	purple="\e[1;35m";
-	red="\e[1;31m";
-	violet="\e[1;35m";
-	white="\e[1;37m";
-	yellow="\e[1;33m";
+  bold='';
+  reset="\e[0m";
+  black="\e[1;30m";
+  blue="\e[1;34m";
+  cyan="\e[1;36m";
+  green="\e[1;32m";
+  orange="\e[1;33m";
+  purple="\e[1;35m";
+  red="\e[1;31m";
+  violet="\e[1;35m";
+  white="\e[1;37m";
+  yellow="\e[1;33m";
 fi;
 
 # Highlight the user name when logged in as root.
 user_style() {
-	if [[ "${USER}" == "root" ]]; then
-		printf "${bold}${red}";
-	else
-		printf "${bold}${orange}";
-	fi;
+  if [[ "${USER}" == "root" ]]; then
+    printf "${bold}${red}";
+  else
+    printf "${bold}${orange}";
+  fi;
 }
 
 # Highlight the hostname when connected via SSH.
 host_style() {
-	#if [[ "${SSH_TTY}" ]]; then
-	#	printf "${bold}${red}";
-	#else
-		printf "${yellow}";
-	#fi;
+  #if [[ "${SSH_TTY}" ]]; then
+  #	printf "${bold}${red}";
+  #else
+  printf "${yellow}";
+  #fi;
 }
 
 dir_style() {
-	if [[ $(ls -ld "$PWD" | awk '{print $3}') == "${USER}" ]]; then
-		printf "${green}";
-	else
-		printf "${bold}${cyan}";
-	fi;
+  if [[ $(ls -ld "$PWD" | awk '{print $3}') == "${USER}" ]]; then
+    printf "${green}";
+  else
+    printf "${bold}${cyan}";
+  fi;
 }
 
 # Set the terminal title to the current working directory.
-PS1="\[\033]0;\w\007\]";
+PS1="\n";
+PS1+="\[\033]0;\w\007\]";
 PS1+="\$(user_style)\u"; # username
 PS1+="\[${reset}${black}\] @ ";
 PS1+="\$(host_style)\h"; # host
