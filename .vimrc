@@ -164,10 +164,11 @@ let NERDSpaceDelims=1
 let NERDCompactSexyComs=1
 let g:NERDCustomDelimiters = { 'racket': { 'left': ';', 'leftAlt': '#|', 'rightAlt': '|#' } }
 
-" Buffer navigation (,,) (,]) (,[) (,ls)
+" Buffer navigation (,,) (,]) (,[) (,\) (,ls)
 map <leader>, <C-^>
 map <leader>] :bnext<CR>
 map <leader>[ :bprev<CR>
+map <leader>\ :bdelete<CR>
 map <leader>ls :buffers<CR>
 
 " Close Quickfix window (,qq)
@@ -238,3 +239,4 @@ let g:NERDTreeWinPos = "right"
 let g:UltiSnipsExpandTrigger="<C-j>"
 
 " YouCompleteMe
+let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
