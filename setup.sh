@@ -1,3 +1,4 @@
+#!/bin/bash
 
 set -e
 
@@ -20,4 +21,13 @@ echo " -> YouCompleteMe"
 echo ""
 
 ~/.vim/bundle/YouCompleteMe/install.sh
+
+echo "Creating aliases..."
+
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+ln -s ~/.vimrc "$SCRIPTPATH/.vimrc"
+ln -s ~/.ycm_extra_conf.py "$SCRIPTPATH/.ycm_extra_conf.py"
+
 
