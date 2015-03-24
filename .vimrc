@@ -175,7 +175,7 @@ map <leader>ls :buffers<CR>
 map <leader>qq :cclose<CR>
 
 " Open QuickFix window for grep commands
-autocmd QuickFixCmdPost *grep* cwindow
+command -nargs=+ Ggr execute 'silent Ggrep!' <q-args> | cw | redraw!
 
 " Insert newline
 map <leader><Enter> o<ESC>
