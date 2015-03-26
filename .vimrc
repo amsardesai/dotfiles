@@ -169,13 +169,14 @@ map <leader>, <C-^>
 map <leader>] :bnext<CR>
 map <leader>[ :bprev<CR>
 map <leader>\ :bdelete<CR>
+map <leader><bar> :enew<CR>
 map <leader>ls :buffers<CR>
 
 " Close Quickfix window (,qq)
 map <leader>qq :cclose<CR>
 
 " Open QuickFix window for grep commands
-command -nargs=+ Ggr execute 'silent Ggrep!' <q-args> | cw | redraw!
+command! -nargs=+ Ggr execute 'silent Ggrep!' <q-args> | cw | redraw!
 
 " Insert newline
 map <leader><Enter> o<ESC>
@@ -188,6 +189,9 @@ nnoremap <leader>* :%s/\<<C-r><C-w>\>//<Left>
 
 " Auto close html tags
 iabbrev <// </<C-X><C-O>
+
+" Ctrl-Backspace
+imap <C-BS> <C-W>
 
 " Fix page up and down
 map <PageUp> <C-U>

@@ -6,21 +6,23 @@ set -e
 echo "Setting up Vim..."
 echo ""
 
-echo " -> Vundle"
-echo ""
+if [ ! -d "~/.vim" ]; then
+	echo " -> Vundle"
+	echo ""
 
-mkdir -p ~/.vim/bundle
-mkdir -p ~/.vim/swaps
-mkdir -p ~/.vim/backups
-mkdir -p ~/.vim/undo
+	mkdir -p ~/.vim/bundle
+	mkdir -p ~/.vim/swaps
+	mkdir -p ~/.vim/backups
+	mkdir -p ~/.vim/undo
 
-git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-vim -c PluginInstall -c quitall
+	git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+	vim -c PluginInstall -c quitall
 
-echo " -> YouCompleteMe"
-echo ""
+	echo " -> YouCompleteMe"
+	echo ""
 
-~/.vim/bundle/YouCompleteMe/install.sh
+	~/.vim/bundle/YouCompleteMe/install.sh
+fi
 
 echo "Creating aliases..."
 
