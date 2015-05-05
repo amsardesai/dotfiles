@@ -24,7 +24,7 @@ call vundle#begin()
   Plugin 'tpope/vim-git'
   Plugin 'surround.vim'
   Plugin 'SirVer/ultisnips'
-  Plugin 'lervag/vim-latex'
+  Plugin 'LaTeX-Box-Team/LaTeX-Box'
 
   " Languages / Frameworks
   Plugin 'mattn/emmet-vim'
@@ -37,6 +37,9 @@ call vundle#begin()
   Plugin 'digitaltoad/vim-jade'
   Plugin 'othree/html5.vim'
   Plugin 'pangloss/vim-javascript'
+  Plugin 'othree/javascript-libraries-syntax.vim'
+  Plugin 'othree/yajs.vim'
+  Plugin 'othree/vim-jsx'
 
 call vundle#end()
 
@@ -48,7 +51,8 @@ syntax on
 colorscheme hybrid
 
 " Change mapleader
-let mapleader=","
+let mapleader = ","
+let maplocalleader = ";"
 
 " Local dirs
 set backupdir=~/.vim/backups
@@ -63,8 +67,9 @@ set smartindent
 set smarttab " At start of line, <Tab> inserts shiftwidth spaces, <Bs> deletes shiftwidth spaces.
 set softtabstop=2 " Tab key results in 2 spaces
 set tabstop=4
-
-
+set breakindent showbreak=..
+set linebreak
+set wrap
 
 " Set some junk
 set cursorline " Highlight current line
@@ -102,7 +107,6 @@ set noerrorbells " Disable error bells.
 set nojoinspaces " Only insert single space after a '.', '?' and '!' with a join command.
 set noshowmode " Don't show the current mode (Powerline takes care of us)
 set nostartofline " Don't reset cursor to start of line when moving around.
-set nowrap " Do not wrap lines.
 set nu " Enable line numbers.
 set ofu=syntaxcomplete#Complete " Set omni-completion method.
 set report=0 " Show all changes.
@@ -130,6 +134,18 @@ set wildmode=list:longest " Complete only until point of ambiguity.
 set winminheight=0 "Allow splits to be reduced to a single line.
 set wrapscan " Searches wrap around end of file
 set whichwrap+=<,>,h,l,[,]
+
+" Change the way up and down is interpreted
+noremap  <buffer> <silent> <Up>   gk
+noremap  <buffer> <silent> <Down> gj
+noremap  <buffer> <silent> k      gk
+noremap  <buffer> <silent> j      gj
+noremap  <buffer> <silent> 0      g0
+noremap  <buffer> <silent> $      g$
+inoremap <buffer> <silent> <Up>   <C-o>gk
+inoremap <buffer> <silent> <Down> <C-o>gj
+
+
 
 " Speed up transition from modes
 if ! has('gui_running')
@@ -237,10 +253,14 @@ let g:airline_powerline_fonts = 1
 
 " NERDTree
 nmap <leader>b :NERDTreeFind<CR>
-let g:NERDTreeWinPos = "right"
 
 " UtiliSnips
 let g:UltiSnipsExpandTrigger="<C-j>"
 
 " YouCompleteMe
 let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
+let g:ycm_path_to_python_interpreter = '/usr/bin/python'
+
+" Latex
+let g:tex_flavor = 'latex'
+
