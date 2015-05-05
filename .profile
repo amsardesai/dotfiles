@@ -39,7 +39,7 @@ source "$(dirname $BASH_SOURCE)/.bash_prompt"
 shopt -s no_empty_cmd_completion
 
 # My aliases
-alias ls='ls -alFh --color=auto'
+alias ls='ls -alFh'
 alias ll='ls'
 alias l='ls'
 alias d='du -hs'
