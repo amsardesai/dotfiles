@@ -85,3 +85,25 @@ __git_complete gg _git_grep
 __git_complete blame _git_blame
 __git_complete caam _git_commit
 __git_complete cam _git_commit
+
+# Configuration
+shopt -s cdspell 2> /dev/null
+shopt -s nocaseglob 2> /dev/null
+shopt -s histappend 2> /dev/null
+shopt -s autocd 2> /dev/null
+shopt -s globstar 2> /dev/null
+
+# Completion
+command -v complete >/dev/null 2>&1 && (
+
+	# SSH Completion
+	[ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2 | tr ' ' '\n')" scp sftp ssh
+
+	# Add `killall` tab completion for common apps
+	complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal Twitter" killall
+)
+
+
+
+
+

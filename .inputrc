@@ -1,3 +1,8 @@
+
+set cdspell
+set histappend
+set nocaseglob
+
 set completion-ignore-case on
 set show-all-if-ambiguous on
 set show-all-if-unmodified on
