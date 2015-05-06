@@ -25,6 +25,7 @@ call vundle#begin()
   Plugin 'surround.vim'
   Plugin 'SirVer/ultisnips'
   Plugin 'LaTeX-Box-Team/LaTeX-Box'
+  Plugin 'scrooloose/syntastic'
 
   " Languages / Frameworks
   Plugin 'mattn/emmet-vim'
@@ -145,8 +146,6 @@ noremap  <buffer> <silent> $      g$
 inoremap <buffer> <silent> <Up>   <C-o>gk
 inoremap <buffer> <silent> <Down> <C-o>gj
 
-
-
 " Speed up transition from modes
 if ! has('gui_running')
   set ttimeoutlen=10
@@ -236,11 +235,14 @@ au BufNewFile,BufReadPost *.coffee setl foldmethod=indent nofoldenable
 " XML
 au FileType xml exe ":silent 1,$!xmllint --format --recover - 2>/dev/null"
 
+" Quick fix for grep
+au QuickFixCmdPost *grep* cwindow
+
 " CtrlP.vim
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 
 " RainbowParenthesis.vim
-nnoremap <leader>rp :RainbowParenthesesToggle<CR>
+nnoremap <leader>rr :RainbowParenthesesToggle<CR>
 
 " Emulate bundles, allow plugins to live independantly. Easier to manage.
 filetype plugin indent on
@@ -252,7 +254,8 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 
 " NERDTree
-nmap <leader>b :NERDTreeFind<CR>
+nmap <leader>m :NERDTreeToggle<CR>
+nmap <leader>n :NERDTreeFind<CR>
 
 " UtiliSnips
 let g:UltiSnipsExpandTrigger="<C-j>"
@@ -261,6 +264,15 @@ let g:UltiSnipsExpandTrigger="<C-j>"
 let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 let g:ycm_path_to_python_interpreter = '/usr/bin/python'
 
+" Syntastic
+let g:syntastic_check_on_open=1
+let g:syntastic_enable_signs=1
+let g:syntastic_javascript_checkers = ['/usr/local/bin/jshint']
+
 " Latex
 let g:tex_flavor = 'latex'
+
+" Fugitive
+nmap <Leader>gb :Gblame<CR>
+
 
