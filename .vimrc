@@ -26,6 +26,7 @@ call vundle#begin()
   Plugin 'SirVer/ultisnips'
   Plugin 'LaTeX-Box-Team/LaTeX-Box'
   Plugin 'scrooloose/syntastic'
+  Plugin 'editorconfig/editorconfig-vim'
 
   " Languages / Frameworks
   Plugin 'mattn/emmet-vim'
@@ -38,9 +39,9 @@ call vundle#begin()
   Plugin 'digitaltoad/vim-jade'
   Plugin 'othree/html5.vim'
   Plugin 'pangloss/vim-javascript'
-  Plugin 'othree/javascript-libraries-syntax.vim'
   Plugin 'othree/yajs.vim'
   Plugin 'othree/vim-jsx'
+  Plugin 'nginx.vim'
 
 call vundle#end()
 
@@ -183,12 +184,12 @@ let g:NERDCustomDelimiters = { 'racket': { 'left': ';', 'leftAlt': '#|', 'rightA
 map <leader>, <C-^>
 map <leader>] :bnext<CR>
 map <leader>[ :bprev<CR>
-map <leader>\ :bdelete<CR>
+map <leader>\ :bp<CR>:bdelete<SPACE>#<CR>
 map <leader><bar> :enew<CR>
 map <leader>ls :buffers<CR>
 
 " Close Quickfix window (,qq)
-map <leader>qq :cclose<CR>
+map <leader>q :cclose<CR>
 
 " Open QuickFix window for grep commands
 command! -nargs=+ Ggr execute 'silent Ggrep!' <q-args> | cw | redraw!
@@ -254,8 +255,10 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 
 " NERDTree
-nmap <leader>m :NERDTreeToggle<CR>
+let NERDTreeShowHidden=1
+nmap <leader>m :NERDTreeToggle<CR><C-w>w
 nmap <leader>n :NERDTreeFind<CR>
+nmap <leader>b :NERDTree<CR>
 
 " UtiliSnips
 let g:UltiSnipsExpandTrigger="<C-j>"
@@ -273,6 +276,8 @@ let g:syntastic_javascript_checkers = ['/usr/local/bin/jshint']
 let g:tex_flavor = 'latex'
 
 " Fugitive
-nmap <Leader>gb :Gblame<CR>
+nmap <Leader>gr :Ggr<space>
+nmap <silent> <Leader>gb :Gblame<CR>
+nmap <silent> <Leader>gl :Glog<CR>
 
 
