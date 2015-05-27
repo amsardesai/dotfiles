@@ -24,9 +24,12 @@ call vundle#begin()
   Plugin 'tpope/vim-git'
   Plugin 'surround.vim'
   Plugin 'SirVer/ultisnips'
+  Plugin 'honza/vim-snippets'
   Plugin 'LaTeX-Box-Team/LaTeX-Box'
   Plugin 'scrooloose/syntastic'
   Plugin 'editorconfig/editorconfig-vim'
+  Plugin 'tacahiroy/ctrlp-funky'
+  Plugin 'majutsushi/tagbar'
 
   " Languages / Frameworks
   Plugin 'mattn/emmet-vim'
@@ -38,10 +41,11 @@ call vundle#begin()
   Plugin 'groenewege/vim-less'
   Plugin 'digitaltoad/vim-jade'
   Plugin 'othree/html5.vim'
-  Plugin 'pangloss/vim-javascript'
+  " Plugin 'pangloss/vim-javascript'
   Plugin 'othree/yajs.vim'
   Plugin 'othree/vim-jsx'
   Plugin 'nginx.vim'
+  Plugin 'derekwyatt/vim-scala'
 
 call vundle#end()
 
@@ -184,7 +188,7 @@ let g:NERDCustomDelimiters = { 'racket': { 'left': ';', 'leftAlt': '#|', 'rightA
 map <leader>, <C-^>
 map <leader>] :bnext<CR>
 map <leader>[ :bprev<CR>
-map <leader>\ :bp<CR>:bdelete<SPACE>#<CR>
+map <leader>\ :bprevious<CR>:bdelete<SPACE>#<CR>
 map <leader><bar> :enew<CR>
 map <leader>ls :buffers<CR>
 
@@ -192,7 +196,8 @@ map <leader>ls :buffers<CR>
 map <leader>q :cclose<CR>
 
 " Open QuickFix window for grep commands
-command! -nargs=+ Ggr execute 'silent Ggrep!' <q-args> | cw | redraw!
+command! -nargs=+ Gr execute 'silent Ggrep!' <q-args> | cw | redraw!
+command! Gl execute 'silent Glog!' | cw | redraw!
 
 " Insert newline
 map <leader><Enter> o<ESC>
@@ -241,6 +246,11 @@ au QuickFixCmdPost *grep* cwindow
 
 " CtrlP.vim
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+let g:ctrlp_dont_split = 'NERD'
+map <C-h> :CtrlPBuffer<CR>
+
+" CtrlPFunky
+map <C-t> :CtrlPFunky<CR>
 
 " RainbowParenthesis.vim
 nnoremap <leader>rr :RainbowParenthesesToggle<CR>
@@ -258,26 +268,30 @@ let g:airline_powerline_fonts = 1
 let NERDTreeShowHidden=1
 nmap <leader>m :NERDTreeToggle<CR><C-w>w
 nmap <leader>n :NERDTreeFind<CR>
-nmap <leader>b :NERDTree<CR>
+nmap <leader>b :NERDTree<CR><C-w>w
 
 " UtiliSnips
 let g:UltiSnipsExpandTrigger="<C-j>"
+let g:UltiSnipsJumpForwardTrigger="<C-b>"
+let g:UltiSnipsJumpBackwardTrigger="<C-z>"
 
 " YouCompleteMe
 let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 let g:ycm_path_to_python_interpreter = '/usr/bin/python'
 
 " Syntastic
-let g:syntastic_check_on_open=1
-let g:syntastic_enable_signs=1
-let g:syntastic_javascript_checkers = ['/usr/local/bin/jshint']
+let g:syntastic_check_on_open = 1
+let g:syntastic_enable_signs = 1
+let g:syntastic_javascript_checkers = ['jsxhint']
+" let g:syntastic_javascript_jshint_conf = $HOME . '/.jshintrc'
+let g:syntastic_debug = 0
 
 " Latex
 let g:tex_flavor = 'latex'
 
 " Fugitive
-nmap <Leader>gr :Ggr<space>
+nmap <Leader>gk :silent Ggr<space>
+nmap <silent> <Leader>gl :silent Glog<CR>
 nmap <silent> <Leader>gb :Gblame<CR>
-nmap <silent> <Leader>gl :Glog<CR>
 
 
