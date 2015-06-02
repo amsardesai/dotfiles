@@ -44,6 +44,7 @@ call vundle#begin()
   Plugin 'othree/yajs.vim'
   Plugin 'rschmukler/pangloss-vim-indent'
   Plugin 'othree/vim-jsx'
+  Plugin 'elzr/vim-json'
   Plugin 'nginx.vim'
   Plugin 'derekwyatt/vim-scala'
 
