@@ -200,9 +200,6 @@ map <leader>q :cclose<CR>
 command! -nargs=+ Gr execute 'silent Ggrep!' <q-args> | cw | redraw!
 command! Gl execute 'silent Glog!' | cw | redraw!
 
-" Insert newline
-map <leader><Enter> o<ESC>
-
 " Fix Whitespace
 nnoremap <leader>fw :FixWhitespace<CR>
 
@@ -227,20 +224,11 @@ autocmd BufReadPost *
   \   exe "normal! g`\"" |
   \ endif
 
-" Jade
-au BufRead,BufNewFile *.jade set ft=jade
-
 " Ruby
 au BufRead,BufNewFile Rakefile,Capfile,Gemfile,.autotest,.irbrc,*.treetop,*.tt set ft=ruby
 
 " JSON
 au BufRead,BufNewFile .jshintrc,.eslintrc set ft=json
-
-" Coffee
-au BufNewFile,BufReadPost *.coffee setl foldmethod=indent nofoldenable
-
-" XML
-au FileType xml exe ":silent 1,$!xmllint --format --recover - 2>/dev/null"
 
 " Quick fix for grep
 au QuickFixCmdPost *grep* cwindow
