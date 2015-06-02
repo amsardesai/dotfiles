@@ -227,10 +227,13 @@ autocmd BufReadPost *
   \ endif
 
 " Jade
-au BufRead,BufNewFile *.jade set ft=jade syntax=jade
+au BufRead,BufNewFile *.jade set ft=jade
 
 " Ruby
-au BufRead,BufNewFile Rakefile,Capfile,Gemfile,.autotest,.irbrc,*.treetop,*.tt set ft=ruby syntax=ruby
+au BufRead,BufNewFile Rakefile,Capfile,Gemfile,.autotest,.irbrc,*.treetop,*.tt set ft=ruby
+
+" JSON
+au BufRead,BufNewFile .jshintrc,.eslintrc set ft=json
 
 " Coffee
 au BufNewFile,BufReadPost *.coffee setl foldmethod=indent nofoldenable
@@ -291,4 +294,5 @@ nmap <Leader>gk :silent Ggr<space>
 nmap <silent> <Leader>gl :silent Glog<CR>
 nmap <silent> <Leader>gb :Gblame<CR>
 
-
+" vim-json
+set conceallevel = 2
