@@ -295,4 +295,4 @@ nmap <silent> <Leader>gl :silent Glog<CR>
 nmap <silent> <Leader>gb :Gblame<CR>
 
 " vim-json
-set conceallevel = 2
+set conceallevel=2
