@@ -226,9 +226,6 @@ autocmd BufReadPost *
   \   exe "normal! g`\"" |
   \ endif
 
-" JSON
-au BufRead,BufNewFile *.json set ft=json syntax=javascript
-
 " Jade
 au BufRead,BufNewFile *.jade set ft=jade syntax=jade
 
@@ -282,7 +279,7 @@ let g:ycm_path_to_python_interpreter = '/usr/bin/python'
 " Syntastic
 let g:syntastic_check_on_open = 1
 let g:syntastic_enable_signs = 1
-let g:syntastic_javascript_checker = 'eslint --reset'
+let g:syntastic_javascript_checkers = ['eslint --reset']
 " let g:syntastic_javascript_jshint_conf = $HOME . '/.jshintrc'
 let g:syntastic_debug = 0
 
