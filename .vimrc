@@ -271,9 +271,11 @@ let g:ycm_path_to_python_interpreter = '/usr/bin/python'
 " Syntastic
 let g:syntastic_check_on_open = 1
 let g:syntastic_enable_signs = 1
-let g:syntastic_javascript_checkers = ['eslint --reset']
-" let g:syntastic_javascript_jshint_conf = $HOME . '/.jshintrc'
+let g:syntastic_javascript_checkers = ['eslint']
 let g:syntastic_debug = 0
+nmap <Leader>st :SyntasticToggleMode<CR>:SyntasticReset<CR>
+nmap <Leader>si :SyntasticInfo<CR>
+nmap <Leader>sc :SyntasticCheck<CR>
 
 " Latex
 let g:tex_flavor = 'latex'
