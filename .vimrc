@@ -273,7 +273,7 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_enable_signs = 1
 let g:syntastic_javascript_checkers = ['eslint']
 let g:syntastic_debug = 0
-nmap <Leader>st :SyntasticToggleMode<CR>:SyntasticReset<CR>
+nmap <Leader>sk :SyntasticToggleMode<CR>:SyntasticReset<CR>
 nmap <Leader>si :SyntasticInfo<CR>
 nmap <Leader>sc :SyntasticCheck<CR>
 
