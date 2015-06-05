@@ -287,3 +287,9 @@ nmap <silent> <Leader>gb :Gblame<CR>
 
 " vim-json
 set conceallevel=2
+
+" GitGutter
+let g:gitgutter_realtime = 0
+let g:gitgutter_eager = 0
+
+
