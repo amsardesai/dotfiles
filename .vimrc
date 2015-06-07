@@ -269,6 +269,7 @@ let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 let g:ycm_path_to_python_interpreter = '/usr/bin/python'
 
 " Syntastic
+let b:syntastic_mode = 'passive'
 let g:syntastic_check_on_open = 1
 let g:syntastic_enable_signs = 1
 let g:syntastic_javascript_checkers = ['eslint']
