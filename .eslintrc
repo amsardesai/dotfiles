@@ -12,7 +12,7 @@
 
   "ecmaFeatures": {
     "modules": true,
-    "jsx": false
+    "jsx": true
   },
 
   "env": {
