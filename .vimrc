@@ -27,16 +27,12 @@ call vundle#begin()
   Plugin 'honza/vim-snippets'
   Plugin 'LaTeX-Box-Team/LaTeX-Box'
   Plugin 'scrooloose/syntastic'
-  Plugin 'editorconfig/editorconfig-vim'
-  Plugin 'tacahiroy/ctrlp-funky'
   Plugin 'majutsushi/tagbar'
 
   " Languages / Frameworks
   Plugin 'mattn/emmet-vim'
   Plugin 'vim-ruby/vim-ruby'
   Plugin 'tpope/vim-rails'
-  Plugin 'tpope/vim-bundler'
-  Plugin 'tpope/vim-rake'
   Plugin 'kchmck/vim-coffee-script'
   Plugin 'groenewege/vim-less'
   Plugin 'digitaltoad/vim-jade'
@@ -162,10 +158,6 @@ if ! has('gui_running')
   augroup END
 endif
 
-" Speed up viewport scrolling
-nnoremap <C-e> 2<C-e>
-nnoremap <C-y> 2<C-y>
-
 " Escape to remove search results
 nnoremap <silent> <CR> :noh<CR><CR>
 
@@ -178,12 +170,9 @@ endif
 " Remap certain keys
 command! W write
 command! Q quit
-command! T tabnew
 
 " NERD Commenter
 let NERDSpaceDelims=1
-let NERDCompactSexyComs=1
-let g:NERDCustomDelimiters = { 'racket': { 'left': ';', 'leftAlt': '#|', 'rightAlt': '|#' } }
 
 " Buffer navigation (,,) (,]) (,[) (,\) (,ls)
 map <leader>, <C-^>
@@ -230,9 +219,6 @@ au BufRead,BufNewFile Rakefile,Capfile,Gemfile,.autotest,.irbrc,*.treetop,*.tt s
 " JSON
 au BufRead,BufNewFile .jshintrc,.eslintrc set ft=json
 
-" Quick fix for grep
-au QuickFixCmdPost *grep* cwindow
-
 " CtrlP.vim
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_dont_split = 'NERD'
@@ -270,10 +256,8 @@ let g:ycm_path_to_python_interpreter = '/usr/bin/python'
 
 " Syntastic
 let b:syntastic_mode = 'passive'
-let g:syntastic_check_on_open = 1
 let g:syntastic_enable_signs = 1
 let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_debug = 0
 nmap <Leader>sk :SyntasticToggleMode<CR>:SyntasticReset<CR>
 nmap <Leader>si :SyntasticInfo<CR>
 nmap <Leader>sc :SyntasticCheck<CR>
