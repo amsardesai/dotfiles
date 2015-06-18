@@ -28,6 +28,7 @@ call vundle#begin()
   Plugin 'LaTeX-Box-Team/LaTeX-Box'
   Plugin 'scrooloose/syntastic'
   Plugin 'majutsushi/tagbar'
+  " Plugin 'Xuyuanp/nerdtree-git-plugin'
 
   " Languages / Frameworks
   Plugin 'mattn/emmet-vim'
@@ -75,6 +76,7 @@ set linebreak
 set wrap
 
 " Set some junk
+set autoread " Automatically load updated file if it's not changed
 set cursorline " Highlight current line
 set diffopt=filler " Add vertical spaces to keep right and left aligned
 " set diffopt+=iwhite " Ignore whitespace changes (focus on code changes)
@@ -188,6 +190,7 @@ map <leader>q :cclose<CR>
 " Open QuickFix window for grep commands
 command! -nargs=+ Gr execute 'silent Ggrep!' <q-args> | cw | redraw!
 command! Gl execute 'silent Glog!' | cw | redraw!
+autocmd QuickFixCmdPost *grep* cwindow
 
 " Fix Whitespace
 nnoremap <leader>fw :FixWhitespace<CR>
@@ -220,6 +223,7 @@ au BufRead,BufNewFile Rakefile,Capfile,Gemfile,.autotest,.irbrc,*.treetop,*.tt s
 au BufRead,BufNewFile .jshintrc,.eslintrc set ft=json
 
 " CtrlP.vim
+let g:ctrlp_match_window = 'max:50'
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_dont_split = 'NERD'
 map <C-h> :CtrlPBuffer<CR>
