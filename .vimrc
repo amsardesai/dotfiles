@@ -227,6 +227,7 @@ let g:ctrlp_match_window = 'max:50'
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_dont_split = 'NERD'
 map <C-h> :CtrlPBuffer<CR>
+map <Leader>p :CtrlPClearAllCaches<CR>
 
 " CtrlPFunky
 map <C-t> :CtrlPFunky<CR>
