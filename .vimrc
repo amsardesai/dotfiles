@@ -177,15 +177,15 @@ command! Q quit
 let NERDSpaceDelims=1
 
 " Buffer navigation (,,) (,]) (,[) (,\) (,ls)
-map <leader>, <C-^>
-map <leader>] :bnext<CR>
-map <leader>[ :bprev<CR>
-map <leader>\ :bprevious<CR>:bdelete<SPACE>#<CR>
-map <leader><bar> :enew<CR>
-map <leader>ls :buffers<CR>
+map <Leader>, <C-^>
+map <Leader>] :bnext<CR>
+map <Leader>[ :bprev<CR>
+map <Leader>\ :bprevious<CR>:bdelete<SPACE>#<CR>
+map <Leader><bar> :enew<CR>
+map <Leader>ls :buffers<CR>
 
 " Close Quickfix window (,qq)
-map <leader>q :cclose<CR>
+map <Leader>q :cclose<CR>
 
 " Open QuickFix window for grep commands
 command! -nargs=+ Gr execute 'silent Ggrep!' <q-args> | cw | redraw!
@@ -229,9 +229,6 @@ let g:ctrlp_dont_split = 'NERD'
 map <C-h> :CtrlPBuffer<CR>
 map <Leader>p :CtrlPClearAllCaches<CR>
 
-" CtrlPFunky
-map <C-t> :CtrlPFunky<CR>
-
 " RainbowParenthesis.vim
 nnoremap <leader>rr :RainbowParenthesesToggle<CR>
 
@@ -246,6 +243,7 @@ let g:airline_powerline_fonts = 1
 
 " NERDTree
 let NERDTreeShowHidden=1
+let NERDTreeAutoDeleteBuffer=1
 nmap <leader>m :NERDTreeToggle<CR><C-w>w
 nmap <leader>n :NERDTreeFind<CR>
 nmap <leader>b :NERDTree<CR><C-w>w
@@ -263,7 +261,8 @@ let g:ycm_path_to_python_interpreter = '/usr/bin/python'
 let b:syntastic_mode = 'passive'
 let g:syntastic_enable_signs = 1
 let g:syntastic_javascript_checkers = ['eslint']
-nmap <Leader>sk :SyntasticToggleMode<CR>:SyntasticReset<CR>
+nmap <Leader>sk :SyntasticToggleMode<CR>
+nmap <Leader>sr :SyntasticReset<CR>
 nmap <Leader>si :SyntasticInfo<CR>
 nmap <Leader>sc :SyntasticCheck<CR>
 
