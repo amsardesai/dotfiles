@@ -83,7 +83,6 @@ __git_complete add _git_add
 __git_complete reb _git_rebase
 __git_complete lg _git_log
 __git_complete gg _git_grep
-__git_complete blame _git_blame
 __git_complete caam _git_commit
 __git_complete cam _git_commit
 
