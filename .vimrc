@@ -32,6 +32,7 @@ call vundle#begin()
 
   " Languages / Frameworks
   Plugin 'mattn/emmet-vim'
+  Plugin 'tpope/vim-haml'
   Plugin 'vim-ruby/vim-ruby'
   Plugin 'tpope/vim-rails'
   Plugin 'kchmck/vim-coffee-script'
@@ -227,7 +228,7 @@ let g:ctrlp_match_window = 'max:50'
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_dont_split = 'NERD'
 map <C-h> :CtrlPBuffer<CR>
-map <Leader>p :CtrlPClearAllCaches<CR>
+map <Leader>op :CtrlPClearAllCaches<CR>
 
 " RainbowParenthesis.vim
 nnoremap <leader>rr :RainbowParenthesesToggle<CR>
