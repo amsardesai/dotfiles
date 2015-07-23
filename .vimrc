@@ -38,6 +38,7 @@ call vundle#begin()
   Plugin 'kchmck/vim-coffee-script'
   Plugin 'groenewege/vim-less'
   Plugin 'digitaltoad/vim-jade'
+  Plugin 'avakhov/vim-yaml'
   Plugin 'othree/html5.vim'
   Plugin 'othree/yajs.vim'
   Plugin 'rschmukler/pangloss-vim-indent'
@@ -78,6 +79,7 @@ set wrap
 
 " Set some junk
 set autoread " Automatically load updated file if it's not changed
+set colorcolumn=100 " Max length of a line
 set cursorline " Highlight current line
 set diffopt=filler " Add vertical spaces to keep right and left aligned
 " set diffopt+=iwhite " Ignore whitespace changes (focus on code changes)
