@@ -29,6 +29,7 @@ call vundle#begin()
   Plugin 'scrooloose/syntastic'
   Plugin 'majutsushi/tagbar'
   " Plugin 'Xuyuanp/nerdtree-git-plugin'
+  Plugin 'marijnh/tern_for_vim'
 
   " Languages / Frameworks
   Plugin 'mattn/emmet-vim'
@@ -142,16 +143,6 @@ set wildmode=list:longest " Complete only until point of ambiguity.
 set winminheight=0 "Allow splits to be reduced to a single line.
 set wrapscan " Searches wrap around end of file
 set whichwrap+=<,>,h,l,[,]
-
-" Change the way up and down is interpreted
-noremap  <buffer> <silent> <Up>   gk
-noremap  <buffer> <silent> <Down> gj
-noremap  <buffer> <silent> k      gk
-noremap  <buffer> <silent> j      gj
-noremap  <buffer> <silent> 0      g0
-noremap  <buffer> <silent> $      g$
-inoremap <buffer> <silent> <Up>   <C-o>gk
-inoremap <buffer> <silent> <Down> <C-o>gj
 
 " Speed up transition from modes
 if ! has('gui_running')
