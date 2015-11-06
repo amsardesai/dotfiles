@@ -12,7 +12,6 @@ call vundle#begin()
   Plugin 'kien/ctrlp.vim'
   Plugin 'scrooloose/nerdcommenter'
   Plugin 'scrooloose/nerdtree'
-  Plugin 'kien/rainbow_parentheses.vim'
   Plugin 'bling/vim-airline'
   Plugin 'airblade/vim-gitgutter'
   Plugin 'tpope/vim-fugitive'
@@ -28,8 +27,6 @@ call vundle#begin()
   Plugin 'LaTeX-Box-Team/LaTeX-Box'
   Plugin 'scrooloose/syntastic'
   Plugin 'majutsushi/tagbar'
-  " Plugin 'Xuyuanp/nerdtree-git-plugin'
-  Plugin 'marijnh/tern_for_vim'
 
   " Languages / Frameworks
   Plugin 'mattn/emmet-vim'
@@ -49,7 +46,6 @@ call vundle#begin()
   Plugin 'derekwyatt/vim-scala'
 
 call vundle#end()
-
 
 " Set syntax highlighting options.
 set t_Co=256
@@ -122,7 +118,7 @@ set report=0 " Show all changes.
 set ruler " Show the cursor position
 set scrolloff=3 " Start scrolling three lines before horizontal border of window.
 set shell=\/usr\/bin\/env\ bash\ --login
-set shortmess=atI " Don't show the intro message when starting vim.
+" set shortmess=atI " Don't show the intro message when starting vim.
 set showmode " Show the current mode.
 set showtabline=2 " Always show tab bar.
 set sidescrolloff=3 " Start scrolling three columns before vertical border of window.
