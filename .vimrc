@@ -140,6 +140,9 @@ set winminheight=0 "Allow splits to be reduced to a single line.
 set wrapscan " Searches wrap around end of file
 set whichwrap+=<,>,h,l,[,]
 
+" Set and unset pasting mode
+set pastetoggle=<Leader>u
+
 " Speed up transition from modes
 if ! has('gui_running')
   set ttimeoutlen=10
@@ -246,6 +249,7 @@ let g:UltiSnipsJumpBackwardTrigger = '<C-z>'
 " YouCompleteMe
 let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 let g:ycm_path_to_python_interpreter = '/usr/bin/python'
+let g:ycm_confirm_extra_conf = 0
 
 " Syntastic
 let b:syntastic_mode = 'passive'
