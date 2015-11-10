@@ -118,7 +118,6 @@ set report=0 " Show all changes.
 set ruler " Show the cursor position
 set scrolloff=3 " Start scrolling three lines before horizontal border of window.
 set shell=\/usr\/bin\/env\ bash\ --login
-" set shortmess=atI " Don't show the intro message when starting vim.
 set showmode " Show the current mode.
 set showtabline=2 " Always show tab bar.
 set sidescrolloff=3 " Start scrolling three columns before vertical border of window.
