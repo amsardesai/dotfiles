@@ -1,56 +1,66 @@
 " Make vim more useful
 set nocompatible
 
-" Enabled later, after Vundle
-filetype off
+" Install plug if it's not already installed
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !mkdir -p ~/.vim/autoload/
+  silent !mkdir -p ~/.vim/backups/
+  silent !mkdir -p ~/.vim/bundle/
+  silent !mkdir -p ~/.vim/swaps/
+  silent !mkdir -p ~/.vim/undo/
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall | source $MYVIMRC
+endif
 
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+call plug#begin('~/.vim/bundle')
+
   " Plugins
-  Plugin 'gmarik/Vundle.vim'
-  Plugin 'jiangmiao/auto-pairs'
-  Plugin 'kien/ctrlp.vim'
-  Plugin 'scrooloose/nerdcommenter'
-  Plugin 'scrooloose/nerdtree'
-  Plugin 'bling/vim-airline'
-  Plugin 'airblade/vim-gitgutter'
-  Plugin 'tpope/vim-fugitive'
-  Plugin 'Valloric/YouCompleteMe'
-  Plugin 'terryma/vim-multiple-cursors'
-  Plugin 'tpope/vim-sleuth'
-  Plugin 'flazz/vim-colorschemes'
-  Plugin 'bronson/vim-trailing-whitespace'
-  Plugin 'tpope/vim-git'
-  Plugin 'surround.vim'
-  Plugin 'SirVer/ultisnips'
-  Plugin 'honza/vim-snippets'
-  Plugin 'LaTeX-Box-Team/LaTeX-Box'
-  Plugin 'scrooloose/syntastic'
-  Plugin 'majutsushi/tagbar'
+  Plug 'gmarik/Vundle.vim'
+  Plug 'jiangmiao/auto-pairs'
+  Plug 'ctrlpvim/ctrlp.vim'
+  Plug 'scrooloose/nerdcommenter'
+  Plug 'scrooloose/nerdtree'
+  Plug 'bling/vim-airline'
+  Plug 'airblade/vim-gitgutter'
+  Plug 'tpope/vim-fugitive'
+  Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+  Plug 'terryma/vim-multiple-cursors'
+  Plug 'tpope/vim-sleuth'
+  Plug 'flazz/vim-colorschemes'
+  Plug 'bronson/vim-trailing-whitespace'
+  Plug 'tpope/vim-git'
+  Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-repeat'
+  Plug 'SirVer/ultisnips'
+  Plug 'honza/vim-snippets'
+  Plug 'LaTeX-Box-Team/LaTeX-Box'
+  Plug 'scrooloose/syntastic'
+  Plug 'majutsushi/tagbar'
 
   " Languages / Frameworks
-  Plugin 'mattn/emmet-vim'
-  Plugin 'tpope/vim-haml'
-  Plugin 'vim-ruby/vim-ruby'
-  Plugin 'tpope/vim-rails'
-  Plugin 'kchmck/vim-coffee-script'
-  Plugin 'groenewege/vim-less'
-  Plugin 'digitaltoad/vim-jade'
-  Plugin 'avakhov/vim-yaml'
-  Plugin 'othree/html5.vim'
-  Plugin 'othree/yajs.vim'
-  Plugin 'rschmukler/pangloss-vim-indent'
-  Plugin 'othree/vim-jsx'
-  Plugin 'elzr/vim-json'
-  Plugin 'nginx.vim'
-  Plugin 'derekwyatt/vim-scala'
+  Plug 'mattn/emmet-vim', { 'for': 'html' }
+  Plug 'tpope/vim-haml'
+  Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
+  Plug 'tpope/vim-rails', { 'for': 'ruby' }
+  Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
+  Plug 'groenewege/vim-less'
+  Plug 'digitaltoad/vim-jade'
+  Plug 'avakhov/vim-yaml', { 'for': 'yaml' }
+  Plug 'othree/html5.vim'
+  Plug 'othree/yajs.vim'
+  Plug 'rschmukler/pangloss-vim-indent'
+  Plug 'othree/vim-jsx'
+  Plug 'elzr/vim-json', { 'for': 'json' }
+  Plug 'nginx.vim'
+  Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
+  Plug 'ekalinin/Dockerfile.vim'
 
-call vundle#end()
+call plug#end()
 
 " Set syntax highlighting options.
 set t_Co=256
 set background=dark
-syntax on
 colorscheme hybrid
 
 " Change mapleader
@@ -135,7 +145,6 @@ set wildignore+=*.jpg,*.jpeg,*.gif,*.png,*.gif,*.psd,*.o,*.obj,*.min.js
 set wildignore+=*/smarty/*,*/vendor/*,*/node_modules/*,*/.git/*,*/.hg/*,*/.svn/*,*/.sass-cache/*,*/log/*,*/tmp/*,*/build/*,*/ckeditor/*,*/doc/*
 set wildmenu " Hitting TAB in command mode will show possible completions above command line.
 set wildmode=list:longest " Complete only until point of ambiguity.
-set winminheight=0 "Allow splits to be reduced to a single line.
 set wrapscan " Searches wrap around end of file
 set whichwrap+=<,>,h,l,[,]
 
@@ -202,12 +211,6 @@ map <PageDown> <C-D>
 imap <PageUp> <C-O><C-U>
 imap <PageDown> <C-O><C-D>
 
-" Restore cursor position
-autocmd BufReadPost *
-  \ if line("'\"") > 1 && line("'\"") <= line("$") |
-  \   exe "normal! g`\"" |
-  \ endif
-
 " Ruby
 au BufRead,BufNewFile Rakefile,Capfile,Gemfile,.autotest,.irbrc,*.treetop,*.tt set ft=ruby
 
@@ -223,9 +226,6 @@ map <Leader>op :CtrlPClearAllCaches<CR>
 
 " RainbowParenthesis.vim
 nnoremap <leader>rr :RainbowParenthesesToggle<CR>
-
-" Emulate bundles, allow plugins to live independantly. Easier to manage.
-filetype plugin indent on
 
 " Airline
 let g:airline_theme='tomorrow'
