@@ -27,7 +27,7 @@ call plug#begin('~/.vim/bundle')
   Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
   Plug 'terryma/vim-multiple-cursors'
   Plug 'tpope/vim-sleuth'
-  Plug 'flazz/vim-colorschemes'
+  Plug 'chriskempson/vim-tomorrow-theme'
   Plug 'bronson/vim-trailing-whitespace'
   Plug 'tpope/vim-git'
   Plug 'tpope/vim-surround'
@@ -61,7 +61,7 @@ call plug#end()
 " Set syntax highlighting options.
 set t_Co=256
 set background=dark
-colorscheme hybrid
+colorscheme Tomorrow-Night-Bright
 
 " Change mapleader
 let mapleader = ","
