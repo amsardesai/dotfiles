@@ -30,7 +30,7 @@ export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
 export LESS="-RMS"
 
 # Git Autocomplete
-source "$(dirname $BASH_SOURCE)/.git-completion.bash"
+source "$(dirname $BASH_SOURCE)/git-completion.bash"
 
 # Bash Prompt
 source "$(dirname $BASH_SOURCE)/.bash_prompt"

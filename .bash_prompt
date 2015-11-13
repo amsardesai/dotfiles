@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source "$(dirname $BASH_SOURCE)/.git-prompt.bash"
-source "$(dirname $BASH_SOURCE)/.svn-prompt.bash"
+source "$(dirname $BASH_SOURCE)/git-prompt.bash"
+source "$(dirname $BASH_SOURCE)/svn-prompt.bash"
 
 # SVN
 SVNP_HUGE_REPO_EXCLUDE_PATH="nufw-svn$|/tags$|/branches$"
