@@ -15,7 +15,7 @@ endif
 
 call plug#begin('~/.vim/bundle')
 
-  " Plugins
+  " Productivity Plugins
   Plug 'jiangmiao/auto-pairs'
   Plug 'ctrlpvim/ctrlp.vim'
   Plug 'scrooloose/nerdcommenter'
@@ -23,22 +23,23 @@ call plug#begin('~/.vim/bundle')
   Plug 'bling/vim-airline'
   Plug 'airblade/vim-gitgutter'
   Plug 'tpope/vim-fugitive'
-  Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
   Plug 'terryma/vim-multiple-cursors'
   Plug 'tpope/vim-sleuth'
-  Plug 'chriskempson/vim-tomorrow-theme'
-  Plug 'bronson/vim-trailing-whitespace'
-  Plug 'tpope/vim-git'
+  Plug 'bronson/vim-trailing-whitespace', { 'on': 'FixWhitespace' }
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
-  Plug 'SirVer/ultisnips'
-  Plug 'honza/vim-snippets'
-  Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
+  Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+  Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
   Plug 'scrooloose/syntastic', { 'for': [ 'javascript', 'python' ] }
 
-  " Languages / Frameworks
+  " Themes
+  Plug 'kristijanhusak/vim-hybrid-material'
+
+  " Filetype Plugins
+  Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+  Plug 'tpope/vim-git', { 'for': 'git' }
   Plug 'mattn/emmet-vim', { 'for': 'html' }
-  Plug 'tpope/vim-haml'
+  Plug 'tpope/vim-haml', { 'for': [ 'haml', 'scss', 'sass' ] }
   Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
   Plug 'tpope/vim-rails', { 'for': 'ruby' }
   Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
@@ -47,11 +48,14 @@ call plug#begin('~/.vim/bundle')
   Plug 'avakhov/vim-yaml', { 'for': 'yaml' }
   Plug 'othree/html5.vim', { 'for': 'html' }
   Plug 'othree/yajs.vim', { 'for': 'javascript' }
-  Plug 'rschmukler/pangloss-vim-indent'
-  Plug 'othree/vim-jsx'
+  Plug 'rschmukler/pangloss-vim-indent', { 'for': 'javascript' }
+  Plug 'othree/vim-jsx', { 'for': 'javascript' }
   Plug 'elzr/vim-json', { 'for': 'json' }
-  Plug 'nginx.vim'
   Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
+  Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
+
+  " Configuration File Plugins
+  Plug 'vim-scripts/nginx.vim'
   Plug 'ekalinin/Dockerfile.vim'
 
 call plug#end()
@@ -59,7 +63,7 @@ call plug#end()
 " Set syntax highlighting options.
 set t_Co=256
 set background=dark
-colorscheme Tomorrow-Night
+colorscheme hybrid_reverse
 
 " Change mapleader
 let mapleader = ","
@@ -122,6 +126,7 @@ set noshowmode " Don't show the current mode (Powerline takes care of us)
 set nostartofline " Don't reset cursor to start of line when moving around.
 set nu " Enable line numbers.
 set ofu=syntaxcomplete#Complete " Set omni-completion method.
+set pastetoggle=<Leader>u " Set paste toggle
 set report=0 " Show all changes.
 set ruler " Show the cursor position
 set scrolloff=3 " Start scrolling three lines before horizontal border of window.
@@ -146,9 +151,6 @@ set wildmode=list:longest " Complete only until point of ambiguity.
 set wrapscan " Searches wrap around end of file
 set whichwrap+=<,>,h,l,[,]
 
-" Set and unset pasting mode
-set pastetoggle=<Leader>u
-
 " Speed up transition from modes
 if ! has('gui_running')
   set ttimeoutlen=10
@@ -172,15 +174,12 @@ endif
 command! W write
 command! Q quit
 
-" NERD Commenter
-let NERDSpaceDelims=1
-
 " Buffer navigation (,,) (,]) (,[) (,\) (,ls)
 map <Leader>, <C-^>
 map <Leader>] :bnext<CR>
 map <Leader>[ :bprev<CR>
 map <Leader>\ :bprevious<CR>:bdelete<SPACE>#<CR>
-map <Leader><bar> :enew<CR>
+map <Leader><bar> :bprevious<CR>:bdelete!<SPACE>#<CR>
 map <Leader>ls :buffers<CR>
 
 " Close Quickfix window (,qq)
@@ -193,12 +192,6 @@ autocmd QuickFixCmdPost *grep* cwindow
 
 " Fix Whitespace
 nnoremap <leader>fw :FixWhitespace<CR>
-
-" Search and replace word under cursor (,*)
-nnoremap <leader>* :%s/\<<C-r><C-w>\>//<Left>
-
-" Auto close html tags
-iabbrev <// </<C-X><C-O>
 
 " Ctrl-Backspace
 imap <C-BS> <C-W>
@@ -215,15 +208,15 @@ au BufRead,BufNewFile Rakefile,Capfile,Gemfile,.autotest,.irbrc,*.treetop,*.tt s
 " JSON
 au BufRead,BufNewFile .jshintrc,.eslintrc set ft=json
 
+" NERD Commenter
+let NERDSpaceDelims=1
+
 " CtrlP.vim
 let g:ctrlp_match_window = 'max:50'
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_dont_split = 'NERD'
 map <C-h> :CtrlPBuffer<CR>
 map <Leader>op :CtrlPClearAllCaches<CR>
-
-" RainbowParenthesis.vim
-nnoremap <leader>rr :RainbowParenthesesToggle<CR>
 
 " Airline
 let g:airline_theme='tomorrow'
@@ -271,5 +264,4 @@ set conceallevel=2
 " GitGutter
 let g:gitgutter_realtime = 0
 let g:gitgutter_eager = 0
-
 
