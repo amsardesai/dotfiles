@@ -8,6 +8,8 @@ curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-pro
 	> git-prompt.bash
 curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash \
 	> git-completion.bash
+curl https://raw.githubusercontent.com/Valloric/ycmd/master/cpp/ycm/.ycm_extra_conf.py \
+	> .ycm_extra_conf.py
 
 echo "Creating aliases..."
 

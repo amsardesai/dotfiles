@@ -103,7 +103,3 @@ command -v complete >/dev/null 2>&1 && (
 	complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal Twitter" killall
 )
 
-
-
-
-
