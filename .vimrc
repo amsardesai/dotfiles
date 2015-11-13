@@ -16,7 +16,6 @@ endif
 call plug#begin('~/.vim/bundle')
 
   " Plugins
-  Plug 'gmarik/Vundle.vim'
   Plug 'jiangmiao/auto-pairs'
   Plug 'ctrlpvim/ctrlp.vim'
   Plug 'scrooloose/nerdcommenter'
@@ -34,9 +33,8 @@ call plug#begin('~/.vim/bundle')
   Plug 'tpope/vim-repeat'
   Plug 'SirVer/ultisnips'
   Plug 'honza/vim-snippets'
-  Plug 'LaTeX-Box-Team/LaTeX-Box'
-  Plug 'scrooloose/syntastic'
-  Plug 'majutsushi/tagbar'
+  Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
+  Plug 'scrooloose/syntastic', { 'for': [ 'javascript', 'python' ] }
 
   " Languages / Frameworks
   Plug 'mattn/emmet-vim', { 'for': 'html' }
@@ -44,11 +42,11 @@ call plug#begin('~/.vim/bundle')
   Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
   Plug 'tpope/vim-rails', { 'for': 'ruby' }
   Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
-  Plug 'groenewege/vim-less'
-  Plug 'digitaltoad/vim-jade'
+  Plug 'groenewege/vim-less', { 'for': 'less' }
+  Plug 'digitaltoad/vim-jade', { 'for': 'jade' }
   Plug 'avakhov/vim-yaml', { 'for': 'yaml' }
-  Plug 'othree/html5.vim'
-  Plug 'othree/yajs.vim'
+  Plug 'othree/html5.vim', { 'for': 'html' }
+  Plug 'othree/yajs.vim', { 'for': 'javascript' }
   Plug 'rschmukler/pangloss-vim-indent'
   Plug 'othree/vim-jsx'
   Plug 'elzr/vim-json', { 'for': 'json' }
@@ -61,7 +59,7 @@ call plug#end()
 " Set syntax highlighting options.
 set t_Co=256
 set background=dark
-colorscheme Tomorrow-Night-Bright
+colorscheme Tomorrow-Night
 
 " Change mapleader
 let mapleader = ","
