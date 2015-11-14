@@ -53,6 +53,7 @@ call plug#begin('~/.vim/bundle')
   Plug 'elzr/vim-json', { 'for': 'json' }
   Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
   Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
+  Plug 'vim-scripts/sql.vim--Stinson', { 'for': 'sql' }
 
   " Configuration File Plugins
   Plug 'vim-scripts/nginx.vim'
