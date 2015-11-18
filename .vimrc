@@ -25,7 +25,7 @@ call plug#begin('~/.vim/bundle')
   Plug 'tpope/vim-fugitive'
   Plug 'terryma/vim-multiple-cursors'
   Plug 'tpope/vim-sleuth'
-  Plug 'bronson/vim-trailing-whitespace', { 'on': 'FixWhitespace' }
+  Plug 'bronson/vim-trailing-whitespace'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
   Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
@@ -78,11 +78,9 @@ set undodir=~/.vim/undo
 " Indentation
 set autoindent " Copy indent from last line when starting new line.
 set backspace=indent,eol,start
-set shiftwidth=2 " The # of spaces for indenting.
 set smartindent
 set smarttab " At start of line, <Tab> inserts shiftwidth spaces, <Bs> deletes shiftwidth spaces.
 set softtabstop=2 " Tab key results in 2 spaces
-set tabstop=4
 set breakindent showbreak=..
 set linebreak
 set wrap
