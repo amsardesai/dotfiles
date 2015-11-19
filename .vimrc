@@ -78,9 +78,11 @@ set undodir=~/.vim/undo
 " Indentation
 set autoindent " Copy indent from last line when starting new line.
 set backspace=indent,eol,start
+set shiftwidth=2
 set smartindent
 set smarttab " At start of line, <Tab> inserts shiftwidth spaces, <Bs> deletes shiftwidth spaces.
 set softtabstop=2 " Tab key results in 2 spaces
+set tabstop=4
 set breakindent showbreak=..
 set linebreak
 set wrap
