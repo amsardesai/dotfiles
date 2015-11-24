@@ -47,17 +47,17 @@ call plug#begin('~/.vim/bundle')
   Plug 'digitaltoad/vim-jade', { 'for': 'jade' }
   Plug 'avakhov/vim-yaml', { 'for': 'yaml' }
   Plug 'othree/html5.vim', { 'for': 'html' }
-  Plug 'othree/yajs.vim', { 'for': 'javascript' }
-  Plug 'rschmukler/pangloss-vim-indent', { 'for': 'javascript' }
-  Plug 'othree/vim-jsx', { 'for': 'javascript' }
+  Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
+  Plug 'rschmukler/pangloss-vim-indent', { 'for': ['javascript', 'javascript.jsx'] }
+  Plug 'othree/vim-jsx', { 'for': 'javascript.jsx' }
   Plug 'elzr/vim-json', { 'for': 'json' }
   Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
   Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
   Plug 'vim-scripts/sql.vim--Stinson', { 'for': 'sql' }
 
   " Configuration File Plugins
-  Plug 'vim-scripts/nginx.vim'
-  Plug 'ekalinin/Dockerfile.vim'
+  Plug 'vim-scripts/nginx.vim', { 'for': 'nginx' }
+  Plug 'ekalinin/Dockerfile.vim', { 'for': 'Dockerfile' }
 
 call plug#end()
 
@@ -96,13 +96,13 @@ set diffopt=filler " Add vertical spaces to keep right and left aligned
 set encoding=utf-8 nobomb " BOM often causes trouble
 set esckeys " Allow cursor keys in insert mode.
 set expandtab " Expand tabs to spaces
-set foldcolumn=4 " Column to show folds
-set foldenable
-set foldlevel=5
-set foldlevelstart=99
-set foldmethod=syntax " Markers are used to specify folds.
+" set foldcolumn=4 " Column to show folds
+" set foldenable
+" set foldlevel=5
+" set foldlevelstart=99
+" set foldmethod=syntax " Markers are used to specify folds.
 " set foldminlines=0 " Allow folding single lines
-set foldnestmax=3 " Set max fold nesting level
+" set foldnestmax=3 " Set max fold nesting level
 set formatoptions=
 set formatoptions+=c " Format comments
 set formatoptions+=r " Continue comments by default
