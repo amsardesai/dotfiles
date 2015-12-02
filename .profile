@@ -57,6 +57,9 @@ alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/download
 alias psg="ps ax | grep -v ' grep ' | grep"
 alias su='su -m'
 
+# Vim commands
+alias rmswaps='rm -rf ~/.vim/swaps/* && echo "Removed vim swap files!"'
+
 # git commands
 alias st='git status -s'
 alias cam='git commit -m'
