@@ -54,6 +54,7 @@ call plug#begin('~/.vim/bundle')
   Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
   Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
   Plug 'vim-scripts/sql.vim--Stinson', { 'for': 'sql' }
+  Plug 'vim-scripts/applescript.vim', { 'for': 'applescript' }
 
   " Configuration File Plugins
   Plug 'vim-scripts/nginx.vim', { 'for': 'nginx' }
