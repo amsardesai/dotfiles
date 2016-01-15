@@ -55,6 +55,8 @@ call plug#begin('~/.vim/bundle')
   Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
   Plug 'vim-scripts/sql.vim--Stinson', { 'for': 'sql' }
   Plug 'vim-scripts/applescript.vim', { 'for': 'applescript' }
+  Plug 'hdima/python-syntax', { 'for': 'python' }
+  Plug 'vim-scripts/mako.vim', { 'for': 'html' }
 
   " Configuration File Plugins
   Plug 'vim-scripts/nginx.vim', { 'for': 'nginx' }
@@ -261,7 +263,7 @@ nmap <Leader>sc :SyntasticCheck<CR>
 let g:tex_flavor = 'latex'
 
 " Fugitive
-nmap <Leader>gk :silent Ggr<space>
+nmap <Leader>gk :silent Ggr<space>""<Left>
 nmap <silent> <Leader>gl :silent Glog<CR>
 nmap <silent> <Leader>gb :Gblame<CR>
 
