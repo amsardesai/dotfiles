@@ -48,6 +48,7 @@ call plug#begin('~/.vim/bundle')
   Plug 'avakhov/vim-yaml', { 'for': 'yaml' }
   Plug 'othree/html5.vim', { 'for': 'html' }
   Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
+  Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'rschmukler/pangloss-vim-indent', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'othree/vim-jsx', { 'for': 'javascript.jsx' }
   Plug 'elzr/vim-json', { 'for': 'json' }
