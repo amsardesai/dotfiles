@@ -29,7 +29,7 @@ call plug#begin('~/.vim/bundle')
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
   Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-  Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+  Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
   Plug 'scrooloose/syntastic', { 'for': [ 'javascript', 'python' ] }
 
   " Themes
