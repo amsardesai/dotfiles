@@ -19,4 +19,5 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 ln -s ~/.vimrc "$SCRIPTPATH/.vimrc"
 ln -s ~/.inputrc "$SCRIPTPATH/.inputrc"
 ln -s ~/.ycm_extra_conf.py "$SCRIPTPATH/.ycm_extra_conf.py"
+ln -s ~/.tern-config "$SCRIPTPATH/.tern-config"
 
