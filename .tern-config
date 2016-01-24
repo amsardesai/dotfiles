@@ -1,3 +1,3 @@
 {
-  "lib": [ "emca5", "emca6", "browser" ]
+  "lib": [ "emca5", "emca6", "browser", "node" ]
 }
