@@ -31,6 +31,7 @@ call plug#begin('~/.vim/bundle')
   Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
   Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
   Plug 'scrooloose/syntastic', { 'for': [ 'javascript', 'python' ] }
+  Plug 'easymotion/vim-easymotion'
 
   " Themes
   Plug 'kristijanhusak/vim-hybrid-material'
@@ -168,6 +169,8 @@ endif
 
 " Escape to remove search results
 nnoremap <silent> <CR> :noh<CR><CR>
+
+map \ <Plug>(easymotion-prefix)
 
 " Faster split resizing (+,-)
 if bufwinnr(1)
