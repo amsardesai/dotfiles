@@ -71,7 +71,6 @@ if ! [ -f ~/.bash_profile ] || ! ( grep -Fxq "source $SCRIPTPATH/.profile" ~/.ba
 	echo "# Source Ankit's profile" >> ~/.bash_profile
 	echo "source $SCRIPTPATH/.profile" >> ~/.bash_profile
 	echo "" >> ~/.bash_profile
-	source "$SCRIPTPATH/.profile"
 fi
 
 echo_task "Creating aliases..."
@@ -90,6 +89,7 @@ copy_dir "$SCRIPTPATH/ftplugin" ~/.vim
 
 echo_task "Setting up neovim aliases..."
 
+export XDG_CONFIG_HOME="$HOME/.config"
 make_dir $XDG_CONFIG_HOME/nvim/
 link_file "$HOME/.vimrc" "$XDG_CONFIG_HOME/nvim/init.vim"
 

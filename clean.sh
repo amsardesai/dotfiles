@@ -55,5 +55,11 @@ echo_task "Deleting nvim stuff..."
 
 delete_file "$XDG_CONFIG_HOME/nvim"
 
-echo_info "Finished."
+echo_task "Don't forget to remove the 'source' line from the bash profile."
+echo_task "Resetting bash in 2 seconds..."
+
+sleep 2
+
+clear
+exec bash -l
 
