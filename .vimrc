@@ -23,6 +23,14 @@ if empty(glob(vimdir . "autoload/plug.vim"))
   autocmd VimEnter * PlugInstall | source $MYVIMRC
 endif
 
+" Updating remote plugins
+function! UpdateRPlugin(info)
+  if has('nvim')
+    silent UpdateRemotePlugins
+    echomsg 'rplugin updated: ' . a:info['name'] . ', restart vim for changes'
+  endif
+endfunction
+
 call plug#begin(vimdir . "bundle")
 
   " Productivity Plugins
@@ -38,10 +46,17 @@ call plug#begin(vimdir . "bundle")
   Plug 'bronson/vim-trailing-whitespace'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
-  Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-  Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
-  Plug 'scrooloose/syntastic', { 'for': [ 'javascript', 'python' ] }
   Plug 'easymotion/vim-easymotion'
+
+  " nvim vs vim plugins
+  if has('nvim')
+    Plug 'Shougo/deoplete.nvim', { 'do': function('UpdateRPlugin') }
+    Plug 'benekastah/neomake', { 'do': function('UpdateRPlugin') }
+  else
+    Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
+    Plug 'scrooloose/syntastic', { 'for': [ 'javascript', 'python' ] }
+    Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+  endif
 
   " Themes
   Plug 'kristijanhusak/vim-hybrid-material'
@@ -261,25 +276,6 @@ nmap <leader>m :NERDTreeToggle<CR><C-w>w
 nmap <leader>n :NERDTreeFind<CR>
 nmap <leader>b :NERDTree<CR><C-w>w
 
-" UtiliSnips
-let g:UltiSnipsExpandTrigger = '<C-j>'
-let g:UltiSnipsJumpForwardTrigger = '<C-b>'
-let g:UltiSnipsJumpBackwardTrigger = '<C-z>'
-
-" YouCompleteMe
-let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
-let g:ycm_path_to_python_interpreter = '/usr/bin/python'
-let g:ycm_confirm_extra_conf = 0
-
-" Syntastic
-let b:syntastic_mode = 'passive'
-let g:syntastic_enable_signs = 1
-let g:syntastic_javascript_checkers = ['eslint']
-nmap <Leader>sk :SyntasticToggleMode<CR>
-nmap <Leader>sr :SyntasticReset<CR>
-nmap <Leader>si :SyntasticInfo<CR>
-nmap <Leader>sc :SyntasticCheck<CR>
-
 " Latex
 let g:tex_flavor = 'latex'
 
@@ -294,4 +290,38 @@ set conceallevel=2
 " GitGutter
 let g:gitgutter_realtime = 0
 let g:gitgutter_eager = 0
+
+if has('nvim')
+  " Neovim specific commands
+
+  " Deoplete
+  let g:deoplete#enable_at_startup = 1
+
+  " Neomake
+  let g:neomake_javascript_enabled_makers = ['eslint']
+  autocmd! BufWritePost * Neomake
+
+else
+  " Old vim specific commands
+
+  " UtiliSnips
+  let g:UltiSnipsExpandTrigger = '<C-j>'
+  let g:UltiSnipsJumpForwardTrigger = '<C-b>'
+  let g:UltiSnipsJumpBackwardTrigger = '<C-z>'
+
+  " YouCompleteMe
+  let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
+  let g:ycm_path_to_python_interpreter = '/usr/bin/python'
+  let g:ycm_confirm_extra_conf = 0
+
+  " Syntastic
+  let b:syntastic_mode = 'passive'
+  let g:syntastic_enable_signs = 1
+  let g:syntastic_javascript_checkers = ['eslint']
+  nmap <Leader>sk :SyntasticToggleMode<CR>
+  nmap <Leader>sr :SyntasticReset<CR>
+  nmap <Leader>si :SyntasticInfo<CR>
+  nmap <Leader>sc :SyntasticCheck<CR>
+
+endif
 
