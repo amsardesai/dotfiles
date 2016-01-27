@@ -57,7 +57,7 @@ call plug#begin(vimdir . "bundle")
 
   else
 
-    Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
+    Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
     Plug 'scrooloose/syntastic', { 'for': [ 'javascript', 'python' ] }
     Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 
