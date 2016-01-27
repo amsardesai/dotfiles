@@ -61,6 +61,7 @@ echo_task "Setting up bash_profile..."
 if ! [ -f ~/.bash_profile ] || ! ( grep -Fxq "source $SCRIPTPATH/.profile" ~/.bash_profile ); then
 	echo_message "Adding source script to bash profile"
 	echo "" >> ~/.bash_profile
+	echo "# Source Ankit's profile" >> ~/.bash_profile
 	echo "source $SCRIPTPATH/.profile" >> ~/.bash_profile
 	echo "" >> ~/.bash_profile
 	source ~/.bash_profile
