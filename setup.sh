@@ -50,6 +50,12 @@ set -e
 
 echo_info "Directory with scripts is $SCRIPTPATH"
 
+echo_task "Setting up files..."
+
+download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh" git-prompt.bash
+download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash" git-completion.bash
+download_file "https://raw.githubusercontent.com/Valloric/ycmd/master/cpp/ycm/.ycm_extra_conf.py" .ycm_extra_conf.py
+
 echo_task "Setting up bash_profile..."
 
 if ! [ -f ~/.bash_profile ] || ! ( grep -Fxq "source $SCRIPTPATH/.profile" ~/.bash_profile ); then
@@ -59,12 +65,6 @@ if ! [ -f ~/.bash_profile ] || ! ( grep -Fxq "source $SCRIPTPATH/.profile" ~/.ba
 	echo "" >> ~/.bash_profile
 	source ~/.bash_profile
 fi
-
-echo_task "Setting up files..."
-
-download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh" git-prompt.bash
-download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash" git-completion.bash
-download_file "https://raw.githubusercontent.com/Valloric/ycmd/master/cpp/ycm/.ycm_extra_conf.py" .ycm_extra_conf.py
 
 echo_task "Creating aliases..."
 
