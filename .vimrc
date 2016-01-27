@@ -50,12 +50,17 @@ call plug#begin(vimdir . "bundle")
 
   " nvim vs vim plugins
   if has('nvim')
+
     Plug 'Shougo/deoplete.nvim', { 'do': function('UpdateRPlugin') }
     Plug 'benekastah/neomake', { 'do': function('UpdateRPlugin') }
+    Plug 'mhinz/vim-grepper', { 'do': function('UpdateRPlugin') }
+
   else
+
     Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
     Plug 'scrooloose/syntastic', { 'for': [ 'javascript', 'python' ] }
     Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+
   endif
 
   " Themes
@@ -115,10 +120,6 @@ set softtabstop=2 " Tab key results in 2 spaces
 set tabstop=4
 set linebreak
 set wrap
-
-if exists('&breakindent')
-  set breakindent showbreak=..
-endif
 
 " Set some junk
 set autoread " Automatically load updated file if it's not changed
@@ -183,6 +184,10 @@ set wildmenu " Hitting TAB in command mode will show possible completions above 
 set wildmode=list:longest " Complete only until point of ambiguity.
 set wrapscan " Searches wrap around end of file
 set whichwrap+=<,>,h,l,[,]
+
+if exists('&breakindent')
+  set breakindent showbreak=..
+endif
 
 if exists('&ttymouse')
   set ttymouse=xterm " Set mouse type to xterm.
@@ -300,6 +305,9 @@ if has('nvim')
   " Neomake
   let g:neomake_javascript_enabled_makers = ['eslint']
   autocmd! BufWritePost * Neomake
+
+  " vim-grepper
+  nmap <Leader>gk :Grepper -tool git -switch<CR>
 
 else
   " Old vim specific commands
