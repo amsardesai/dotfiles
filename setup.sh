@@ -46,6 +46,13 @@ make_dir() {
 	mkdir -p $1
 }
 
+copy_dir() {
+	printf "    "
+	tput setaf $COLOR_MESSAGE && printf "Copying to "
+	tput sgr0 && printf "$2\n"
+	cp -a $1 $2
+}
+
 set -e
 
 echo_info "Directory with scripts is $SCRIPTPATH"
@@ -64,7 +71,7 @@ if ! [ -f ~/.bash_profile ] || ! ( grep -Fxq "source $SCRIPTPATH/.profile" ~/.ba
 	echo "# Source Ankit's profile" >> ~/.bash_profile
 	echo "source $SCRIPTPATH/.profile" >> ~/.bash_profile
 	echo "" >> ~/.bash_profile
-	source ~/.bash_profile
+	source "$SCRIPTPATH/.profile"
 fi
 
 echo_task "Creating aliases..."
@@ -79,6 +86,7 @@ link_file "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
 echo_task "Setting up vim..."
 
 make_dir ~/.vim
+copy_dir "$SCRIPTPATH/ftplugin" ~/.vim
 
 echo_task "Setting up neovim aliases..."
 
