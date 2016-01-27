@@ -53,6 +53,7 @@ delete_file "$HOME/.vim"
 
 echo_task "Deleting nvim stuff..."
 
+export XDG_CONFIG_HOME="$HOME/.config"
 delete_file "$XDG_CONFIG_HOME/nvim"
 
 echo_task "Don't forget to remove the 'source' line from the bash profile."
