@@ -73,6 +73,7 @@ link_file "$SCRIPTPATH/.gvimrc" "$HOME/.gvimrc"
 link_file "$SCRIPTPATH/.inputrc" "$HOME/.inputrc"
 link_file "$SCRIPTPATH/.ycm_extra_conf.py" "$HOME/.ycm_extra_conf.py"
 link_file "$SCRIPTPATH/.tern-config" "$HOME/.tern-config"
+link_file "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
 
 echo_task "Setting up vim..."
 
