@@ -1,19 +1,29 @@
+
 " Make vim more useful
-set nocompatible
+if exists('&nocompatible')
+  set nocompatible
+endif
+
+" Determine vim directories
+if has('nvim')
+  let vimdir = $XDG_CONFIG_HOME . "/nvim/"
+else
+  let vimdir = "~/.vim/"
+endif
 
 " Install plug if it's not already installed
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !mkdir -p ~/.vim/autoload/
-  silent !mkdir -p ~/.vim/backups/
-  silent !mkdir -p ~/.vim/bundle/
-  silent !mkdir -p ~/.vim/swaps/
-  silent !mkdir -p ~/.vim/undo/
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+if empty(glob(vimdir . "autoload/plug.vim"))
+  execute "!mkdir -p " . vimdir . "autoload/"
+  execute "!mkdir -p " . vimdir . "backups/"
+  execute "!mkdir -p " . vimdir . "bundle/"
+  execute "!mkdir -p " . vimdir . "swaps/"
+  execute "!mkdir -p " . vimdir . "undo/"
+  execute "!curl -fLo " . vimdir . "autoload/plug.vim --create-dirs " .
+        \ "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   autocmd VimEnter * PlugInstall | source $MYVIMRC
 endif
 
-call plug#begin('~/.vim/bundle')
+call plug#begin(vimdir . "bundle")
 
   " Productivity Plugins
   Plug 'jiangmiao/auto-pairs'
@@ -69,7 +79,7 @@ call plug#end()
 " Set syntax highlighting options.
 set t_Co=256
 set background=dark
-colorscheme hybrid_reverse
+silent! colorscheme hybrid_reverse
 
 " Change mapleader
 let mapleader = ","
@@ -88,9 +98,12 @@ set smartindent
 set smarttab " At start of line, <Tab> inserts shiftwidth spaces, <Bs> deletes shiftwidth spaces.
 set softtabstop=2 " Tab key results in 2 spaces
 set tabstop=4
-set breakindent showbreak=..
 set linebreak
 set wrap
+
+if exists('&breakindent')
+  set breakindent showbreak=..
+endif
 
 " Set some junk
 set autoread " Automatically load updated file if it's not changed
@@ -146,7 +159,6 @@ set splitright " New windows goes right
 set suffixes=.bak,~,.swp,.swo,.o,.d,.info,.aux,.log,.dvi,.pdf,.bin,.bbl,.blg,.brf,.cb,.dmg,.exe,.ind,.idx,.ilg,.inx,.out,.toc,.pyc,.pyd,.dll
 set title " Show the filename in the window titlebar.
 set ttyfast " Send more characters at a given time.
-set ttymouse=xterm " Set mouse type to xterm.
 set undofile " Persistent Undo.
 set visualbell " Use visual bell instead of audible bell (annnnnoying)
 set wildchar=<TAB> " Character for CLI expansion (TAB-completion).
@@ -156,6 +168,10 @@ set wildmenu " Hitting TAB in command mode will show possible completions above 
 set wildmode=list:longest " Complete only until point of ambiguity.
 set wrapscan " Searches wrap around end of file
 set whichwrap+=<,>,h,l,[,]
+
+if exists('&ttymouse')
+  set ttymouse=xterm " Set mouse type to xterm.
+endif
 
 " Speed up transition from modes
 if ! has('gui_running')
@@ -170,6 +186,7 @@ endif
 " Escape to remove search results
 nnoremap <silent> <CR> :noh<CR><CR>
 
+" EasyMotion
 map \ <Plug>(easymotion-prefix)
 
 " Faster split resizing (+,-)

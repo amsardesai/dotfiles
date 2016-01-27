@@ -30,7 +30,7 @@ export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
 export LESS="-RMS"
 
 # Config files
-export XDG_CONFIG_HOME='$HOME/.config'
+export XDG_CONFIG_HOME="$HOME/.config"
 
 # Git Autocomplete
 source "$(dirname $BASH_SOURCE)/git-completion.bash"
