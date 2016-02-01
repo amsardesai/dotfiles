@@ -244,6 +244,9 @@ nnoremap <Leader>ls :buffers<CR>
 " Close Quickfix window (,qq)
 noremap <Leader>q :cclose<CR>
 
+" Redraw screen if something weird happens
+nnoremap <Leader>rd :redraw!<CR>
+
 " Open QuickFix window for grep commands
 command! -nargs=+ Gr execute 'silent Ggrep!' <q-args> | cw | redraw!
 command! Gl execute 'silent Glog!' | cw | redraw!
