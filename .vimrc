@@ -161,11 +161,10 @@ set noshowmode " Don't show the current mode (Powerline takes care of us)
 set nostartofline " Don't reset cursor to start of line when moving around.
 set nu " Enable line numbers.
 set ofu=syntaxcomplete#Complete " Set omni-completion method.
-set pastetoggle=<Leader>u " Set paste toggle
 set report=0 " Show all changes.
 set ruler " Show the cursor position
 set scrolloff=3 " Start scrolling three lines before horizontal border of window.
-set shell=\/usr\/bin\/env\ bash\ --login
+" set shell="/bin/bash --login"
 set showmode " Show the current mode.
 set showtabline=2 " Always show tab bar.
 set sidescrolloff=3 " Start scrolling three columns before vertical border of window.
@@ -193,6 +192,17 @@ if exists('&ttymouse')
   set ttymouse=xterm " Set mouse type to xterm.
 endif
 
+if exists(':terminal')
+  nnoremap <Leader>z :terminal<CR>
+  nnoremap <Leader>x :vsp<CR>:terminal<CR>
+  tnoremap ;;q <C-\><C-n>:bd!<CR>
+  tnoremap <ESC><ESC> <C-\><C-n>
+  tnoremap <C-w><Left> <C-\><C-n><C-w><Left>
+  tnoremap <C-w><Up> <C-\><C-n><C-w><Up>
+  tnoremap <C-w><Down> <C-\><C-n><C-w><Down>
+  tnoremap <C-w><Right> <C-\><C-n><C-w><Right>
+endif
+
 " Speed up transition from modes
 if ! has('gui_running')
   set ttimeoutlen=10
@@ -207,28 +217,32 @@ endif
 nnoremap <silent> <CR> :noh<CR><CR>
 
 " EasyMotion
-map \ <Plug>(easymotion-prefix)
+noremap \ <Plug>(easymotion-prefix)
 
 " Faster split resizing (+,-)
 if bufwinnr(1)
-  map + <C-W>+
-  map - <C-W>-
+  noremap + <C-W>+
+  noremap - <C-W>-
 endif
+
+" Brackets for easier page movement
+nnoremap ( 10k0
+nnoremap ) 10j0
 
 " Remap certain keys
 command! W write
 command! Q quit
 
 " Buffer navigation (,,) (,]) (,[) (,\) (,ls)
-map <Leader>, <C-^>
-map <Leader>] :bnext<CR>
-map <Leader>[ :bprev<CR>
-map <Leader>\ :bprevious<CR>:bdelete<SPACE>#<CR>
-map <Leader><bar> :bprevious<CR>:bdelete!<SPACE>#<CR>
-map <Leader>ls :buffers<CR>
+nnoremap <Leader>, <C-^>
+nnoremap <Leader>] :bnext<CR>
+nnoremap <Leader>[ :bprev<CR>
+nnoremap <Leader>\ :bprevious<CR>:bdelete<SPACE>#<CR>
+nnoremap <Leader><bar> :bprevious<CR>:bdelete!<SPACE>#<CR>
+nnoremap <Leader>ls :buffers<CR>
 
 " Close Quickfix window (,qq)
-map <Leader>q :cclose<CR>
+noremap <Leader>q :cclose<CR>
 
 " Open QuickFix window for grep commands
 command! -nargs=+ Gr execute 'silent Ggrep!' <q-args> | cw | redraw!
@@ -239,17 +253,17 @@ autocmd QuickFixCmdPost *grep* cwindow
 nnoremap <leader>fw :FixWhitespace<CR>
 
 " Ctrl-Backspace
-imap <C-BS> <C-W>
+inoremap <C-BS> <C-W>
 
 " Fix page up and down
-map <PageUp> <C-U>
-map <PageDown> <C-D>
-imap <PageUp> <C-O><C-U>
-imap <PageDown> <C-O><C-D>
+noremap <PageUp> <C-U>
+noremap <PageDown> <C-D>
+inoremap <PageUp> <C-O><C-U>
+inoremap <PageDown> <C-O><C-D>
 
 " Switch between .cc and .h files
 if index(['c', 'cpp'], &filetype) == -1
-  nmap ,gh :e %:p:s,.h$,.X123X,:s,.cc$,.h,:s,.X123X$,.cc,<CR>
+  nnoremap ,gh :e %:p:s,.h$,.X123X,:s,.cc$,.h,:s,.X123X$,.cc,<CR>
 endif
 
 " Ruby
@@ -265,8 +279,8 @@ let NERDSpaceDelims=1
 let g:ctrlp_match_window = 'max:50'
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_dont_split = 'NERD'
-map <C-h> :CtrlPBuffer<CR>
-map <Leader>op :CtrlPClearAllCaches<CR>
+noremap <C-h> :CtrlPBuffer<CR>
+noremap <Leader>op :CtrlPClearAllCaches<CR>
 
 " Airline
 let g:airline_theme='tomorrow'
@@ -277,24 +291,20 @@ let g:airline_powerline_fonts = 1
 " NERDTree
 let NERDTreeShowHidden=1
 let NERDTreeAutoDeleteBuffer=1
-nmap <leader>m :NERDTreeToggle<CR><C-w>w
-nmap <leader>n :NERDTreeFind<CR>
-nmap <leader>b :NERDTree<CR><C-w>w
+nnoremap <leader>m :NERDTreeToggle<CR><C-w>w
+nnoremap <leader>n :NERDTreeFind<CR>
+nnoremap <leader>b :NERDTree<CR><C-w>w
 
 " Latex
 let g:tex_flavor = 'latex'
 
 " Fugitive
-nmap <Leader>gk :silent Ggr<space>""<Left>
-nmap <silent> <Leader>gl :silent Glog<CR>
-nmap <silent> <Leader>gb :Gblame<CR>
+nnoremap <Leader>gk :silent Ggr<space>""<Left>
+nnoremap <silent> <Leader>gl :silent Glog<CR>
+nnoremap <silent> <Leader>gb :Gblame<CR>
 
 " vim-json
 set conceallevel=2
-
-" GitGutter
-let g:gitgutter_realtime = 0
-let g:gitgutter_eager = 0
 
 if has('nvim')
   " Neovim specific commands
@@ -305,12 +315,23 @@ if has('nvim')
   " Neomake
   let g:neomake_javascript_enabled_makers = ['eslint']
   autocmd! BufWritePost * Neomake
+  let g:neomake_error_sign = { 'text': '!', 'texthl': 'ErrorMsg' }
+  hi MyWarningMsg ctermbg=3 ctermfg=0
+  let g:neomake_warning_sign = { 'text': '>', 'texthl': 'MyWarningMsg' }
 
   " vim-grepper
-  nmap <Leader>gk :Grepper -tool git -switch<CR>
+  nnoremap <Leader>gk :Grepper -tool git -switch<CR>
+  vnoremap <Leader>gk :Grepper -tool git -cword -switch<CR>
+
+  " GitGutter
+  let g:gitgutter_realtime = 1
+  let g:gitgutter_eager = 0
 
 else
   " Old vim specific commands
+
+  " Options
+  set pastetoggle=<Leader>u " Set paste toggle
 
   " UtiliSnips
   let g:UltiSnipsExpandTrigger = '<C-j>'
@@ -326,10 +347,14 @@ else
   let b:syntastic_mode = 'passive'
   let g:syntastic_enable_signs = 1
   let g:syntastic_javascript_checkers = ['eslint']
-  nmap <Leader>sk :SyntasticToggleMode<CR>
-  nmap <Leader>sr :SyntasticReset<CR>
-  nmap <Leader>si :SyntasticInfo<CR>
-  nmap <Leader>sc :SyntasticCheck<CR>
+  nnoremap <Leader>sk :SyntasticToggleMode<CR>
+  nnoremap <Leader>sr :SyntasticReset<CR>
+  nnoremap <Leader>si :SyntasticInfo<CR>
+  nnoremap <Leader>sc :SyntasticCheck<CR>
+
+  " GitGutter
+  let g:gitgutter_realtime = 0
+  let g:gitgutter_eager = 0
 
 endif
 
