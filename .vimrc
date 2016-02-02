@@ -207,8 +207,8 @@ if exists(':terminal')
   tnoremap <C-w><Right> <C-\><C-n><C-w><Right>
 
   " Buffer navigation (,]) (,[)
-  tnoremap <Leader>] :bnext<CR>
-  tnoremap <Leader>[ :bprev<CR>
+  tnoremap <Leader>] <C-\><C-n>:bnext<CR>
+  tnoremap <Leader>[ <C-\><C-n>:bprev<CR>
 endif
 
 " Speed up transition from modes
