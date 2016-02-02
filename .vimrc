@@ -195,12 +195,20 @@ endif
 if exists(':terminal')
   nnoremap <Leader>z :terminal<CR>
   nnoremap <Leader>x :vsp<CR>:terminal<CR>
+
+  " Better escaping
   tnoremap ;;q <C-\><C-n>:bd!<CR>
   tnoremap <ESC><ESC> <C-\><C-n>
+
+  " Pane navigation
   tnoremap <C-w><Left> <C-\><C-n><C-w><Left>
   tnoremap <C-w><Up> <C-\><C-n><C-w><Up>
   tnoremap <C-w><Down> <C-\><C-n><C-w><Down>
   tnoremap <C-w><Right> <C-\><C-n><C-w><Right>
+
+  " Buffer navigation (,]) (,[)
+  tnoremap <Leader>] :bnext<CR>
+  tnoremap <Leader>[ :bprev<CR>
 endif
 
 " Speed up transition from modes
