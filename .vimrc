@@ -339,10 +339,11 @@ if has('nvim')
 
   " Neomake
   let g:neomake_javascript_enabled_makers = ['eslint']
-  autocmd! BufWritePost * Neomake
-  let g:neomake_error_sign = { 'text': '!', 'texthl': 'ErrorMsg' }
-  hi MyWarningMsg ctermbg=3 ctermfg=0
-  let g:neomake_warning_sign = { 'text': '>', 'texthl': 'MyWarningMsg' }
+  autocmd! BufEnter,BufWritePost * Neomake
+  hi NeomakeError cterm=underline ctermfg=167 ctermbg=52 gui=undercurl
+  hi NeomakeWarning cterm=underline ctermfg=172 ctermbg=58 gui=undercurl
+  let g:neomake_error_sign = { 'text': '!>', 'texthl': 'NeomakeError' }
+  let g:neomake_warning_sign = { 'text': '!>', 'texthl': 'NeomakeWarning' }
 
   " vim-grepper
   nnoremap <Leader>gk :Grepper -tool git -switch<CR>
