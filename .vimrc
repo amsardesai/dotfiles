@@ -210,10 +210,10 @@ if exists(':terminal')
   tnoremap <ESC><ESC> <C-\><C-n>
 
   " Pane navigation
-  tnoremap <C-w><Left> <C-\><C-n><C-w><Left>
-  tnoremap <C-w><Up> <C-\><C-n><C-w><Up>
-  tnoremap <C-w><Down> <C-\><C-n><C-w><Down>
-  tnoremap <C-w><Right> <C-\><C-n><C-w><Right>
+  tnoremap <S-Left> <C-\><C-n><C-w><Left>
+  tnoremap <S-Up> <C-\><C-n><C-w><Up>
+  tnoremap <S-Down> <C-\><C-n><C-w><Down>
+  tnoremap <S-Right> <C-\><C-n><C-w><Right>
 
   " Buffer navigation (,]) (,[)
   tnoremap <Leader>, <C-\><C-n><C-^>
@@ -268,6 +268,12 @@ nnoremap <Leader>[ :bprevious<CR>
 nnoremap <Leader>\ :bprevious<CR>:bdelete<SPACE>#<CR>
 nnoremap <Leader><bar> :bprevious<CR>:bdelete!<SPACE>#<CR>
 nnoremap <Leader>ls :buffers<CR>
+
+" Pane switching
+nnoremap <S-Up> <C-w><Up>
+nnoremap <S-Down> <C-w><Down>
+nnoremap <S-Left> <C-w><Left>
+nnoremap <S-Right> <C-w><Right>
 
 " Close Quickfix window (,qq)
 noremap <Leader>q :cclose<CR>

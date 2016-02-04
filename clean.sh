@@ -36,7 +36,7 @@ echo_info "Directory with scripts is $SCRIPTPATH"
 
 echo_task "Cleaning this folder..."
 
-git -C "$SCRIPTPATH" clean -Xf
+( cd "$SCRIPTPATH" && git clean -Xf )
 
 echo_task "Deleting symlinks..."
 

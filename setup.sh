@@ -55,6 +55,19 @@ copy_dir() {
 
 set -e
 
+echo_info "Checking for dependencies..."
+
+echo_task "Checking python installation..."
+python -c "exit(0)"
+python3 -c "exit(0)"
+
+echo_task "Checking node installation..."
+node -e "process.exit(0)"
+
+echo_task "Checking proper neovim installation..."
+python -c "import neovim"
+python3 -c "import neovim"
+
 echo_info "Directory with scripts is $SCRIPTPATH"
 
 echo_task "Setting up files..."
