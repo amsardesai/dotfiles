@@ -54,11 +54,15 @@ call plug#begin(vimdir . "bundle")
     Plug 'Shougo/deoplete.nvim', { 'do': function('UpdateRPlugin') }
     Plug 'benekastah/neomake', { 'do': function('UpdateRPlugin') }
     Plug 'mhinz/vim-grepper', { 'do': function('UpdateRPlugin') }
+    Plug 'Shougo/neosnippet.vim'
+      \ | Plug 'Shougo/neosnippet-snippets'
+      \ | Plug 'Shougo/neopairs.vim'
+    Plug 'ternjs/tern_for_vim', { 'do': 'npm install', 'for': ['javascript', 'javascript.jsx'] }
 
   else
 
     Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
-    Plug 'scrooloose/syntastic', { 'for': [ 'javascript', 'python' ] }
+    Plug 'scrooloose/syntastic', { 'for': ['javascript', 'javascript.jsx', 'python'] }
     Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 
   endif
@@ -127,7 +131,6 @@ set colorcolumn=100 " Max length of a line
 set cursorline " Highlight current line
 set diffopt=filler " Add vertical spaces to keep right and left aligned
 " set diffopt+=iwhite " Ignore whitespace changes (focus on code changes)
-set encoding=utf-8 nobomb " BOM often causes trouble
 set esckeys " Allow cursor keys in insert mode.
 set expandtab " Expand tabs to spaces
 " set foldcolumn=4 " Column to show folds
@@ -183,6 +186,10 @@ set wildmenu " Hitting TAB in command mode will show possible completions above 
 set wildmode=list:longest " Complete only until point of ambiguity.
 set wrapscan " Searches wrap around end of file
 set whichwrap+=<,>,h,l,[,]
+
+if !has('nvim')
+  set encoding=utf-8 nobomb " BOM often causes trouble
+endif
 
 if exists('&breakindent')
   set breakindent showbreak=..
@@ -333,13 +340,33 @@ set conceallevel=2
 if has('nvim')
   " Neovim specific commands
 
+  " Function to check if whitespace exists
+  function! s:is_whitespace() "{{{
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~? '\s'
+  endfunction
+
   " Deoplete
   let g:deoplete#enable_at_startup = 1
   let g:deoplete#file#enable_buffer_path = 1
 
+  " Key bindings for completion for deoplete
+  inoremap <silent> <expr> <Tab> pumvisible() ? "\<C-n>" :
+    \ (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)" :
+      \ (<SID>is_whitespace() ? "\<Tab>" : deoplete#mappings#manual_complete()))
+  inoremap <silent> <expr> <CR> pumvisible() ?
+    \ (neosnippet#expandable() ? "\<Plug>(neosnippet_expand)" : "\<C-y>") : "\<CR>"
+  inoremap <silent> <expr> <Down> pumvisible() ? "\<C-n>" : "\<Down>"
+  inoremap <silent> <expr> <Up> pumvisible() ? "\<C-p>" : "\<Up>"
+  inoremap <silent> <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+  " Tern for vim
+  autocmd FileType javascript setlocal omnifunc=tern#Complete
+  let g:tern_show_signature_in_pum = 1
+
   " Neomake
   let g:neomake_javascript_enabled_makers = ['eslint']
-  autocmd! BufEnter,BufWritePost * Neomake
+  autocmd! BufWritePost * Neomake
   hi NeomakeError cterm=underline ctermfg=167 ctermbg=52 gui=undercurl
   hi NeomakeWarning cterm=underline ctermfg=172 ctermbg=58 gui=undercurl
   let g:neomake_error_sign = { 'text': '!>', 'texthl': 'NeomakeError' }
@@ -348,10 +375,6 @@ if has('nvim')
   " vim-grepper
   nnoremap <Leader>gk :Grepper -tool git -switch<CR>
   vnoremap <Leader>gk :Grepper -tool git -cword -switch<CR>
-
-  " GitGutter
-  let g:gitgutter_realtime = 1
-  let g:gitgutter_eager = 0
 
 else
   " Old vim specific commands
