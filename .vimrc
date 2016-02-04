@@ -195,6 +195,8 @@ endif
 if exists(':terminal')
   nnoremap <Leader>z :terminal<CR>
   nnoremap <Leader>x :vsp<CR>:terminal<CR>
+  tnoremap <Leader>z <C-\><C-n>:terminal<CR>
+  tnoremap <Leader>x <C-\><C-n>:vsp<CR><C-\><C-n>:terminal<CR>
 
   " Better escaping
   tnoremap ;;q <C-\><C-n>:bd!<CR>
@@ -207,8 +209,19 @@ if exists(':terminal')
   tnoremap <C-w><Right> <C-\><C-n><C-w><Right>
 
   " Buffer navigation (,]) (,[)
+  tnoremap <Leader>, <C-\><C-n><C-^>
   tnoremap <Leader>] <C-\><C-n>:bnext<CR>
-  tnoremap <Leader>[ <C-\><C-n>:bprev<CR>
+  tnoremap <Leader>[ <C-\><C-n>:bprevious<CR>
+  tnoremap <Leader>\ <C-\><C-n>:bprevious<CR><C-\><C-n>:bdelete<SPACE>#<CR>
+  tnoremap <Leader><bar> <C-\><C-n>:bprevious<CR><C-\><C-n>:bdelete!<SPACE>#<CR>
+  tnoremap <Leader>ls <C-\><C-n>:buffers<CR>
+
+  " Redraw screen if something weird happens
+  tnoremap <Leader>rd <C-\><C-n>:redraw!<CR>
+
+  " Insert on enter, normal on leave
+  autocmd BufWinEnter,WinEnter term://* startinsert
+  autocmd BufLeave term://* stopinsert
 endif
 
 " Speed up transition from modes
@@ -244,7 +257,7 @@ command! Q quit
 " Buffer navigation (,,) (,]) (,[) (,\) (,ls)
 nnoremap <Leader>, <C-^>
 nnoremap <Leader>] :bnext<CR>
-nnoremap <Leader>[ :bprev<CR>
+nnoremap <Leader>[ :bprevious<CR>
 nnoremap <Leader>\ :bprevious<CR>:bdelete<SPACE>#<CR>
 nnoremap <Leader><bar> :bprevious<CR>:bdelete!<SPACE>#<CR>
 nnoremap <Leader>ls :buffers<CR>
@@ -322,6 +335,7 @@ if has('nvim')
 
   " Deoplete
   let g:deoplete#enable_at_startup = 1
+  let g:deoplete#file#enable_buffer_path = 1
 
   " Neomake
   let g:neomake_javascript_enabled_makers = ['eslint']
