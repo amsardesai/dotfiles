@@ -38,7 +38,8 @@ call plug#begin(vimdir . "bundle")
   Plug 'ctrlpvim/ctrlp.vim'
   Plug 'scrooloose/nerdcommenter'
   Plug 'scrooloose/nerdtree'
-  Plug 'bling/vim-airline'
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
   Plug 'airblade/vim-gitgutter'
   Plug 'tpope/vim-fugitive'
   Plug 'terryma/vim-multiple-cursors'
@@ -219,8 +220,8 @@ if exists(':terminal')
   tnoremap <Leader>, <C-\><C-n><C-^>
   tnoremap <Leader>] <C-\><C-n>:bnext<CR>
   tnoremap <Leader>[ <C-\><C-n>:bprevious<CR>
-  tnoremap <Leader>\ <C-\><C-n>:bprevious<CR><C-\><C-n>:bdelete<SPACE>#<CR>
-  tnoremap <Leader><bar> <C-\><C-n>:bprevious<CR><C-\><C-n>:bdelete!<SPACE>#<CR>
+  tmap <Leader>\ <C-\><C-n>:bprevious<CR><C-\><C-n>:bdelete<SPACE>#<CR>
+  tmap <Leader><bar> <C-\><C-n>:bprevious<CR><C-\><C-n>:bdelete!<SPACE>#<CR>
   tnoremap <Leader>ls <C-\><C-n>:buffers<CR>
 
   " Redraw screen if something weird happens
@@ -276,7 +277,7 @@ nnoremap <S-Left> <C-w><Left>
 nnoremap <S-Right> <C-w><Right>
 
 " Close Quickfix window (,qq)
-noremap <Leader>q :cclose<CR>
+noremap <Leader>q :cclose<CR>:pclose<CR>
 
 " Redraw screen if something weird happens
 nnoremap <Leader>rd :redraw!<CR>
