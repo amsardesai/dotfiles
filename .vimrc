@@ -275,6 +275,10 @@ nnoremap <S-Up> <C-w><Up>
 nnoremap <S-Down> <C-w><Down>
 nnoremap <S-Left> <C-w><Left>
 nnoremap <S-Right> <C-w><Right>
+inoremap <S-Up> <C-w><Up>
+inoremap <S-Down> <C-w><Down>
+inoremap <S-Left> <C-w><Left>
+inoremap <S-Right> <C-w><Right>
 
 " Close Quickfix window (,qq)
 noremap <Leader>q :cclose<CR>:pclose<CR>
@@ -359,10 +363,7 @@ if has('nvim')
 
   " Key bindings for completion for deoplete
   inoremap <silent> <expr> <Tab> pumvisible() ? "\<C-n>" :
-    \ (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)" :
-      \ (<SID>is_whitespace() ? "\<Tab>" : deoplete#mappings#manual_complete()))
-  inoremap <silent> <expr> <CR> pumvisible() ?
-    \ (neosnippet#expandable() ? "\<Plug>(neosnippet_expand)" : "\<C-y>") : "\<CR>"
+      \ (<SID>is_whitespace() ? "\<Tab>" : deoplete#mappings#manual_complete())
   inoremap <silent> <expr> <Down> pumvisible() ? "\<C-n>" : "\<Down>"
   inoremap <silent> <expr> <Up> pumvisible() ? "\<C-p>" : "\<Up>"
   inoremap <silent> <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
