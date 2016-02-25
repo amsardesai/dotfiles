@@ -48,6 +48,7 @@ call plug#begin(vimdir . "bundle")
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
   Plug 'easymotion/vim-easymotion'
+  Plug 'jmcantrell/vim-virtualenv'
 
   " nvim vs vim plugins
   if has('nvim')
@@ -255,12 +256,6 @@ nnoremap <silent> <CR> :noh<CR><CR>
 " EasyMotion
 noremap \ <Plug>(easymotion-prefix)
 
-" Faster split resizing (+,-)
-if bufwinnr(1)
-  noremap + <C-W>+
-  noremap - <C-W>-
-endif
-
 " Brackets for easier page movement
 nnoremap ( 10k0
 nnoremap ) 10j0
@@ -343,8 +338,10 @@ noremap <Leader>op :CtrlPClearAllCaches<CR>
 
 " Airline
 let g:airline_theme='tomorrow'
-let g:airline#extensions#hunks#enabled = 0
+let g:airline#extensions#hunks#non_zero_only = 1
 let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#ycm#error_symbol = 'error:'
+let g:airline#extensions#ycm#warning_symbol = 'warning:'
 let g:airline_powerline_fonts = 1
 
 " NERDTree
@@ -358,7 +355,6 @@ nnoremap <leader>b :NERDTree<CR><C-w>w
 let g:tex_flavor = 'latex'
 
 " Fugitive
-nnoremap <Leader>gk :silent Ggr<space>""<Left>
 nnoremap <silent> <Leader>gl :silent Glog<CR>
 nnoremap <silent> <Leader>gb :Gblame<CR>
 
@@ -367,6 +363,10 @@ set conceallevel=2
 
 " Vim markdown
 let g:vim_markdown_folding_disabled = 1
+
+" GitGutter
+nmap + <Plug>GitGutterNextHunk
+nmap _ <Plug>GitGutterPrevHunk
 
 if has('nvim')
   " Neovim specific commands
