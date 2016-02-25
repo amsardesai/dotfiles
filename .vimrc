@@ -269,6 +269,7 @@ nnoremap <Leader>[ :bprevious<CR>
 nnoremap <Leader>\ :bprevious<CR>:bdelete<SPACE>#<CR>
 nnoremap <Leader><bar> :bprevious<CR>:bdelete!<SPACE>#<CR>
 nnoremap <Leader>ls :buffers<CR>
+nnoremap <Leader>v :vsplit<CR>
 
 " Pane switching
 nnoremap <S-Up> <C-w><Up>
@@ -347,6 +348,9 @@ nnoremap <silent> <Leader>gb :Gblame<CR>
 
 " vim-json
 set conceallevel=2
+
+" Vim markdown
+let g:vim_markdown_folding_disabled = 1
 
 if has('nvim')
   " Neovim specific commands
