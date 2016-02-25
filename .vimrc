@@ -215,6 +215,13 @@ if exists(':terminal')
   tnoremap <S-Up> <C-\><C-n><C-w><Up>
   tnoremap <S-Down> <C-\><C-n><C-w><Down>
   tnoremap <S-Right> <C-\><C-n><C-w><Right>
+  tnoremap <C-w><Left> <C-\><C-n><C-w><Left>
+  tnoremap <C-w><Up> <C-\><C-n><C-w><Up>
+  tnoremap <C-w><Down> <C-\><C-n><C-w><Down>
+  tnoremap <C-w><Right> <C-\><C-n><C-w><Right>
+
+  " Re-source this file
+  tnoremap <Leader>rs <C-\><C-n>:source $MYVIMRC<CR>
 
   " Buffer navigation (,]) (,[)
   tnoremap <Leader>, <C-\><C-n><C-^>
@@ -257,6 +264,8 @@ endif
 " Brackets for easier page movement
 nnoremap ( 10k0
 nnoremap ) 10j0
+vnoremap ( 10k0
+vnoremap ) 10j0
 
 " Remap certain keys
 command! W write
@@ -280,6 +289,10 @@ inoremap <S-Up> <C-w><Up>
 inoremap <S-Down> <C-w><Down>
 inoremap <S-Left> <C-w><Left>
 inoremap <S-Right> <C-w><Right>
+vnoremap <S-Up> <C-w><Up>
+vnoremap <S-Down> <C-w><Down>
+vnoremap <S-Left> <C-w><Left>
+vnoremap <S-Right> <C-w><Right>
 
 " Close Quickfix window (,qq)
 noremap <Leader>q :cclose<CR>:pclose<CR>
@@ -287,13 +300,16 @@ noremap <Leader>q :cclose<CR>:pclose<CR>
 " Redraw screen if something weird happens
 nnoremap <Leader>rd :redraw!<CR>
 
+" Re-source this file
+nnoremap <Leader>rs :source $MYVIMRC<CR>
+
 " Open QuickFix window for grep commands
 command! -nargs=+ Gr execute 'silent Ggrep!' <q-args> | cw | redraw!
 command! Gl execute 'silent Glog!' | cw | redraw!
 autocmd QuickFixCmdPost *grep* cwindow
 
 " Fix Whitespace
-nnoremap <leader>fw :FixWhitespace<CR>
+nnoremap <Leader>fw :FixWhitespace<CR>
 
 " Ctrl-Backspace
 inoremap <C-BS> <C-W>
