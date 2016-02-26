@@ -189,7 +189,9 @@ set wildmode=list:longest " Complete only until point of ambiguity.
 set wrapscan " Searches wrap around end of file
 set whichwrap+=<,>,h,l,[,]
 
-if !has('nvim')
+if has('nvim')
+  set updatetime=500
+else
   set encoding=utf-8 nobomb " BOM often causes trouble
 endif
 
