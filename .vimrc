@@ -259,10 +259,10 @@ nnoremap <silent> <CR> :noh<CR><CR>
 noremap \ <Plug>(easymotion-prefix)
 
 " Brackets for easier page movement
-nnoremap ( 10k0
-nnoremap ) 10j0
-vnoremap ( 10k0
-vnoremap ) 10j0
+nnoremap _ 10k0
+nnoremap + 10j0
+vnoremap _ 10k0
+vnoremap + 10j0
 
 " Remap certain keys
 command! W write
@@ -367,8 +367,8 @@ set conceallevel=2
 let g:vim_markdown_folding_disabled = 1
 
 " GitGutter
-nmap + <Plug>GitGutterNextHunk
-nmap _ <Plug>GitGutterPrevHunk
+nmap ) <Plug>GitGutterNextHunk
+nmap ( <Plug>GitGutterPrevHunk
 
 if has('nvim')
   " Neovim specific commands
