@@ -63,10 +63,6 @@ call plug#begin(vimdir . "bundle")
 
   else
 
-    Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
-    Plug 'scrooloose/syntastic', { 'for': ['javascript', 'javascript.jsx', 'python'] }
-    Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-
   endif
 
   " Themes
@@ -190,7 +186,7 @@ set wrapscan " Searches wrap around end of file
 set whichwrap+=<,>,h,l,[,]
 
 if has('nvim')
-  set updatetime=500
+  set updatetime=200 " This is so GitGutter updates really fast
 else
   set encoding=utf-8 nobomb " BOM often causes trouble
 endif
