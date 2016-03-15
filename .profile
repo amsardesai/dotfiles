@@ -67,6 +67,7 @@ alias rmswaps='rm -rf ~/.vim/swaps/* && echo "Removed vim swap files!"'
 
 # git commands
 alias st='git status -s'
+alias com='git commit -m'
 alias cam='git commit -m'
 alias caam='git commit --amend --no-edit'
 alias co='git checkout'
@@ -92,8 +93,9 @@ __git_complete add _git_add
 __git_complete reb _git_rebase
 __git_complete lg _git_log
 __git_complete gg _git_grep
-__git_complete caam _git_commit
+__git_complete com _git_commit
 __git_complete cam _git_commit
+__git_complete caam _git_commit
 
 # Configuration
 shopt -s cdspell 2> /dev/null
