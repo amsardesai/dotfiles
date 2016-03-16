@@ -43,7 +43,6 @@ echo_task "Deleting symlinks..."
 delete_file "$HOME/.vimrc"
 delete_file "$HOME/.gvimrc"
 delete_file "$HOME/.inputrc"
-delete_file "$HOME/.ycm_extra_conf.py"
 delete_file "$HOME/.tern-config"
 delete_file "$HOME/.tmux.conf"
 
@@ -51,7 +50,7 @@ echo_task "Deleting vim stuff..."
 
 delete_file "$HOME/.vim"
 
-echo_task "Deleting nvim stuff..."
+echo_task "Deleting neovim stuff..."
 
 export XDG_CONFIG_HOME="$HOME/.config"
 delete_file "$XDG_CONFIG_HOME/nvim"

@@ -74,7 +74,6 @@ echo_task "Setting up files..."
 
 download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh" git-prompt.bash
 download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash" git-completion.bash
-download_file "https://raw.githubusercontent.com/Valloric/ycmd/master/cpp/ycm/.ycm_extra_conf.py" .ycm_extra_conf.py
 
 echo_task "Setting up bash_profile..."
 
@@ -88,23 +87,25 @@ fi
 
 echo_task "Creating aliases..."
 
-link_file "$SCRIPTPATH/.vimrc" "$HOME/.vimrc"
-link_file "$SCRIPTPATH/.gvimrc" "$HOME/.gvimrc"
+link_file "$SCRIPTPATH/init.vim" "$HOME/.vimrc"
+link_file "$SCRIPTPATH/graphical.vim" "$HOME/.gvimrc"
 link_file "$SCRIPTPATH/.inputrc" "$HOME/.inputrc"
-link_file "$SCRIPTPATH/.ycm_extra_conf.py" "$HOME/.ycm_extra_conf.py"
 link_file "$SCRIPTPATH/.tern-config" "$HOME/.tern-config"
 link_file "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
 
 echo_task "Setting up vim..."
 
-make_dir ~/.vim
-copy_dir "$SCRIPTPATH/ftplugin" ~/.vim
+make_dir "$HOME/.vim/"
+link_file "$SCRIPTPATH/ftplugin" "$HOME/.vim/ftplugin"
+link_file "$SCRIPTPATH/config" "$HOME/.vim/config"
 
 echo_task "Setting up neovim aliases..."
 
 export XDG_CONFIG_HOME="$HOME/.config"
-make_dir $XDG_CONFIG_HOME/nvim/
-link_file "$HOME/.vimrc" "$XDG_CONFIG_HOME/nvim/init.vim"
+make_dir "$XDG_CONFIG_HOME/nvim/"
+link_file "$SCRIPTPATH/ftplugin" "$XDG_CONFIG_HOME/nvim/ftplugin"
+link_file "$SCRIPTPATH/config" "$XDG_CONFIG_HOME/nvim/config"
+link_file "$SCRIPTPATH/init.vim" "$XDG_CONFIG_HOME/nvim/init.vim"
 
 echo_info "To finish, open vim and/or neovim and it should set up itself."
 
