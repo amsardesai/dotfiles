@@ -9,9 +9,9 @@ let mapleader = ','
 let maplocalleader = ';'
 
 " Local dirs
-set backupdir=~/.vim/backups
-set directory=~/.vim/swaps
-set undodir=~/.vim/undo
+set backupdir=$VIMPATH/backups
+set directory=$VIMPATH/swaps
+set undodir=$VIMPATH/undo
 
 " Indentation
 set autoindent " Copy indent from last line when starting new line.
@@ -29,16 +29,8 @@ set autoread " Automatically load updated file if it's not changed
 set colorcolumn=100 " Max length of a line
 set cursorline " Highlight current line
 set diffopt=filler " Add vertical spaces to keep right and left aligned
-" set diffopt+=iwhite " Ignore whitespace changes (focus on code changes)
 set esckeys " Allow cursor keys in insert mode.
 set expandtab " Expand tabs to spaces
-" set foldcolumn=4 " Column to show folds
-" set foldenable
-" set foldlevel=5
-" set foldlevelstart=99
-" set foldmethod=syntax " Markers are used to specify folds.
-" set foldminlines=0 " Allow folding single lines
-" set foldnestmax=3 " Set max fold nesting level
 set formatoptions=
 set formatoptions+=c " Format comments
 set formatoptions+=r " Continue comments by default
@@ -48,6 +40,7 @@ set formatoptions+=n " Recognize numbered lists
 set formatoptions+=2 " Use indent from 2nd line of a paragraph
 set formatoptions+=l " Don't break lines that are already long
 set formatoptions+=1 " Break before 1-letter words
+set formatoptions+=j " Remove comment leader
 set gdefault " By default add g flag to search/replace. Add g to toggle.
 set hidden " When a buffer is brought to foreground, remember undo history and marks.
 set history=1000 " Increase history from 20 default to 1000
@@ -55,6 +48,7 @@ set hlsearch " Highlight searches
 set ignorecase " Ignore case of searches.
 set incsearch " Highlight dynamically as pattern is typed.
 set laststatus=2 " Always show status line
+set lazyredraw
 set magic " Enable extended regexes.
 set mouse=a " Enable moouse in all in all modes.
 set noerrorbells " Disable error bells.
@@ -98,4 +92,7 @@ endif
 if exists('&ttymouse')
   set ttymouse=xterm " Set mouse type to xterm.
 endif
+
+" Enable cursor shape
+let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
 

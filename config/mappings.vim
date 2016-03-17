@@ -9,6 +9,10 @@ if ! has('gui_running')
   augroup END
 endif
 
+" Disable Ex mode
+nnoremap Q <nop>
+nnoremap gQ <nop>
+
 " Escape to remove search results
 nnoremap <silent> <CR> :noh<CR><CR>
 

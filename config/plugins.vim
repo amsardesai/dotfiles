@@ -7,7 +7,7 @@ function! UpdateRPlugin(info)
   endif
 endfunction
 
-call plug#begin(g:base_actual_vim_dir . 'bundle')
+call plug#begin($VIMPATH . 'bundle')
 
   " Productivity Plugins
   Plug 'jiangmiao/auto-pairs'
@@ -71,5 +71,4 @@ call plug#begin(g:base_actual_vim_dir . 'bundle')
   Plug 'ekalinin/Dockerfile.vim', { 'for': 'Dockerfile' }
 
 call plug#end()
-
 

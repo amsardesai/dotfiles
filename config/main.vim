@@ -4,17 +4,18 @@ if exists('&nocompatible')
   set nocompatible
 endif
 
-let g:base_vim_dir = expand('<sfile>:p:h')
+let $VIMCONFIG = expand('<sfile>:p:h')
 
 " Determine vim directories
 if has('nvim')
-  let g:base_actual_vim_dir = $XDG_CONFIG_HOME . '/nvim/'
+  let $VIMPATH = $XDG_CONFIG_HOME . '/nvim/'
 else
-  let g:base_actual_vim_dir = '~/.vim/'
+  let $VIMPATH = '~/.vim/'
 endif
 
+" Sourcing function
 function! s:source_file(path) abort
-  execute 'source' fnameescape(g:base_vim_dir . '/' . a:path)
+  execute 'source' fnameescape($VIMCONFIG . '/' . a:path)
 endfunction
 
 " Functions
