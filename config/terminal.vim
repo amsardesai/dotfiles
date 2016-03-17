@@ -17,6 +17,7 @@ tnoremap <C-w><Left> <C-\><C-n><C-w><Left>
 tnoremap <C-w><Up> <C-\><C-n><C-w><Up>
 tnoremap <C-w><Down> <C-\><C-n><C-w><Down>
 tnoremap <C-w><Right> <C-\><C-n><C-w><Right>
+tnoremap <C-w><C-w> <C-\><C-n><C-w><C-w>
 
 " Re-source this file
 tnoremap <Leader>rs <C-\><C-n>:source $MYVIMRC<CR>

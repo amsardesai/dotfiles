@@ -23,8 +23,8 @@ call plug#begin($VIMPATH . 'bundle')
   Plug 'bronson/vim-trailing-whitespace'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
-  Plug 'easymotion/vim-easymotion'
   Plug 'jmcantrell/vim-virtualenv'
+  Plug 'justinmk/vim-sneak'
 
   " nvim vs vim plugins
   if has('nvim')

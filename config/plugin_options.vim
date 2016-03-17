@@ -18,9 +18,19 @@ let g:airline#extensions#ycm#warning_symbol = 'warning:'
 let g:airline_powerline_fonts = 1
 
 " NERDTree
-let NERDTreeShowHidden=1
-let NERDTreeAutoDeleteBuffer=1
-nnoremap <leader>m :NERDTreeToggle<CR><C-w>w
+
+" Function that toggles NERDTree and switches back to the previous buffer if
+" needed.
+function! s:toggleNERD()
+  execute 'NERDTreeToggle'
+  if bufwinnr(t:NERDTreeBufName) != -1
+    execute "normal \<C-w>\<C-w>"
+  endif
+endfunction
+
+let NERDTreeShowHidden = 1
+let NERDTreeAutoDeleteBuffer = 1
+nnoremap <leader>m :call <SID>toggleNERD()<CR>
 nnoremap <leader>n :NERDTreeFind<CR>
 nnoremap <leader>b :NERDTree<CR><C-w>w
 
@@ -40,6 +50,10 @@ let g:vim_markdown_folding_disabled = 1
 " GitGutter
 nmap ) <Plug>GitGutterNextHunk
 nmap ( <Plug>GitGutterPrevHunk
+
+" vim-sneak
+let g:sneak#s_next = 1
+let g:sneak#use_ic_scs = 1
 
 if has('nvim')
   " Neovim specific commands
