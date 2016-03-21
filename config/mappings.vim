@@ -16,9 +16,6 @@ nnoremap gQ <nop>
 " Escape to remove search results
 nnoremap <silent> <CR> :noh<CR><CR>
 
-" EasyMotion
-noremap \ <Plug>(easymotion-prefix)
-
 " Brackets for easier page movement
 nnoremap _ 10k0
 nnoremap + 10j0
@@ -53,18 +50,13 @@ vnoremap <S-Left> <C-w><Left>
 vnoremap <S-Right> <C-w><Right>
 
 " Close Quickfix window (,qq)
-noremap <Leader>q :cclose<CR>:pclose<CR>:lclose<CR>
+nnoremap <Leader>q :cclose<CR>:pclose<CR>:lclose<CR>
 
 " Redraw screen if something weird happens
 nnoremap <Leader>rd :redraw!<CR>
 
 " Re-source this file
 nnoremap <Leader>rs :source $MYVIMRC<CR>
-
-" Open QuickFix window for grep commands
-command! -nargs=+ Gr execute 'silent Ggrep!' <q-args> | cw | redraw!
-command! Gl execute 'silent Glog!' | cw | redraw!
-autocmd QuickFixCmdPost *grep* cwindow
 
 " Fix Whitespace
 nnoremap <Leader>fw :FixWhitespace<CR>
@@ -80,7 +72,7 @@ inoremap <PageDown> <C-O><C-D>
 
 " Switch between .cc and .h files
 if index(['c', 'cpp'], &filetype) == -1
-  nnoremap ,gh :e %:p:s,.h$,.X123X,:s,.cc$,.h,:s,.X123X$,.cc,<CR>
+  nnoremap <Leader>gh :e %:p:s,.h$,.X123X,:s,.cc$,.h,:s,.X123X$,.cc,<CR>
 endif
 
 " Ruby

@@ -1,6 +1,5 @@
 
 " Set syntax highlighting options.
-set t_Co=256
 set background=dark
 silent! colorscheme hybrid_reverse
 
@@ -48,7 +47,6 @@ set hlsearch " Highlight searches
 set ignorecase " Ignore case of searches.
 set incsearch " Highlight dynamically as pattern is typed.
 set laststatus=2 " Always show status line
-set lazyredraw
 set magic " Enable extended regexes.
 set mouse=a " Enable moouse in all in all modes.
 set noerrorbells " Disable error bells.

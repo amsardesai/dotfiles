@@ -28,11 +28,14 @@ function! s:toggleNERD()
   endif
 endfunction
 
+let NERDTreeAutoCenterThreshold = 10
 let NERDTreeShowHidden = 1
 let NERDTreeAutoDeleteBuffer = 1
-nnoremap <leader>m :call <SID>toggleNERD()<CR>
-nnoremap <leader>n :NERDTreeFind<CR>
-nnoremap <leader>b :NERDTree<CR><C-w>w
+let NERDTreeMouseMode = 2
+let NERDTreeMinimalUI = 1
+nnoremap <silent> <leader>m :call <SID>toggleNERD()<CR>
+nnoremap <silent> <leader>n :NERDTreeFind<CR>
+nnoremap <silent> <leader>b :NERDTree<CR><C-w>w
 
 " Latex
 let g:tex_flavor = 'latex'
