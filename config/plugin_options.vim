@@ -19,10 +19,16 @@ let g:airline_powerline_fonts = 1
 
 " NERDTree
 
-" Function that toggles NERDTree and switches back to the previous buffer if
-" needed.
+" Function that toggles NERDTree and switches back to the previous buffer if needed.
 function! s:toggleNERD()
   execute 'NERDTreeToggle'
+  if bufwinnr(t:NERDTreeBufName) != -1
+    execute "normal \<C-w>\<C-w>"
+  endif
+endfunction
+
+function! s:launchNERD()
+  execute 'NERDTree'
   if bufwinnr(t:NERDTreeBufName) != -1
     execute "normal \<C-w>\<C-w>"
   endif
@@ -35,7 +41,7 @@ let NERDTreeMouseMode = 2
 let NERDTreeMinimalUI = 1
 nnoremap <silent> <leader>m :call <SID>toggleNERD()<CR>
 nnoremap <silent> <leader>n :NERDTreeFind<CR>
-nnoremap <silent> <leader>b :NERDTree<CR><C-w>w
+nnoremap <silent> <leader>b :call <SID>launchNERD()<CR>
 
 " Latex
 let g:tex_flavor = 'latex'
