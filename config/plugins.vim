@@ -41,6 +41,7 @@ call plug#begin($VIMPATH . 'bundle')
 
   " Themes
   Plug 'kristijanhusak/vim-hybrid-material'
+  Plug 'chriskempson/base16-vim'
 
   " Filetype Plugins
   Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }

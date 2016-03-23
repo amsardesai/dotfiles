@@ -1,7 +1,9 @@
 
 " Set syntax highlighting options.
+" let base16colorspace=256
 set background=dark
-silent! colorscheme hybrid_reverse
+" colorscheme base16-tomorrow
+colorscheme hybrid_reverse
 
 " Change mapleader
 let mapleader = ','
@@ -93,4 +95,7 @@ endif
 
 " Enable cursor shape
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
+
+" Enable true color
+" let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
