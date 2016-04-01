@@ -36,6 +36,7 @@ call plug#begin($VIMPATH . 'bundle')
       \ | Plug 'Shougo/neosnippet-snippets'
       \ | Plug 'Shougo/neopairs.vim'
     Plug 'ternjs/tern_for_vim', { 'do': 'npm install', 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'zchee/deoplete-jedi', { 'for': 'python' }
 
   endif
 

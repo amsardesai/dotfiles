@@ -74,12 +74,28 @@ if has('nvim')
   endfunction
 
   " Deoplete
+  let g:deoplete#auto_complete_start_length = 2
   let g:deoplete#enable_at_startup = 1
   let g:deoplete#file#enable_buffer_path = 1
+  let g:deoplete#sources#jedi#show_docstring = 1
+
+  " Neosnippet
+  let g:neosnippet#enable_preview = 1
+  let g:neosnippet#enable_completed_snippet = 1
 
   " Key bindings for completion for deoplete
-  inoremap <silent> <expr> <Tab> pumvisible() ? "\<C-n>" :
-      \ (<SID>is_whitespace() ? "\<Tab>" : deoplete#mappings#manual_complete())
+  imap <silent> <expr> <CR> pumvisible() ?
+      \ (neosnippet#expandable() ? "\<Plug>(neosnippet_expand)"
+      \ : deoplete#mappings#close_popup())
+      \ : "\<CR>"
+  imap <silent> <expr> <Tab> pumvisible() ? "\<C-n>"
+      \ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
+      \ : (<SID>is_whitespace() ? "\<Tab>"
+      \ : deoplete#mappings#manual_complete()))
+  smap <silent> <expr> <Tab> pumvisible() ? "\<C-n>"
+      \ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
+      \ : (<SID>is_whitespace() ? "\<Tab>"
+      \ : deoplete#mappings#manual_complete()))
   inoremap <silent> <expr> <Down> pumvisible() ? "\<C-n>" : "\<Down>"
   inoremap <silent> <expr> <Up> pumvisible() ? "\<C-p>" : "\<Up>"
   inoremap <silent> <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
