@@ -74,14 +74,8 @@ if has('nvim')
   endfunction
 
   " Deoplete
-  let g:deoplete#auto_complete_start_length = 2
   let g:deoplete#enable_at_startup = 1
   let g:deoplete#file#enable_buffer_path = 1
-  let g:deoplete#sources#jedi#show_docstring = 1
-
-  " Neosnippet
-  let g:neosnippet#enable_preview = 1
-  let g:neosnippet#enable_completed_snippet = 1
 
   " Key bindings for completion for deoplete
   imap <silent> <expr> <CR> pumvisible() ?
