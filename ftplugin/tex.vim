@@ -19,46 +19,45 @@ let g:LatexBox_latexmk_preview_continuously = 1
 let g:LatexBox_quickfix = 2
 let g:LatexBox_viewer = "/Applications/Skim.app/Contents/MacOS/Skim"
 
-
 " Monospace text
-nmap ;;t ysiw}i\texttt<Esc>
-vmap ;;t S}i\texttt<Esc>
-imap ;;t \texttt{
+nmap <localleader>t ysiw}i\texttt<C-[>
+vmap <localleader>t S}i\texttt<C-[>
+imap <localleader>t \texttt{
 
 " Bold text
-nmap ;;b ysiw}i\textbf<Esc>
-vmap ;;b S}i\textbf<Esc>
-imap ;;b \textbf{
+nmap <localleader>b ysiw}i\textbf<C-[>
+vmap <localleader>b S}i\textbf<C-[>
+imap <localleader>b \textbf{
 
 " Italic text
-nmap ;;i ysiw}i\textit<Esc>
-vmap ;;i S}i\textit<Esc>
-imap ;;i \textit{
+nmap <localleader>i ysiw}i\textit<C-[>
+vmap <localleader>i S}i\textit<C-[>
+imap <localleader>i \textit{
 
 " Section with star
-nmap ;;q ysiw}i\section*<Esc>
-vmap ;;q S}i\section*<Esc>
-imap ;;q \section*{
+nmap <localleader>q ysiw}i\section*<C-[>
+vmap <localleader>q S}i\section*<C-[>
+imap <localleader>q \section*{
 
 " Section without star
-nmap ;;w ysiw}i\section<Esc>
-vmap ;;w S}i\section<Esc>
-imap ;;w \section{
+nmap <localleader>w ysiw}i\section<C-[>
+vmap <localleader>w S}i\section<C-[>
+imap <localleader>w \section{
 
 " Itemized list
-nmap ;;a o\begin{itemize}<Cr>]]<C-O>O\item<Space>
-imap ;;a \begin{itemize}<Cr>]]<C-O>O\item<Space>
+nmap <localleader>a o\begin{itemize}<Cr>]]<C-O>O\item<Space>
+imap <localleader>a \begin{itemize}<Cr>]]<C-O>O\item<Space>
 
 " Enumerated list
-nmap ;;s o\begin{enumerate}<Cr>]]<C-O>O\item<Space>
-imap ;;s \begin{enumerate}<Cr>]]<C-O>O\item<Space>
+nmap <localleader>s o\begin{enumerate}<Cr>]]<C-O>O\item<Space>
+imap <localleader>s \begin{enumerate}<Cr>]]<C-O>O\item<Space>
 
 " Item in a list
-nmap ;;z o<Backspace>\item<Space>
-imap ;;z <C-O>o<Backspace>\item<Space>
+nmap <localleader>z o<Backspace>\item<Space>
+imap <localleader>z <C-O>o<Backspace>\item<Space>
 
 " Item in a list (before)
-nmap ;;Z O<Backspace>\item<Space>
-imap ;;Z <C-O>O<Backspace>\item<Space>
+nmap <localleader>Z O<Backspace>\item<Space>
+imap <localleader>Z <C-O>O<Backspace>\item<Space>
 
 

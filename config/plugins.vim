@@ -3,7 +3,7 @@
 function! UpdateRPlugin(info)
   if has('nvim')
     silent UpdateRemotePlugins
-    echomsg 'rplugin updated: ' . a:info['name'] . ', restart vim for changes'
+    echomsg 'remote plugin updated: ' . a:info['name'] . ', restart vim for changes'
   endif
 endfunction
 

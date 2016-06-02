@@ -21,7 +21,7 @@ endfunction
 " Functions
 call s:source_file('misc/behave_zz.vim')
 
-" Core
+" " Core
 call s:source_file('install.vim')
 call s:source_file('plugins.vim')
 call s:source_file('options.vim')

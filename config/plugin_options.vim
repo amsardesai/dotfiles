@@ -116,16 +116,6 @@ else
   " Options
   set pastetoggle=<Leader>u " Set paste toggle
 
-  " UtiliSnips
-  let g:UltiSnipsExpandTrigger = '<C-j>'
-  let g:UltiSnipsJumpForwardTrigger = '<C-b>'
-  let g:UltiSnipsJumpBackwardTrigger = '<C-z>'
-
-  " YouCompleteMe
-  let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
-  let g:ycm_path_to_python_interpreter = '/usr/bin/python'
-  let g:ycm_confirm_extra_conf = 0
-
   " Syntastic
   let b:syntastic_mode = 'passive'
   let g:syntastic_enable_signs = 1
