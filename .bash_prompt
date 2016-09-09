@@ -82,6 +82,13 @@ prompt_svn() {
 
 }
 
+prompt_hg() {
+  hg=$( hg prompt "({branch}{:{bookmark}})${1}{[{status}{update}]}" 2> /dev/null )
+  if [[ ! -z "${hg}" ]]; then
+    printf "${hg}"
+  fi
+}
+
 tput sgr0; # reset colors
 bold=$(tput bold);
 reset=$(tput sgr0);
