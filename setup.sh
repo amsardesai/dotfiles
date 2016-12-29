@@ -75,9 +75,6 @@ echo_task "Setting up files..."
 download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh" git-prompt.bash
 download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash" git-completion.bash
 
-download_file "https://raw.githubusercontent.com/jlfwong/dotfiles/385bd399ead9f59492df95c1d63899e9ce73978f/hg-prompt/prompt.py" prompt.py
-download_file "https://raw.githubusercontent.com/jlfwong/dotfiles/385bd399ead9f59492df95c1d63899e9ce73978f/hg-completion.bash" hg-completion.bash
-
 echo_task "Setting up bash_profile..."
 
 if ! [ -f ~/.bash_profile ] || ! ( grep -Fxq "source $SCRIPTPATH/.profile" ~/.bash_profile ); then

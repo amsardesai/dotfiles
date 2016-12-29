@@ -82,13 +82,6 @@ prompt_svn() {
 
 }
 
-prompt_hg() {
-  hg=$( hg prompt "({branch}{:{bookmark}})${1}{[{status}{update}]}" 2> /dev/null )
-  if [[ ! -z "${hg}" ]]; then
-    printf "${hg}"
-  fi
-}
-
 tput sgr0; # reset colors
 bold=$(tput bold);
 reset=$(tput sgr0);
@@ -139,8 +132,7 @@ PS1+="\$(host_style)\h"; # host
 PS1+="\[${reset}${black}\] : ";
 PS1+="\$(dir_style)\w"; # working directory
 PS1+="\[${reset}${violet}\]\$(prompt_git \"\[${blue}\]\")"; # Git repository details
-PS1+="\[${reset}${purple}\]\$(prompt_svn \"\[${blue}\]\")";
-PS1+="\[${reset}${purple}\]\$(prompt_hg \"\[${blue}\]\")";
+PS1+="\[${reset}${purple}\]\$(prompt_svn \"\[${blue}\]\")"; # SVN repository details
 PS1+="\[${reset}${black}\] (\@)"; # time
 PS1+="\n";
 PS1+="\[${white}\]"
