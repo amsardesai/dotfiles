@@ -30,12 +30,12 @@ call plug#begin($VIMPATH . 'bundle')
   if has('nvim')
 
     Plug 'Shougo/deoplete.nvim', { 'do': function('UpdateRPlugin') }
-    Plug 'benekastah/neomake', { 'do': function('UpdateRPlugin') }
+    Plug 'neomake/neomake', { 'do': function('UpdateRPlugin') }
     Plug 'mhinz/vim-grepper', { 'do': function('UpdateRPlugin') }
     Plug 'Shougo/neosnippet.vim'
       \ | Plug 'Shougo/neosnippet-snippets'
       \ | Plug 'Shougo/neopairs.vim'
-    Plug 'ternjs/tern_for_vim', { 'do': 'npm install', 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'ternjs/tern_for_vim', { 'do': 'npm install', 'for': ['javascript'] }
     Plug 'zchee/deoplete-jedi', { 'for': 'python' }
     Plug 'artur-shaik/vim-javacomplete2', { 'for': 'java' }
 
