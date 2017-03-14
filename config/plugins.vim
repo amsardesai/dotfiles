@@ -60,7 +60,7 @@ call plug#begin($VIMPATH . 'bundle')
   Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'gavocanov/vim-js-indent', { 'for': ['javascript', 'javascript.jsx'] }
-  Plug 'othree/vim-jsx', { 'for': 'javascript.jsx' }
+  Plug 'othree/vim-jsx', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'elzr/vim-json', { 'for': 'json' }
   Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
   Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
