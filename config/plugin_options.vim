@@ -67,6 +67,9 @@ let g:sneak#use_ic_scs = 1
 " vim-jsx
 let g:jsx_ext_required = 0
 
+" vim-flow
+let g:flow#autoclose = 1
+
 if has('nvim')
   " Neovim specific commands
 
@@ -102,7 +105,7 @@ if has('nvim')
   let g:tern_show_signature_in_pum = 1
 
   " Neomake
-  let g:neomake_javascript_enabled_makers = ['eslint']
+  let g:neomake_javascript_enabled_makers = ['eslint', 'flow']
   autocmd! BufWritePost * Neomake
   hi NeomakeError cterm=underline ctermfg=167 ctermbg=52 gui=undercurl
   hi NeomakeWarning cterm=underline ctermfg=172 ctermbg=58 gui=undercurl
