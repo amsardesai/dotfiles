@@ -30,7 +30,6 @@ set autoread " Automatically load updated file if it's not changed
 set colorcolumn=100 " Max length of a line
 set cursorline " Highlight current line
 set diffopt=filler " Add vertical spaces to keep right and left aligned
-set esckeys " Allow cursor keys in insert mode.
 set expandtab " Expand tabs to spaces
 set formatoptions=
 set formatoptions+=c " Format comments
