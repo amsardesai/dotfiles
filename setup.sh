@@ -64,9 +64,9 @@ python3 -c "exit(0)"
 echo_task "Checking node installation..."
 node -e "process.exit(0)"
 
-echo_task "Checking proper neovim installation..."
-python -c "import neovim"
-python3 -c "import neovim"
+#echo_task "Checking proper neovim installation..."
+#python -c "import neovim"
+#python3 -c "import neovim"
 
 echo_info "Directory with scripts is $SCRIPTPATH"
 
@@ -99,13 +99,13 @@ make_dir "$HOME/.vim/"
 link_file "$SCRIPTPATH/ftplugin" "$HOME/.vim/ftplugin"
 link_file "$SCRIPTPATH/config" "$HOME/.vim/config"
 
-echo_task "Setting up neovim aliases..."
+#echo_task "Setting up neovim aliases..."
 
-export XDG_CONFIG_HOME="$HOME/.config"
-make_dir "$XDG_CONFIG_HOME/nvim/"
-link_file "$SCRIPTPATH/ftplugin" "$XDG_CONFIG_HOME/nvim/ftplugin"
-link_file "$SCRIPTPATH/config" "$XDG_CONFIG_HOME/nvim/config"
-link_file "$SCRIPTPATH/init.vim" "$XDG_CONFIG_HOME/nvim/init.vim"
+#export XDG_CONFIG_HOME="$HOME/.config"
+#make_dir "$XDG_CONFIG_HOME/nvim/"
+#link_file "$SCRIPTPATH/ftplugin" "$XDG_CONFIG_HOME/nvim/ftplugin"
+#link_file "$SCRIPTPATH/config" "$XDG_CONFIG_HOME/nvim/config"
+#link_file "$SCRIPTPATH/init.vim" "$XDG_CONFIG_HOME/nvim/init.vim"
 
 echo_info "To finish, open vim and/or neovim and it should set up itself."
 
