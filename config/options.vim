@@ -9,6 +9,17 @@ colorscheme hybrid_reverse
 let mapleader = ','
 let maplocalleader = ';'
 
+" Create directories
+if empty(glob('~/.vim/backups'))
+  silent !mkdir -p ~/.vim/backups
+endif
+if empty(glob('~/.vim/swaps'))
+  silent !mkdir -p ~/.vim/swaps
+endif
+if empty(glob('~/.vim/undos'))
+  silent !mkdir -p ~/.vim/undos
+endif
+
 " Local dirs
 set backupdir=$VIMPATH/backups
 set directory=$VIMPATH/swaps
