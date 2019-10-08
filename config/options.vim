@@ -10,20 +10,20 @@ let mapleader = ','
 let maplocalleader = ';'
 
 " Create directories
-if empty(glob('~/.vim/backups'))
-  silent !mkdir -p ~/.vim/backups
+if empty(glob('~/.vim-backups'))
+  silent !mkdir -p ~/.vim-backups
 endif
-if empty(glob('~/.vim/swaps'))
-  silent !mkdir -p ~/.vim/swaps
+if empty(glob('~/.vim-swaps'))
+  silent !mkdir -p ~/.vim-swaps
 endif
-if empty(glob('~/.vim/undo'))
-  silent !mkdir -p ~/.vim/undo
+if empty(glob('~/.vim-undo'))
+  silent !mkdir -p ~/.vim-undo
 endif
 
 " Local dirs
-set backupdir=$VIMPATH/backups
-set directory=$VIMPATH/swaps
-set undodir=$VIMPATH/undo
+set backupdir=~/.vim-backups
+set directory=~/.vim-swaps
+set undodir=~/.vim-undo
 
 " Indentation
 set autoindent " Copy indent from last line when starting new line.
