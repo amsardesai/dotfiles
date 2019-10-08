@@ -5,6 +5,7 @@ set show-all-if-unmodified on
 set match-hidden-files off
 set skip-completed-text on
 set visible-stats on
+set completion-prefix-display-length 3
 
 # Use the text that has already been typed as the prefix for searching through
 # commands (i.e. more intelligent Up/Down behavior)
