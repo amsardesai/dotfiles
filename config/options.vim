@@ -16,8 +16,8 @@ endif
 if empty(glob('~/.vim/swaps'))
   silent !mkdir -p ~/.vim/swaps
 endif
-if empty(glob('~/.vim/undos'))
-  silent !mkdir -p ~/.vim/undos
+if empty(glob('~/.vim/undo'))
+  silent !mkdir -p ~/.vim/undo
 endif
 
 " Local dirs
