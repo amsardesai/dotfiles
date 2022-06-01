@@ -74,6 +74,7 @@ echo_task "Setting up files..."
 
 download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh" git-prompt.bash
 download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash" git-completion.bash
+download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.zsh" git-completion.zsh
 
 echo_task "Setting up bash_profile..."
 
@@ -92,6 +93,7 @@ link_file "$SCRIPTPATH/graphical.vim" "$HOME/.gvimrc"
 link_file "$SCRIPTPATH/.inputrc" "$HOME/.inputrc"
 link_file "$SCRIPTPATH/.tern-config" "$HOME/.tern-config"
 link_file "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
+link_file "$HOME/.bash_profile" "$HOME/.zshrc"
 
 echo_task "Setting up vim..."
 

@@ -32,14 +32,27 @@ export LESS="-RMS"
 # Config files
 export XDG_CONFIG_HOME="$HOME/.config"
 
-# Git Autocomplete
-source "$(dirname $BASH_SOURCE)/git-completion.bash"
+if [ -n "$ZSH_VERSION" ]; then
+  export SCRIPT_SOURCE=$0:h:P
+  source "$SCRIPT_SOURCE/git-completion.zsh"
 
-# Bash Prompt
-source "$(dirname $BASH_SOURCE)/.bash_prompt"
+  export ZSH_THEME="steeef"
+else
+  export SCRIPT_SOURCE=$(dirname $BASH_SOURCE)
+  source "$SCRIPT_SOURCE/git-completion.bash"
+  source "$SCRIPT_SOURCE/.bash_prompt"
 
-# Bash Autocomplete
-shopt -s no_empty_cmd_completion
+  # Bash Autocomplete
+  shopt -s no_empty_cmd_completion
+
+  # Configuration
+  shopt -s cdspell 2> /dev/null
+  shopt -s nocaseglob 2> /dev/null
+  shopt -s histappend 2> /dev/null
+  shopt -s autocd 2> /dev/null
+  shopt -s globstar 2> /dev/null
+fi
+
 
 # My aliases
 alias ls='ls -alFh'
@@ -96,13 +109,6 @@ __git_complete gg _git_grep
 __git_complete com _git_commit
 __git_complete cam _git_commit
 __git_complete caam _git_commit
-
-# Configuration
-shopt -s cdspell 2> /dev/null
-shopt -s nocaseglob 2> /dev/null
-shopt -s histappend 2> /dev/null
-shopt -s autocd 2> /dev/null
-shopt -s globstar 2> /dev/null
 
 # Completion
 command -v complete >/dev/null 2>&1 && (
