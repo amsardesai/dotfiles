@@ -1,12 +1,4 @@
 
-" Updating remote plugins
-function! UpdateRPlugin(info)
-  if has('nvim')
-    silent UpdateRemotePlugins
-    echomsg 'remote plugin updated: ' . a:info['name'] . ', restart vim for changes'
-  endif
-endfunction
-
 call plug#begin($VIMPATH . 'bundle')
 
   " Productivity Plugins
@@ -17,29 +9,14 @@ call plug#begin($VIMPATH . 'bundle')
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
   Plug 'airblade/vim-gitgutter'
-  Plug 'tpope/vim-fugitive'
   Plug 'terryma/vim-multiple-cursors'
-  Plug 'tpope/vim-sleuth'
   Plug 'bronson/vim-trailing-whitespace'
+  Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-sleuth'
   Plug 'tpope/vim-repeat'
   Plug 'jmcantrell/vim-virtualenv'
   Plug 'justinmk/vim-sneak'
-
-  " nvim vs vim plugins
-  if has('nvim')
-
-    Plug 'Shougo/deoplete.nvim', { 'do': function('UpdateRPlugin') }
-    Plug 'neomake/neomake', { 'do': function('UpdateRPlugin') }
-    Plug 'mhinz/vim-grepper', { 'do': function('UpdateRPlugin') }
-    Plug 'Shougo/neosnippet.vim'
-      \ | Plug 'Shougo/neosnippet-snippets'
-      \ | Plug 'Shougo/neopairs.vim'
-    Plug 'ternjs/tern_for_vim', { 'do': 'npm install', 'for': ['javascript'] }
-    Plug 'zchee/deoplete-jedi', { 'for': 'python' }
-    Plug 'artur-shaik/vim-javacomplete2', { 'for': 'java' }
-
-  endif
 
   " Themes
   Plug 'kristijanhusak/vim-hybrid-material'
@@ -60,8 +37,9 @@ call plug#begin($VIMPATH . 'bundle')
   Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'gavocanov/vim-js-indent', { 'for': ['javascript', 'javascript.jsx'] }
-  Plug 'othree/vim-jsx', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'flowtype/vim-flow', { 'for': ['javascript', 'javascript.jsx'] }
+  Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript', 'javascript.jsx', 'typescript'] }
+  Plug 'leafgarland/typescript-vim', { 'for': ['typescript'] }
   Plug 'elzr/vim-json', { 'for': 'json' }
   Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
   Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }

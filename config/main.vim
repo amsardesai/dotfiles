@@ -6,12 +6,7 @@ endif
 
 let $VIMCONFIG = expand('<sfile>:p:h')
 
-" Determine vim directories
-if has('nvim')
-  let $VIMPATH = $XDG_CONFIG_HOME . '/nvim/'
-else
-  let $VIMPATH = '~/.vim/'
-endif
+let $VIMPATH = '~/.vim/'
 
 " Sourcing function
 function! s:source_file(path) abort

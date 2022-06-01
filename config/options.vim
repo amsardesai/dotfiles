@@ -100,7 +100,7 @@ if exists('&breakindent')
 endif
 
 if exists('&ttymouse')
-  set ttymouse=xterm " Set mouse type to xterm.
+  set ttymouse=xterm2 " Set mouse type to xterm2.
 endif
 
 " Enable cursor shape

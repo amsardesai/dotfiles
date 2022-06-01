@@ -10,14 +10,22 @@ noremap <C-h> :CtrlPBuffer<CR>
 noremap <Leader>op :CtrlPClearAllCaches<CR>
 
 " Airline
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
 let g:airline_theme='tomorrow'
 let g:airline#extensions#hunks#non_zero_only = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#ycm#error_symbol = 'error:'
 let g:airline#extensions#ycm#warning_symbol = 'warning:'
 let g:airline_powerline_fonts = 1
-
-" NERDTree
+let g:airline_symbols.branch = ''
+let g:airline_symbols.colnr = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ' :'
+let g:airline_symbols.maxlinenr = '☰ '
+let g:airline_symbols.dirty='⚡'
 
 " Function that toggles NERDTree and switches back to the previous buffer if needed.
 function! s:toggleNERD()
@@ -47,8 +55,8 @@ nnoremap <silent> <leader>b :call <SID>launchNERD()<CR>
 let g:tex_flavor = 'latex'
 
 " Fugitive
-nnoremap <silent> <Leader>gl :silent Glog<CR>
-nnoremap <silent> <Leader>gb :Gblame<CR>
+nnoremap <silent> <Leader>gl :silent Git log<CR>
+nnoremap <silent> <Leader>gb :Git blame<CR>
 
 " vim-json
 set conceallevel=2
@@ -70,69 +78,18 @@ let g:jsx_ext_required = 0
 " vim-flow
 let g:flow#autoclose = 1
 
-if has('nvim')
-  " Neovim specific commands
+" Options
+set pastetoggle=<Leader>u " Set paste toggle
 
-  " Function to check if whitespace exists
-  function! s:is_whitespace() "{{{
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~? '\s'
-  endfunction
+" Syntastic
+let b:syntastic_mode = 'passive'
+let g:syntastic_enable_signs = 1
+let g:syntastic_javascript_checkers = ['eslint']
+nnoremap <Leader>sk :SyntasticToggleMode<CR>
+nnoremap <Leader>sr :SyntasticReset<CR>
+nnoremap <Leader>si :SyntasticInfo<CR>
+nnoremap <Leader>sc :SyntasticCheck<CR>
 
-  " Deoplete
-  let g:deoplete#enable_at_startup = 1
-  let g:deoplete#file#enable_buffer_path = 1
-
-  " Key bindings for completion for deoplete
-  imap <silent> <expr> <CR> pumvisible() ?
-      \ (neosnippet#expandable() ? "\<Plug>(neosnippet_expand)"
-      \ : deoplete#mappings#close_popup())
-      \ : "\<CR>"
-  imap <silent> <expr> <Tab> pumvisible() ? "\<C-n>"
-      \ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
-      \ : (<SID>is_whitespace() ? "\<Tab>"
-      \ : deoplete#mappings#manual_complete()))
-  smap <silent> <expr> <Tab> pumvisible() ? "\<C-n>"
-      \ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
-      \ : (<SID>is_whitespace() ? "\<Tab>"
-      \ : deoplete#mappings#manual_complete()))
-  inoremap <silent> <expr> <Down> pumvisible() ? "\<C-n>" : "\<Down>"
-  inoremap <silent> <expr> <Up> pumvisible() ? "\<C-p>" : "\<Up>"
-  inoremap <silent> <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-  " Tern for vim
-  autocmd FileType javascript setlocal omnifunc=tern#Complete
-  let g:tern_show_signature_in_pum = 1
-
-  " Neomake
-  let g:neomake_javascript_enabled_makers = ['eslint', 'flow']
-  autocmd! BufWritePost * Neomake
-  hi NeomakeError cterm=underline ctermfg=167 ctermbg=52 gui=undercurl
-  hi NeomakeWarning cterm=underline ctermfg=172 ctermbg=58 gui=undercurl
-  let g:neomake_error_sign = { 'text': '!>', 'texthl': 'NeomakeError' }
-  let g:neomake_warning_sign = { 'text': '!>', 'texthl': 'NeomakeWarning' }
-
-  " vim-grepper
-  nnoremap <Leader>gk :Grepper -tool git -switch<CR>
-  vnoremap <Leader>gk :Grepper -tool git -cword -switch<CR>
-
-else
-  " Old vim specific commands
-
-  " Options
-  set pastetoggle=<Leader>u " Set paste toggle
-
-  " Syntastic
-  let b:syntastic_mode = 'passive'
-  let g:syntastic_enable_signs = 1
-  let g:syntastic_javascript_checkers = ['eslint']
-  nnoremap <Leader>sk :SyntasticToggleMode<CR>
-  nnoremap <Leader>sr :SyntasticReset<CR>
-  nnoremap <Leader>si :SyntasticInfo<CR>
-  nnoremap <Leader>sc :SyntasticCheck<CR>
-
-  " GitGutter
-  let g:gitgutter_realtime = 0
-  let g:gitgutter_eager = 0
-
-endif
+" GitGutter
+let g:gitgutter_realtime = 0
+let g:gitgutter_eager = 0
