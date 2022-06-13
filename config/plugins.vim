@@ -9,7 +9,7 @@ call plug#begin($VIMPATH . 'bundle')
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
   Plug 'airblade/vim-gitgutter'
-  Plug 'terryma/vim-multiple-cursors'
+  Plug 'mg979/vim-visual-multi', {'branch': 'master'}
   Plug 'bronson/vim-trailing-whitespace'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
@@ -17,6 +17,10 @@ call plug#begin($VIMPATH . 'bundle')
   Plug 'tpope/vim-repeat'
   Plug 'jmcantrell/vim-virtualenv'
   Plug 'justinmk/vim-sneak'
+  Plug 'prabirshrestha/vim-lsp'
+  Plug 'mattn/vim-lsp-settings'
+  Plug 'prabirshrestha/asyncomplete.vim'
+  Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
   " Themes
   Plug 'kristijanhusak/vim-hybrid-material'
