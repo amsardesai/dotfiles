@@ -21,6 +21,7 @@ call plug#begin($VIMPATH . 'bundle')
   Plug 'mattn/vim-lsp-settings'
   Plug 'prabirshrestha/asyncomplete.vim'
   Plug 'prabirshrestha/asyncomplete-lsp.vim'
+  Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
 
   " Themes
   Plug 'kristijanhusak/vim-hybrid-material'

@@ -57,10 +57,6 @@ set -e
 
 echo_info "Checking for dependencies..."
 
-echo_task "Checking python installation..."
-python -c "exit(0)"
-python3 -c "exit(0)"
-
 echo_task "Checking node installation..."
 node -e "process.exit(0)"
 
