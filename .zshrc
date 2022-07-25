@@ -158,7 +158,4 @@ alias lgh="git log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%a
 alias gg='git grep'
 alias blame='git blame -w'
 
-export ANDROID_SDK=/opt/android_sdk
-export ANDROID_NDK_REPOSITORY=/opt/android_ndk
-export ANDROID_HOME=${ANDROID_SDK}
-export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools:${HOME}/homebrew/bin:${HOME}/homebrew/sbin
+export PATH=${PATH}:${HOME}/homebrew/bin:${HOME}/homebrew/sbin
