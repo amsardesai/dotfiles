@@ -158,4 +158,5 @@ alias lgh="git log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%a
 alias gg='git grep'
 alias blame='git blame -w'
 
-export PATH=${PATH}:${HOME}/homebrew/bin:${HOME}/homebrew/sbin
+export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
+export OP_BIOMETRIC_UNLOCK_ENABLED=true
