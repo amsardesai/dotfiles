@@ -123,15 +123,13 @@ alias d='du -hs'
 alias v='vim'
 alias vi='vim'
 alias v.='vim .'
-alias n='nvim'
-alias n.='nvim .'
 alias c='clear'
 alias ..='cd ..'
 alias ....='cd ../..'
 alias ......='cd ../../..'
 alias ........='cd ../../../..'
 alias ..........='cd ../../../../..'
-alias rebash='source ~/.profile'
+alias rebash='source ~/.zshrc'
 alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
 alias psg="ps ax | grep -v ' grep ' | grep"
 alias su='su -m'
@@ -148,8 +146,9 @@ alias co='git checkout'
 alias dif='git diff'
 alias difc='git diff HEAD~ HEAD'
 alias difs='git diff --staged'
-alias difb='git diff `git merge-base master HEAD`'
+alias difb='git diff `git merge-base main HEAD`'
 alias add='git add'
+alias add.='git add .'
 alias pushme='git push origin HEAD'
 alias pushmef='git push -f origin HEAD'
 alias reb='git rebase'
@@ -160,3 +159,6 @@ alias blame='git blame -w'
 
 export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
+
+eval "$(rbenv init - zsh)"
+eval "$(notion completion --install)"
