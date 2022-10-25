@@ -146,16 +146,25 @@ alias co='git checkout'
 alias dif='git diff'
 alias difc='git diff HEAD~ HEAD'
 alias difs='git diff --staged'
-alias difb='git diff `git merge-base main HEAD`'
+alias difb='git diff `git merge-base origin/main HEAD`'
+alias difbl='git diff `git merge-base origin/main HEAD` --name-only | cat && echo'
+
 alias add='git add'
 alias add.='git add .'
+
 alias pushme='git push origin HEAD'
 alias pushmef='git push -f origin HEAD'
+
 alias reb='git rebase'
+alias rebc='git rebase --continue'
+alias reba='git rebase --abort'
+
 alias lg="git log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%an]%Creset %C(magenta)%ar%Creset %C(black):%Creset %s%Cred%d%Creset' --abbrev-commit"
 alias lgh="git log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%an]%Creset %C(magenta)%ar%Creset %C(black):%Creset %s%Cred%d%Creset' --abbrev-commit --max-count=10 | cat && echo"
+
 alias gg='git grep'
 alias blame='git blame -w'
+alias pullme='git pull origin main'
 
 export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
