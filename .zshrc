@@ -21,7 +21,7 @@ ZSH_THEME="steeef"
 
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+HYPHEN_INSENSITIVE="true"
 
 # Uncomment one of the following lines to change the auto-update behavior
 # zstyle ':omz:update' mode disabled  # disable automatic updates
@@ -47,7 +47,7 @@ ZSH_THEME="steeef"
 # You can also set it to another string to have that shown instead of the default red dots.
 # e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -70,7 +70,7 @@ ZSH_THEME="steeef"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git npm)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -152,19 +152,20 @@ alias difbl='git diff `git merge-base origin/main HEAD` --name-only | cat && ech
 alias add='git add'
 alias add.='git add .'
 
+alias pullme='git pull origin main'
 alias pushme='git push origin HEAD'
 alias pushmef='git push -f origin HEAD'
+alias pruneme='git remote prune origin'
 
 alias reb='git rebase'
 alias rebc='git rebase --continue'
 alias reba='git rebase --abort'
 
 alias lg="git log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%an]%Creset %C(magenta)%ar%Creset %C(black):%Creset %s%Cred%d%Creset' --abbrev-commit"
-alias lgh="git log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%an]%Creset %C(magenta)%ar%Creset %C(black):%Creset %s%Cred%d%Creset' --abbrev-commit --max-count=10 | cat && echo"
+alias lgh="git --no-pager log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%an]%Creset %C(magenta)%ar%Creset %C(black):%Creset %s%Cred%d%Creset' --abbrev-commit --max-count=10"
 
 alias gg='git grep'
 alias blame='git blame -w'
-alias pullme='git pull origin main'
 
 export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
