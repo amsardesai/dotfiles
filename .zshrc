@@ -113,7 +113,7 @@ export CLICOLOR=1
 export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
 
 # LESS
-export LESS="-RMS"
+export LESS="-x2RMS"
 
 # My aliases
 alias ls='ls -alFh'
@@ -125,12 +125,11 @@ alias vi='vim'
 alias v.='vim .'
 alias c='clear'
 alias ..='cd ..'
-alias ....='cd ../..'
-alias ......='cd ../../..'
-alias ........='cd ../../../..'
-alias ..........='cd ../../../../..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
 alias rebash='source ~/.zshrc'
-alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
 alias psg="ps ax | grep -v ' grep ' | grep"
 alias su='su -m'
 
@@ -138,16 +137,11 @@ alias su='su -m'
 alias rmswaps='rm -rf ~/.vim/swaps/* && echo "Removed vim swap files!"'
 
 # git commands
-alias st='git status -s'
+alias st='git status --short'
 alias com='git commit -m'
 alias cam='git commit -m'
 alias caam='git commit --amend --no-edit'
 alias co='git checkout'
-alias dif='git diff'
-alias difc='git diff HEAD~ HEAD'
-alias difs='git diff --staged'
-alias difb='git diff `git merge-base origin/main HEAD`'
-alias difbl='git diff `git merge-base origin/main HEAD` --name-only | cat && echo'
 
 alias add='git add'
 alias add.='git add .'
@@ -157,18 +151,35 @@ alias pushme='git push origin HEAD'
 alias pushmef='git push -f origin HEAD'
 alias pruneme='git remote prune origin'
 
-alias reb='git rebase'
-alias rebc='git rebase --continue'
-alias reba='git rebase --abort'
+alias re='git rebase'
+alias res='git rebase --skip'
+alias rec='git rebase --continue'
+alias rea='git rebase --abort'
+alias reh='git rebase HEAD'
+alias rem='git rebase main'
 
-alias lg="git log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%an]%Creset %C(magenta)%ar%Creset %C(black):%Creset %s%Cred%d%Creset' --abbrev-commit"
-alias lgh="git --no-pager log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%an]%Creset %C(magenta)%ar%Creset %C(black):%Creset %s%Cred%d%Creset' --abbrev-commit --max-count=10"
+GIT_DIFF_OPTIONS="--ignore-all-space --minimal --find-copies"
+alias dif="git diff $GIT_DIFF_OPTIONS"
+alias difc="git diff $GIT_DIFF_OPTIONS HEAD~ HEAD"
+alias difs="git diff $GIT_DIFF_OPTIONS --staged"
+alias difb="git diff $GIT_DIFF_OPTIONS $(git merge-base origin/main HEAD)"
+alias difbl="git --no-pager diff $(git merge-base origin/main HEAD) --stat"
+
+GIT_LOG_OPTIONS="--graph --pretty=format:'%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset) %C(italic)%s%C(reset)%C(auto)%d%C(reset)' --abbrev-commit --date=relative"
+alias lg="git --no-pager log $GIT_LOG_OPTIONS --max-count=10"
+alias lgh="git log $GIT_LOG_OPTIONS --branches"
+alias lgm="git log $GIT_LOG_OPTIONS --author=Ankit"
 
 alias gg='git grep'
-alias blame='git blame -w'
+alias bl='git blame -w'
+
+alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
 
 export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
 
 eval "$(rbenv init - zsh)"
 eval "$(notion completion --install)"
+
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin"
