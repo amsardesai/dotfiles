@@ -165,7 +165,7 @@ alias difs="git diff $GIT_DIFF_OPTIONS --staged"
 alias difb="git diff $GIT_DIFF_OPTIONS $(git merge-base origin/main HEAD)"
 alias difbl="git --no-pager diff $(git merge-base origin/main HEAD) --stat"
 
-GIT_LOG_OPTIONS="--graph --pretty=format:'%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset) %C(italic)%s%C(reset)%C(auto)%d%C(reset)' --abbrev-commit --date=relative"
+GIT_LOG_OPTIONS="--graph --pretty=format:'%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset)%C(auto)%d%C(reset) %C(italic)%s%C(reset)' --abbrev-commit --date=relative"
 alias lg="git --no-pager log $GIT_LOG_OPTIONS --max-count=10"
 alias lgh="git log $GIT_LOG_OPTIONS --branches"
 alias lgm="git log $GIT_LOG_OPTIONS --author=Ankit"
