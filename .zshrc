@@ -136,21 +136,28 @@ alias su='su -m'
 # Vim commands
 alias rmswaps='rm -rf ~/.vim/swaps/* && echo "Removed vim swap files!"'
 
-# git commands
+# Git Status
 alias st='git status --short'
+
+# Git Commit
 alias com='git commit -m'
 alias cam='git commit -m'
 alias caam='git commit --amend --no-edit'
-alias co='git checkout'
 
+# Git Checkout
+alias co='git checkout'
+alias com='git checkout main'
+
+# Git Add
 alias add='git add'
 alias add.='git add .'
 
+# Git Push/Pull
 alias pullme='git pull origin main'
 alias pushme='git push origin HEAD'
 alias pushmef='git push -f origin HEAD'
-alias pruneme='git remote prune origin'
 
+# Git Rebase
 alias re='git rebase'
 alias res='git rebase --skip'
 alias rec='git rebase --continue'
@@ -158,6 +165,7 @@ alias rea='git rebase --abort'
 alias reh='git rebase HEAD'
 alias rem='git rebase main'
 
+# Git Diff
 GIT_DIFF_OPTIONS="--ignore-all-space --minimal --find-copies"
 alias dif="git diff $GIT_DIFF_OPTIONS"
 alias difc="git diff $GIT_DIFF_OPTIONS HEAD~ HEAD"
@@ -165,11 +173,17 @@ alias difs="git diff $GIT_DIFF_OPTIONS --staged"
 alias difb="git diff $GIT_DIFF_OPTIONS `git merge-base origin/main HEAD`"
 alias difbl="git --no-pager diff `git merge-base origin/main HEAD` --stat"
 
+# Git Log
 GIT_LOG_OPTIONS="--graph --pretty=format:'%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset)%C(auto)%d%C(reset) %C(italic)%s%C(reset)' --abbrev-commit --date=relative"
 alias lg="git --no-pager log $GIT_LOG_OPTIONS --max-count=10"
-alias lgh="git log $GIT_LOG_OPTIONS --branches"
+alias lb="git --no-pager log $GIT_LOG_OPTIONS --max-count=10 --branches"
+alias lf="git log $GIT_LOG_OPTIONS --branches"
+alias lga="git log $GIT_LOG_OPTIONS --all"
 alias lgm="git log $GIT_LOG_OPTIONS --author=Ankit"
 
+# Other Git Commands
+alias br='git branch'
+alias chp='git cherry-pick'
 alias gg='git grep'
 alias bl='git blame -w'
 
