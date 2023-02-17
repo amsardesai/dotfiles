@@ -136,8 +136,13 @@ alias su='su -m'
 # Vim commands
 alias rmswaps='rm -rf ~/.vim/swaps/* && echo "Removed vim swap files!"'
 
-# Git Status
-alias st='git status --short'
+# Git Add
+alias add='git add'
+alias add.='git add .'
+
+# Git Branch
+alias br='git branch'
+alias brd='git branch -D'
 
 # Git Commit
 alias com='git commit -m'
@@ -147,23 +152,6 @@ alias caam='git commit --amend --no-edit'
 # Git Checkout
 alias co='git checkout'
 alias com='git checkout main'
-
-# Git Add
-alias add='git add'
-alias add.='git add .'
-
-# Git Push/Pull
-alias pullme='git pull origin main'
-alias pushme='git push origin HEAD'
-alias pushmef='git push -f origin HEAD'
-
-# Git Rebase
-alias re='git rebase'
-alias res='git rebase --skip'
-alias rec='git rebase --continue'
-alias rea='git rebase --abort'
-alias reh='git rebase HEAD'
-alias rem='git rebase main'
 
 # Git Diff
 GIT_DIFF_OPTIONS="--ignore-all-space --minimal --find-copies"
@@ -181,8 +169,23 @@ alias lf="git log $GIT_LOG_OPTIONS --branches"
 alias lga="git log $GIT_LOG_OPTIONS --all"
 alias lgm="git log $GIT_LOG_OPTIONS --author=Ankit"
 
+# Git Push/Pull
+alias pullme='git pull origin main'
+alias pushme='git push origin HEAD'
+alias pushmef='git push -f origin HEAD'
+
+# Git Status
+alias st='git status --short'
+
+# Git Rebase
+alias re='git rebase'
+alias res='git rebase --skip'
+alias rec='git rebase --continue'
+alias rea='git rebase --abort'
+alias reh='git rebase HEAD'
+alias rem='git rebase main'
+
 # Other Git Commands
-alias br='git branch'
 alias chp='git cherry-pick'
 alias gg='git grep'
 alias bl='git blame -w'
