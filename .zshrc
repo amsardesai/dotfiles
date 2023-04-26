@@ -195,8 +195,3 @@ alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/download
 export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
 
-eval "$(rbenv init - zsh)"
-eval "$(notion completion --install)"
-
-export ANDROID_HOME="$HOME/Library/Android/sdk"
-export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin"
