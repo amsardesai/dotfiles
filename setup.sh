@@ -71,11 +71,19 @@ download_file "https://raw.githubusercontent.com/git/git/master/contrib/completi
 echo_task "Setting up bash_profile..."
 
 if ! [ -f ~/.bash_profile ] || ! ( grep -Fxq "source $SCRIPTPATH/.profile" ~/.bash_profile ); then
-	echo_message "Adding source script to bash profile"
+	echo_message "Adding source script to ~/.bash_profile"
 	echo "" >> ~/.bash_profile
 	echo "# Source Ankit's profile" >> ~/.bash_profile
 	echo "source $SCRIPTPATH/.profile" >> ~/.bash_profile
 	echo "" >> ~/.bash_profile
+fi
+
+if ! [ -f ~/.zshrc ] || ! ( grep -Fxq "source $SCRIPTPATH/.profile" ~/.zshrc ); then
+	echo_message "Adding source script to ~/.zshrc"
+	echo "" >> ~/.bash_profile
+	echo "# Source Ankit's zshrc" >> ~/.zshrc
+	echo "source $SCRIPTPATH/.zshrc" >> ~/.zshrc
+	echo "" >> ~/.zshrc
 fi
 
 echo_task "Creating aliases..."
@@ -85,7 +93,6 @@ link_file "$SCRIPTPATH/graphical.vim" "$HOME/.gvimrc"
 link_file "$SCRIPTPATH/.inputrc" "$HOME/.inputrc"
 link_file "$SCRIPTPATH/.tern-config" "$HOME/.tern-config"
 link_file "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
-link_file "$SCRIPTPATH/.zshrc" "$HOME/.zshrc"
 
 echo_task "Setting up vim..."
 
