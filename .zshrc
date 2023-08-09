@@ -148,6 +148,7 @@ alias brd='git branch -D'
 alias com='git commit -m'
 alias cam='git commit -m'
 alias caam='git commit --amend --no-edit'
+alias camn='git commit --no-verify -m'
 
 # Git Checkout
 alias co='git checkout'
@@ -158,8 +159,8 @@ GIT_DIFF_OPTIONS="--ignore-all-space --minimal --find-copies"
 alias dif="git diff $GIT_DIFF_OPTIONS"
 alias difc="git diff $GIT_DIFF_OPTIONS HEAD~ HEAD"
 alias difs="git diff $GIT_DIFF_OPTIONS --staged"
-alias difb="git diff $GIT_DIFF_OPTIONS `git merge-base origin/main HEAD`"
-alias difbl="git --no-pager diff `git merge-base origin/main HEAD` --stat"
+alias difm="git diff $GIT_DIFF_OPTIONS main"
+alias difml="git --no-pager diff main --stat"
 
 # Git Log
 GIT_LOG_OPTIONS="--graph --pretty=format:'%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset)%C(auto)%d%C(reset) %C(italic)%s%C(reset)' --abbrev-commit --date=relative"
