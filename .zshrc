@@ -156,11 +156,15 @@ alias com='git checkout main'
 
 # Git Diff
 GIT_DIFF_OPTIONS="--ignore-all-space --minimal --find-copies"
+GIT_DIFF_STAT_OPTIONS="--stat"
 alias dif="git diff $GIT_DIFF_OPTIONS"
+alias difl="git --no-pager diff $GIT_DIFF_STAT_OPTIONS"
 alias difc="git diff $GIT_DIFF_OPTIONS HEAD~ HEAD"
+alias difcl="git --no-pager diff $GIT_DIFF_STAT_OPTIONS HEAD~ HEAD"
 alias difs="git diff $GIT_DIFF_OPTIONS --staged"
+alias difsl="git --no-pager diff $GIT_DIFF_STAT_OPTIONS --staged"
 alias difm="git diff $GIT_DIFF_OPTIONS main"
-alias difml="git --no-pager diff main --stat"
+alias difml="git --no-pager diff $GIT_DIFF_STAT_OPTIONS main"
 
 # Git Log
 GIT_LOG_OPTIONS="--graph --pretty=format:'%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset)%C(auto)%d%C(reset) %C(italic)%s%C(reset)' --abbrev-commit --date=relative"
@@ -190,8 +194,6 @@ alias rem='git rebase main'
 alias chp='git cherry-pick'
 alias gg='git grep'
 alias bl='git blame -w'
-
-alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
 
 export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
