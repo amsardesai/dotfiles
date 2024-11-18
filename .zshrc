@@ -167,7 +167,7 @@ alias difm="git diff $GIT_DIFF_OPTIONS main"
 alias difml="git --no-pager diff $GIT_DIFF_STAT_OPTIONS main"
 
 # Git Log
-GIT_LOG_OPTIONS="--graph --pretty=format:'%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset)%C(auto)%d%C(reset) %C(italic)%s%C(reset)' --abbrev-commit --date=relative"
+GIT_LOG_OPTIONS="--graph --pretty=format:'%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset) %C(italic)%s%C(reset) %C(italic green)(%G?)%C(reset)%C(auto)%d%C(reset)' --abbrev-commit --date=relative"
 alias lg="git --no-pager log $GIT_LOG_OPTIONS --max-count=10"
 alias lb="git --no-pager log $GIT_LOG_OPTIONS --max-count=10 --branches"
 alias lf="git log $GIT_LOG_OPTIONS --branches"
@@ -184,9 +184,9 @@ alias st='git status --short'
 
 # Git Rebase
 alias re='git rebase'
-alias res='git rebase --skip'
-alias rec='git rebase --continue'
-alias rea='git rebase --abort'
+alias res='GIT_EDITOR=true git rebase --skip'
+alias rec='GIT_EDITOR=true git rebase --continue'
+alias rea='GIT_EDITOR=true git rebase --abort'
 alias reh='git rebase HEAD'
 alias rem='git rebase main'
 
