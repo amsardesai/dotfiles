@@ -167,7 +167,7 @@ alias difm="git diff $GIT_DIFF_OPTIONS main"
 alias difml="git --no-pager diff $GIT_DIFF_STAT_OPTIONS main"
 
 # Git Log
-GIT_LOG_OPTIONS="--graph --pretty=format:'%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset) %C(italic)%s%C(reset) %C(italic green)(%G?)%C(reset)%C(auto)%d%C(reset)' --abbrev-commit --date=relative"
+GIT_LOG_OPTIONS="--graph --pretty=tformat:'%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset) %C(italic)%s%C(reset)%C(auto)%d%C(reset) %C(green)%G?%C(reset)' --abbrev-commit --date=relative"
 alias lg="git --no-pager log $GIT_LOG_OPTIONS --max-count=10"
 alias lb="git --no-pager log $GIT_LOG_OPTIONS --max-count=10 --branches"
 alias lf="git log $GIT_LOG_OPTIONS --branches"
