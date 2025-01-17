@@ -188,7 +188,9 @@ alias res='GIT_EDITOR=true git rebase --skip'
 alias rec='GIT_EDITOR=true git rebase --continue'
 alias rea='GIT_EDITOR=true git rebase --abort'
 alias reh='git rebase HEAD'
+alias rehu='git rebase HEAD --update-refs'
 alias rem='git rebase main'
+alias remu='git rebase main --update-refs'
 
 # Other Git Commands
 alias chp='git cherry-pick'
