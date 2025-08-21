@@ -197,6 +197,12 @@ alias chp='git cherry-pick'
 alias gg='git grep'
 alias bl='git blame -w'
 
+# Graphite Commands
+alias gts='gt sync --force'
+
 export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
 
+if command -v gt > /dev/null; then
+  eval "$(gt completion)"
+fi

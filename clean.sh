@@ -45,6 +45,7 @@ delete_file "$HOME/.gvimrc"
 delete_file "$HOME/.inputrc"
 delete_file "$HOME/.tern-config"
 delete_file "$HOME/.tmux.conf"
+delete_file "$HOME/.claude/CLAUDE.md"
 
 echo_task "Deleting vim stuff..."
 
@@ -52,8 +53,7 @@ delete_file "$HOME/.vim"
 
 echo_task "Deleting neovim stuff..."
 
-export XDG_CONFIG_HOME="$HOME/.config"
-delete_file "$XDG_CONFIG_HOME/nvim"
+delete_file "$HOME/.config/nvim"
 
 echo_task "Don't forget to remove the 'source' line from ~/.bash_profile and ~/.zshrc."
 echo_task "Resetting bash in 2 seconds..."

@@ -6,7 +6,12 @@ endif
 
 let $VIMCONFIG = expand('<sfile>:p:h')
 
-let $VIMPATH = '~/.vim/'
+" Set VIMPATH based on editor
+if has('nvim')
+  let $VIMPATH = stdpath('data') . '/'
+else
+  let $VIMPATH = '~/.vim/'
+endif
 
 " Sourcing function
 function! s:source_file(path) abort
