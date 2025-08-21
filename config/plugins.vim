@@ -3,12 +3,9 @@ call plug#begin($VIMPATH . 'bundle')
 
   " Productivity Plugins
   Plug 'jiangmiao/auto-pairs'
-  Plug 'ctrlpvim/ctrlp.vim'
   Plug 'preservim/nerdcommenter'
-  Plug 'airblade/vim-gitgutter'
   Plug 'mg979/vim-visual-multi', {'branch': 'master'}
   Plug 'bronson/vim-trailing-whitespace'
-  Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-sleuth'
   Plug 'tpope/vim-repeat'
@@ -18,25 +15,52 @@ call plug#begin($VIMPATH . 'bundle')
 
   if has('nvim')
     Plug 'nvim-lualine/lualine.nvim'
+    Plug 'akinsho/bufferline.nvim'
     Plug 'nvim-tree/nvim-tree.lua'
     Plug 'nvim-tree/nvim-web-devicons'
-  else
+    Plug 'lewis6991/gitsigns.nvim'
+    Plug 'nvim-treesitter/nvim-treesitter'
+    Plug 'Isrothy/neominimap.nvim'
+
+    " LSP plugins
+    Plug 'neovim/nvim-lspconfig'
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'hrsh7th/cmp-buffer'
+    Plug 'hrsh7th/cmp-path'
+    Plug 'hrsh7th/cmp-cmdline'
+    Plug 'hrsh7th/nvim-cmp'
+    Plug 'mason-org/mason.nvim'
+    Plug 'mason-org/mason-lspconfig.nvim'
+    Plug 'L3MON4D3/LuaSnip'
+
+    " Fuzzy finder
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim'
+
+    " Theme
+    Plug 'HoNamDuong/hybrid.nvim'
+  endif
+
+  if !has('nvim')
+    Plug 'airblade/vim-gitgutter'
+    Plug 'tpope/vim-fugitive'
     Plug 'preservim/nerdtree'
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
-  endif
 
-  " LSP plugins (Vim only - Neovim has built-in LSP)
-  if !has('nvim')
+    " LSP plugins
     Plug 'prabirshrestha/vim-lsp'
     Plug 'mattn/vim-lsp-settings'
     Plug 'prabirshrestha/asyncomplete.vim'
     Plug 'prabirshrestha/asyncomplete-lsp.vim'
-  endif
 
-  " Themes
-  Plug 'kristijanhusak/vim-hybrid-material'
-  Plug 'chriskempson/base16-vim'
+    " Fuzzy Finder
+    Plug 'ctrlpvim/ctrlp.vim'
+
+    " Theme
+    Plug 'kristijanhusak/vim-hybrid-material'
+    Plug 'chriskempson/base16-vim'
+  endif
 
   " Filetype Plugins
   Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }

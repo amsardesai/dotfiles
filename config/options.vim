@@ -2,8 +2,12 @@
 " Set syntax highlighting options.
 " let base16colorspace=256
 set background=dark
-" colorscheme base16-tomorrow
-colorscheme hybrid_reverse
+
+if has('nvim')
+  colorscheme hybrid
+else
+  colorscheme hybrid_reverse
+endif
 
 " Change mapleader
 let mapleader = ','
@@ -91,6 +95,8 @@ set whichwrap+=<,>,h,l,[,]
 
 if has('nvim')
   set updatetime=200 " This is so GitGutter updates really fast
+  set mousemoveevent
+  set termguicolors
 else
   set encoding=utf-8 nobomb " BOM often causes trouble
 endif
