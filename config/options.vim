@@ -99,10 +99,8 @@ if exists('&breakindent')
   set breakindent showbreak=..
 endif
 
-if has('mouse_sgr')
+if has('mouse_sgr') && !has('nvim')
   set ttymouse=sgr
 endif
 
-" Enable cursor shape
-let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
 
