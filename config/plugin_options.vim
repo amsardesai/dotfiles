@@ -204,6 +204,8 @@ EOF
 
   " Fuzzy finder
   nnoremap <silent> <C-p> :Telescope find_files<CR>
+  nnoremap <silent> <C-o> :Telescope live_grep<CR>
+  nnoremap <silent> <C-i> :Telescope grep_string<CR>
   nnoremap <silent> <leader>l :Telescope find_files<CR>
   nnoremap <silent> <leader>k :Telescope live_grep<CR>
   nnoremap <silent> <leader>j :Telescope grep_string<CR>

@@ -94,15 +94,17 @@ if ! [ -f ~/.zshrc ] || ! ( grep -Fxq "Source Ankit's zshrc" ~/.zshrc ); then
 	echo "" >> ~/.zshrc
 fi
 
-echo_task "Creating aliases..."
+echo_task "⚙️ Creating aliases..."
 
 link_file "$SCRIPTPATH/.inputrc" "$HOME/.inputrc"
 link_file "$SCRIPTPATH/.tern-config" "$HOME/.tern-config"
 link_file "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
 make_dir "$HOME/.claude/"
 link_file "$SCRIPTPATH/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+make_dir "$HOME/.config/kitty/"
+link_file "$SCRIPTPATH/kitty.conf" "$HOME/.config/kitty/kitty.conf"
 
-echo_task "Setting up vim..."
+echo_task "📝 Setting up vim..."
 
 link_file "$SCRIPTPATH/vim-init.vim" "$HOME/.vimrc"
 link_file "$SCRIPTPATH/graphical.vim" "$HOME/.gvimrc"
@@ -110,7 +112,7 @@ make_dir "$HOME/.vim/"
 link_file "$SCRIPTPATH/ftplugin" "$HOME/.vim/ftplugin"
 link_file "$SCRIPTPATH/config" "$HOME/.vim/config"
 
-echo_task "Setting up neovim..."
+echo_task "📝 Setting up neovim..."
 
 make_dir "$HOME/.config/nvim/"
 link_file "$SCRIPTPATH/nvim-init.vim" "$HOME/.config/nvim/init.vim"

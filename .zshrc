@@ -206,3 +206,8 @@ export OP_BIOMETRIC_UNLOCK_ENABLED=true
 if command -v gt > /dev/null; then
   eval "$(gt completion)"
 fi
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/amsardesai/.lmstudio/bin"
+# End of LM Studio CLI section
+
