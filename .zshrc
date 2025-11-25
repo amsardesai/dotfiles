@@ -25,7 +25,7 @@ HYPHEN_INSENSITIVE="true"
 
 # Uncomment one of the following lines to change the auto-update behavior
 # zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
+zstyle ':omz:update' mode auto      # update automatically without asking
 # zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # Uncomment the following line to change how often to auto-update (in days).
@@ -200,14 +200,21 @@ alias bl='git blame -w'
 # Graphite Commands
 alias gts='gt sync --force'
 
-export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
+# macOS-specific: Homebrew paths
+if [[ "$OSTYPE" == darwin* ]]; then
+  export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
+fi
+
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
 
 if command -v gt > /dev/null; then
   eval "$(gt completion)"
 fi
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/amsardesai/.lmstudio/bin"
-# End of LM Studio CLI section
+# macOS-specific: LM Studio CLI
+if [[ "$OSTYPE" == darwin* ]]; then
+  # Added by LM Studio CLI (lms)
+  export PATH="$PATH:/Users/amsardesai/.lmstudio/bin"
+  # End of LM Studio CLI section
+fi
 
