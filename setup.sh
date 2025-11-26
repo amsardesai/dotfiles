@@ -116,7 +116,7 @@ link_file "$SCRIPTPATH/wezterm" "$HOME/.config/wezterm"
 echo_task "📝 Setting up vim..."
 
 link_file "$SCRIPTPATH/vim-init.vim" "$HOME/.vimrc"
-link_file "$SCRIPTPATH/graphical.vim" "$HOME/.gvimrc"
+link_file "$SCRIPTPATH/gvim-init.vim" "$HOME/.gvimrc"
 make_dir "$HOME/.vim/"
 link_file "$SCRIPTPATH/ftplugin" "$HOME/.vim/ftplugin"
 link_file "$SCRIPTPATH/config" "$HOME/.vim/config"

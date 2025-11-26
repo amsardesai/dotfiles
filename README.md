@@ -81,7 +81,7 @@ nvim
 | `kitty.conf` | `~/.config/kitty/kitty.conf` |
 | `wezterm/` | `~/.config/wezterm` |
 | `vim-init.vim` | `~/.vimrc` |
-| `graphical.vim` | `~/.gvimrc` |
+| `gvim-init.vim` | `~/.gvimrc` |
 | `nvim-init.vim` | `~/.config/nvim/init.vim` |
 | `config/`, `ftplugin/` | `~/.vim/` and `~/.config/nvim/` |
 

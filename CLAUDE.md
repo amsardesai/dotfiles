@@ -69,7 +69,7 @@
 ### Editor Configurations
 - `vim-init.vim` - Vim entry point (~/.vimrc symlink target)
 - `nvim-init.vim` - Neovim entry point (~/.config/nvim/init.vim symlink target)
-- `graphical.vim` - GUI vim settings (~/.gvimrc symlink target)
+- `gvim-init.vim` - GUI vim settings (~/.gvimrc symlink target)
 - `config/` - Shared vim/nvim configuration modules
   - `config/plugins.vim` - Plugin declarations (vim-plug)
   - `config/*.vim` - Feature-specific configs (keybindings, LSP, etc.)
