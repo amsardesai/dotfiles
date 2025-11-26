@@ -24,11 +24,13 @@ config.font_size = 15.0
 -- Window appearance
 config.window_decorations = 'RESIZE'
 config.window_padding = {
-  left = 10,
-  right = 10,
-  top = 10,
-  bottom = 10,
+  left = 5,
+  right = 5,
+  top = 5,
+  bottom = 5,
 }
+config.use_resize_increments = true
+-- config.integrated_title_buttons = { 'Close' }
 
 -- Tab bar
 config.enable_tab_bar = true
@@ -45,6 +47,9 @@ config.scrollback_lines = 10000
 -- Cursor
 config.default_cursor_style = 'BlinkingBlock'
 config.cursor_blink_rate = 500
+
+-- Cursor movement easing (subtle animation)
+config.animation_fps = 60
 
 -- =============================================================================
 -- Keybindings
@@ -128,6 +133,15 @@ config.keys = {
     key = 'RightArrow',
     mods = 'CMD|ALT',
     action = wezterm.action.ActivateTabRelative(1),
+  },
+
+  -- Pane selection mode - lets you pick a pane to swap with
+  {
+    key = 's',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action.PaneSelect {
+      mode = 'SwapWithActive',
+    },
   },
 }
 
