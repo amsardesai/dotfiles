@@ -27,12 +27,26 @@ echo_message() {
 download_file() {
 	if [ -f "$2" ]; then
 		echo_message "File $2 already exists, skipping..."
-		return
+		return 0
 	fi
 	printf "    "
 	tput setaf $COLOR_MESSAGE && printf "Downloading file "
 	tput sgr0 && printf "$2\n"
-	curl -# $1 > $2
+
+	# Download with error checking
+	if curl -fsSL "$1" -o "$2"; then
+		# Verify file has content
+		if [ -s "$2" ]; then
+			return 0
+		else
+			echo_message "ERROR: Downloaded file is empty"
+			rm -f "$2"
+			return 1
+		fi
+	else
+		echo_message "ERROR: curl failed to download $1"
+		return 1
+	fi
 }
 
 link_file() {
@@ -59,6 +73,13 @@ copy_dir() {
 }
 
 set -e
+
+# Safety check: If current TERM's terminfo doesn't exist, use xterm-256color temporarily
+# This prevents "tput: unknown terminal" errors when installing wezterm terminfo
+if ! infocmp "$TERM" >/dev/null 2>&1; then
+	echo "WARNING: Terminal type '$TERM' not found, using xterm-256color for setup"
+	export TERM=xterm-256color
+fi
 
 echo_info "Checking for dependencies..."
 
@@ -91,16 +112,35 @@ WEZTERM_TERMINFO_FILE="$SCRIPTPATH/wezterm.terminfo"
 
 download_file "$WEZTERM_TERMINFO_URL" "$WEZTERM_TERMINFO_FILE"
 
-# Compile and install terminfo to user directory
-if [ -f "$WEZTERM_TERMINFO_FILE" ]; then
-    make_dir "$HOME/.terminfo"
-    if tic -o "$HOME/.terminfo" "$WEZTERM_TERMINFO_FILE" 2>/dev/null; then
-        echo_message "Successfully compiled wezterm terminfo"
-    else
-        echo_message "Warning: Failed to compile terminfo, but continuing setup..."
-    fi
+# Verify download succeeded and file has content
+if [ ! -f "$WEZTERM_TERMINFO_FILE" ]; then
+    echo_message "ERROR: Failed to download wezterm terminfo file"
+    echo_message "Falling back to xterm-256color"
+    # Add temporary fallback in shell configs
+    export TERM=xterm-256color
+elif [ ! -s "$WEZTERM_TERMINFO_FILE" ]; then
+    echo_message "ERROR: Downloaded file is empty"
+    echo_message "Falling back to xterm-256color"
+    export TERM=xterm-256color
 else
-    echo_message "Warning: Could not download terminfo file, skipping..."
+    # Compile and install terminfo to user directory
+    make_dir "$HOME/.terminfo"
+
+    # Show tic errors instead of suppressing them
+    if tic -o "$HOME/.terminfo" "$WEZTERM_TERMINFO_FILE"; then
+        echo_message "Successfully compiled wezterm terminfo"
+
+        # Verify installation
+        if [ -f "$HOME/.terminfo/w/wezterm" ]; then
+            echo_message "✓ Verified: ~/.terminfo/w/wezterm installed"
+        else
+            echo_message "WARNING: tic succeeded but terminfo file not found"
+        fi
+    else
+        echo_message "ERROR: Failed to compile terminfo with tic command"
+        echo_message "Falling back to xterm-256color"
+        export TERM=xterm-256color
+    fi
 fi
 
 echo_task "Setting up bash_profile..."
