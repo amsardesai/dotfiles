@@ -5,6 +5,7 @@ COLOR_ARROW=6
 COLOR_INFO=3
 COLOR_TASK=2
 COLOR_MESSAGE=5
+NPM_PACKAGES="typescript-language-server typescript vscode-langservers-extracted vim-language-server"
 
 echo_info() {
 	tput setaf $COLOR_ARROW && printf "\n => "
@@ -24,6 +25,10 @@ echo_message() {
 }
 
 download_file() {
+	if [ -f "$2" ]; then
+		echo_message "File $2 already exists, skipping..."
+		return
+	fi
 	printf "    "
 	tput setaf $COLOR_MESSAGE && printf "Downloading file "
 	tput sgr0 && printf "$2\n"
@@ -36,7 +41,7 @@ link_file() {
 	tput sgr0 && printf "$2"
 	tput setaf $COLOR_MESSAGE && printf " to "
 	tput sgr0 && printf "$1\n"
-	ln -sf $1 $2
+	ln -sfn $1 $2
 }
 
 make_dir() {
@@ -62,13 +67,15 @@ node -e "process.exit(0)"
 
 echo_info "Directory with scripts is $SCRIPTPATH"
 
-echo_task "Installing global npm modules..."
+echo_task "Checking npm packages..."
 
-npm install -g \
-	typescript-language-server \
-	typescript \
-	vscode-langservers-extracted \
-	vim-language-server
+# Check if all required packages are already installed
+if npm list -g $NPM_PACKAGES >/dev/null 2>&1; then
+	echo_message "All npm packages already installed, skipping..."
+else
+	echo_message "Installing missing npm packages..."
+	npm install -g $NPM_PACKAGES
+fi
 
 echo_task "Setting up files..."
 

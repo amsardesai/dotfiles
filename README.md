@@ -65,6 +65,11 @@ nvim
    - Adds source line to `~/.bash_profile` (bash)
    - Adds source line to `~/.zshrc` (zsh)
 
+**Optimization behavior:**
+- Skips npm package installation if all packages are already installed
+- Skips downloading git completion files if they already exist
+- Re-running setup.sh is fast and safe
+
 ### Symlink Map
 
 | Source (in .dotfiles) | Destination |

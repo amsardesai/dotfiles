@@ -18,8 +18,8 @@ end
 config.color_scheme = 'Tokyo Night'
 
 -- Font configuration
-config.font = wezterm.font('JetBrains Mono', { weight = 'Regular' })
-config.font_size = 13.0
+config.font = wezterm.font('FantasqueSansM Nerd Font Mono', { weight = 'Regular' })
+config.font_size = 15.0
 
 -- Window appearance
 config.window_decorations = 'RESIZE'
