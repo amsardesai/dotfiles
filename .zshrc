@@ -218,7 +218,3 @@ if [[ "$OSTYPE" == darwin* ]]; then
   # End of LM Studio CLI section
 fi
 
-
-# Source Ankit's zshrc
-source /Users/amsardesai/.dotfiles/.zshrc
-
