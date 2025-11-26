@@ -31,7 +31,7 @@
 - Automated setup/teardown scripts that symlink configs to home directory
 - Unified vim/neovim configuration with dual plugin ecosystems
 - Shell environment with 50+ git aliases and productivity shortcuts
-- Modern terminal setup (kitty + tmux) with vi-mode
+- Modern terminal setup (kitty/wezterm + tmux) with vi-mode
 
 ---
 
@@ -78,6 +78,7 @@
 ### Terminal & Multiplexer
 - `.tmux.conf` - Tmux configuration (Ctrl+A prefix, vi-mode, mouse support)
 - `kitty.conf` - Kitty terminal emulator config (2,800+ lines: fonts, colors, shortcuts)
+- `wezterm/` - WezTerm configuration directory (entire dir symlinked to ~/.config/wezterm)
 - `.inputrc` - Readline configuration for terminal input
 
 ### Git Tooling
@@ -100,7 +101,7 @@
 - **Zsh** with oh-my-zsh - Primary shell experience
 - **Neovim** - Primary editor (Vim as fallback)
 - **Tmux** - Terminal multiplexer
-- **Kitty** - Terminal emulator
+- **Kitty** or **WezTerm** - Terminal emulator (choose one or both)
 
 ### Optional Tools
 - **Graphite CLI** - Enhanced git workflow
@@ -136,6 +137,9 @@
 ---
 
 ## Recent Discoveries
+
+### 2025-11-26
+- **WezTerm support added:** Added `wezterm/` directory with full directory symlink to `~/.config/wezterm`. This mirrors the pattern used for vim's ftplugin and config directories, allowing future expansion with themes, plugins, and helper Lua files without modifying setup scripts. Fixed missing cleanup for terminal configs in clean.sh.
 
 ### 2025-11-25
 - **Documentation system established:** Created this CLAUDE.md with automatic maintenance instructions. Claude instances should now proactively update documentation as they discover patterns and make changes.

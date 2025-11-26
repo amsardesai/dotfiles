@@ -18,7 +18,7 @@ Personal configuration files for shell, vim/neovim, tmux, and development tools.
 - **Zsh** with oh-my-zsh - Full shell experience with themes
 - **Neovim** - Primary editor (or Vim as fallback)
 - **Tmux** - Terminal multiplexer
-- **Kitty** - Terminal emulator (or any modern terminal)
+- **Kitty** or **WezTerm** - Terminal emulator
 
 **Optional:**
 - Graphite CLI - Enhanced git workflow
@@ -57,7 +57,7 @@ nvim
 
 3. **Creates symlinks** to dotfiles:
    - Shell: `.inputrc`
-   - Terminal: `.tmux.conf`, `kitty.conf`
+   - Terminal: `.tmux.conf`, `kitty.conf`, `wezterm/`
    - Editors: vim and nvim configurations
    - Git: completion scripts
 
@@ -74,6 +74,7 @@ nvim
 | `.tmux.conf` | `~/.tmux.conf` |
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
 | `kitty.conf` | `~/.config/kitty/kitty.conf` |
+| `wezterm/` | `~/.config/wezterm` |
 | `vim-init.vim` | `~/.vimrc` |
 | `graphical.vim` | `~/.gvimrc` |
 | `nvim-init.vim` | `~/.config/nvim/init.vim` |
@@ -192,13 +193,26 @@ After running setup, verify:
 
 **Plugin Manager:** Tmux Plugin Manager (tpm)
 
-### Terminal (Kitty)
+### Terminal Emulators
+
+#### Kitty
 
 Comprehensive configuration (2,800+ lines) in `kitty.conf`:
 - Custom fonts and symbol mappings
 - Color scheme
 - Keyboard shortcuts
 - Window management
+
+#### WezTerm
+
+Lua-based configuration in `wezterm/` directory. Main config is `wezterm/wezterm.lua`.
+The entire directory is symlinked to support additional themes, plugins, and helper files.
+
+Customize with:
+- Font settings
+- Color schemes
+- Keybindings
+- Window behavior
 
 ## Cleanup/Uninstall
 
@@ -310,5 +324,5 @@ git pull
 - Shell: `.zshrc`, `.profile`, `.bash_prompt`, `.inputrc`
 - Vim/Neovim: `config/*.vim`, `ftplugin/*.vim`
 - Tmux: `.tmux.conf`
-- Terminal: `kitty.conf`
+- Terminal: `kitty.conf`, `wezterm/`
 - Scripts: `setup.sh`, `clean.sh`

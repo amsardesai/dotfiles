@@ -103,6 +103,8 @@ make_dir "$HOME/.claude/"
 link_file "$SCRIPTPATH/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 make_dir "$HOME/.config/kitty/"
 link_file "$SCRIPTPATH/kitty.conf" "$HOME/.config/kitty/kitty.conf"
+make_dir "$HOME/.config/"
+link_file "$SCRIPTPATH/wezterm" "$HOME/.config/wezterm"
 
 echo_task "📝 Setting up vim..."
 
