@@ -24,8 +24,8 @@ config.font_size = 15.0
 -- Window appearance
 config.window_decorations = 'RESIZE'
 config.window_padding = {
-  left = 5,
-  right = 5,
+  left = 10,
+  right = 10,
   top = 5,
   bottom = 5,
 }
@@ -47,6 +47,9 @@ config.scrollback_lines = 10000
 -- Cursor
 config.default_cursor_style = 'BlinkingBlock'
 config.cursor_blink_rate = 500
+
+-- Use wezterm terminfo for enhanced capabilities (undercurl, etc.)
+config.term = 'wezterm'
 
 -- Cursor movement easing (subtle animation)
 config.animation_fps = 60

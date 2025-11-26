@@ -1,4 +1,5 @@
 git-completion.bash
 git-completion.zsh
 git-prompt.bash
+wezterm.terminfo
 .ycm_extra_conf.py

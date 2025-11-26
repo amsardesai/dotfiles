@@ -83,6 +83,26 @@ download_file "https://raw.githubusercontent.com/git/git/master/contrib/completi
 download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash" git-completion.bash
 download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.zsh" git-completion.zsh
 
+echo_task "Setting up wezterm terminfo..."
+
+# Download wezterm terminfo file
+WEZTERM_TERMINFO_URL="https://raw.githubusercontent.com/wez/wezterm/main/termwiz/data/wezterm.terminfo"
+WEZTERM_TERMINFO_FILE="$SCRIPTPATH/wezterm.terminfo"
+
+download_file "$WEZTERM_TERMINFO_URL" "$WEZTERM_TERMINFO_FILE"
+
+# Compile and install terminfo to user directory
+if [ -f "$WEZTERM_TERMINFO_FILE" ]; then
+    make_dir "$HOME/.terminfo"
+    if tic -o "$HOME/.terminfo" "$WEZTERM_TERMINFO_FILE" 2>/dev/null; then
+        echo_message "Successfully compiled wezterm terminfo"
+    else
+        echo_message "Warning: Failed to compile terminfo, but continuing setup..."
+    fi
+else
+    echo_message "Warning: Could not download terminfo file, skipping..."
+fi
+
 echo_task "Setting up bash_profile..."
 
 if ! [ -f ~/.bash_profile ] || ! ( grep -Fxq "Source Ankit's profile" ~/.bash_profile ); then
