@@ -15,7 +15,7 @@ end
 
 -- Color scheme
 -- Browse schemes at: https://wezfurlong.org/wezterm/colorschemes/index.html
-config.color_scheme = 'Tokyo Night'
+config.color_scheme = 'Dracula'
 
 -- Font configuration
 config.font = wezterm.font('FantasqueSansM Nerd Font Mono', { weight = 'Regular' })
@@ -66,22 +66,22 @@ config.keys = {
   -- Navigate panes
   {
     key = 'LeftArrow',
-    mods = 'CMD|ALT',
+    mods = 'CMD|SHIFT',
     action = wezterm.action.ActivatePaneDirection 'Left',
   },
   {
     key = 'RightArrow',
-    mods = 'CMD|ALT',
+    mods = 'CMD|SHIFT',
     action = wezterm.action.ActivatePaneDirection 'Right',
   },
   {
     key = 'UpArrow',
-    mods = 'CMD|ALT',
+    mods = 'CMD|SHIFT',
     action = wezterm.action.ActivatePaneDirection 'Up',
   },
   {
     key = 'DownArrow',
-    mods = 'CMD|ALT',
+    mods = 'CMD|SHIFT',
     action = wezterm.action.ActivatePaneDirection 'Down',
   },
 
@@ -108,6 +108,25 @@ config.keys = {
   {
     key = ']',
     mods = 'CMD|SHIFT',
+    action = wezterm.action.ActivateTabRelative(1),
+  },
+
+  -- Toggle pane zoom/maximize
+  {
+    key = 'Return',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action.TogglePaneZoomState,
+  },
+
+  -- Navigate tabs with arrow keys
+  {
+    key = 'LeftArrow',
+    mods = 'CMD|ALT',
+    action = wezterm.action.ActivateTabRelative(-1),
+  },
+  {
+    key = 'RightArrow',
+    mods = 'CMD|ALT',
     action = wezterm.action.ActivateTabRelative(1),
   },
 }
