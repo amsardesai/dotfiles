@@ -127,6 +127,8 @@ if has('nvim')
     },
   })
 
+  require("scrollbar").setup()
+
   -- note: diagnostics are not exclusive to lsp servers
   -- so these can be global keybindings
   vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')

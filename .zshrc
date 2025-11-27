@@ -105,6 +105,10 @@ alias mv="mv -i"
 alias cp="cp -i"
 alias rm="rm -i"
 
+# Word navigation with Option keys (zsh keybindings)
+bindkey "^[[1;3C" forward-word   # Option-Right
+bindkey "^[[1;3D" backward-word  # Option-Left
+
 # Force colors
 export CLICOLOR_FORCE=1
 

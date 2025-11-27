@@ -20,7 +20,7 @@ call plug#begin($VIMPATH . 'bundle')
     Plug 'nvim-tree/nvim-web-devicons'
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'nvim-treesitter/nvim-treesitter'
-    Plug 'Isrothy/neominimap.nvim'
+    Plug 'petertriho/nvim-scrollbar'
 
     " LSP plugins
     Plug 'neovim/nvim-lspconfig'
