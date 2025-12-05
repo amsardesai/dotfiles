@@ -124,7 +124,35 @@ if has('nvim')
     },
   })
 
-  require('telescope').setup({})
+  require('telescope').setup({
+    defaults = {
+      -- Make ESC close immediately instead of needing two presses
+      mappings = {
+        i = {
+          ["<esc>"] = require('telescope.actions').close,
+        },
+      },
+    },
+    pickers = {
+      find_files = {
+        -- Only show git-tracked files (excludes .git, node_modules, untracked files)
+        find_command = { 'git', 'ls-files', '--cached', '--others', '--exclude-standard' },
+      },
+    },
+    extensions = {
+      ["ui-select"] = {
+        require("telescope.themes").get_dropdown({
+          layout_config = {
+            width = 0.6,
+            height = 0.5,
+          },
+        })
+      }
+    }
+  })
+
+  -- Load telescope-ui-select extension
+  require("telescope").load_extension("ui-select")
 
   require('nvim-treesitter.configs').setup({
     ensure_installed = { 'tsx', 'vim', 'tsv', 'bash', 'css', 'json' },
@@ -231,6 +259,10 @@ EOF
   nnoremap <silent> <leader>l :Telescope find_files<CR>
   nnoremap <silent> <leader>k :Telescope live_grep<CR>
   nnoremap <silent> <leader>j :Telescope grep_string<CR>
+
+  " Right-click context menu (implementation in helpers/context_menu.vim)
+  nnoremap <RightMouse> <LeftMouse><Cmd>lua show_context_menu()<CR>
+  vnoremap <RightMouse> <LeftMouse><Cmd>lua show_context_menu()<CR>
 
   " Nvim-tree keybindings
   nnoremap <silent> <leader>m :call <SID>toggleNvimTree()<CR>

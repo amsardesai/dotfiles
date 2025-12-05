@@ -188,5 +188,24 @@ link_file "$SCRIPTPATH/nvim-init.vim" "$HOME/.config/nvim/init.vim"
 link_file "$SCRIPTPATH/ftplugin" "$HOME/.config/nvim/ftplugin"
 link_file "$SCRIPTPATH/config" "$HOME/.config/nvim/config"
 
+echo_task "⚙️ Setting up gitconfig..."
+
+# Create ~/.gitconfig if it doesn't exist
+if ! [ -f ~/.gitconfig ]; then
+	echo_message "Creating ~/.gitconfig"
+	touch ~/.gitconfig
+fi
+
+# Check if include directive already exists
+if ! grep -q "path = $SCRIPTPATH/.gitconfig" ~/.gitconfig; then
+	echo_message "Adding include directive to ~/.gitconfig"
+	echo "" >> ~/.gitconfig
+	echo "[include]" >> ~/.gitconfig
+	echo "	path = $SCRIPTPATH/.gitconfig" >> ~/.gitconfig
+	echo "" >> ~/.gitconfig
+else
+	echo_message "Include directive already exists, skipping..."
+fi
+
 echo_info "To finish, open vim and/or neovim and it should set up itself."
 

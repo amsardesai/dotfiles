@@ -1,0 +1,7 @@
+# Git Configuration
+# This file is included by ~/.gitconfig via [include] directive
+# Machine-specific settings in ~/.gitconfig will override these
+
+[user]
+	name = Ankit Sardesai
+	email = amsardesai@gmail.com

@@ -19,7 +19,12 @@ function! s:source_file(path) abort
 endfunction
 
 " Functions
-call s:source_file('misc/behave_zz.vim')
+call s:source_file('helpers/behave_zz.vim')
+
+" Neovim-specific helpers
+if has('nvim')
+  call s:source_file('helpers/context_menu.vim')
+endif
 
 " " Core
 call s:source_file('install.vim')
