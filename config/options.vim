@@ -23,20 +23,7 @@ let maplocalleader = ';'
 " File & Directory Settings
 " ============================================================
 
-" Create backup/swap/undo directories if they don't exist
-if empty(glob('~/.vim-backups'))
-  silent !mkdir -p ~/.vim-backups
-endif
-if empty(glob('~/.vim-swaps'))
-  silent !mkdir -p ~/.vim-swaps
-endif
-if empty(glob('~/.vim-undo'))
-  silent !mkdir -p ~/.vim-undo
-endif
-
-set backupdir=~/.vim-backups " Directory for backup files
-set directory=~/.vim-swaps " Directory for swap files
-set undodir=~/.vim-undo " Directory for undo history
+set backup " Create backup files before overwriting
 set undofile " Persist undo history across sessions
 set autoread " Automatically reload file if changed externally
 
