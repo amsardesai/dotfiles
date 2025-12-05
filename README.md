@@ -21,6 +21,7 @@ Personal configuration files for shell, vim/neovim, tmux, and development tools.
 - **Kitty** or **WezTerm** - Terminal emulator
 
 **Optional:**
+- **git-delta** - Syntax-highlighted diffs (used as git pager)
 - Graphite CLI - Enhanced git workflow
 - LM Studio CLI - Local LLM integration
 - 1Password CLI - Password management
@@ -77,6 +78,8 @@ nvim
 | `.inputrc` | `~/.inputrc` |
 | `.tern-config` | `~/.tern-config` |
 | `.tmux.conf` | `~/.tmux.conf` |
+| `.gitconfig` | `~/.gitconfig` |
+| `themes.gitconfig` | `~/.themes.gitconfig` |
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
 | `kitty.conf` | `~/.config/kitty/kitty.conf` |
 | `wezterm/` | `~/.config/wezterm` |
@@ -152,9 +155,13 @@ After running setup, verify:
 | | `<F2>` | Rename symbol |
 | | `<F3>` | Format document |
 | | `<F4>` | Code actions |
+| **Terminal** | `,z` | Open terminal (horizontal split) |
+| | `,x` | Close terminal |
+| | `;;q` / `<ESC><ESC>` | Exit terminal mode |
 | **Git** | `(` | Previous hunk |
 | | `)` | Next hunk |
 | | `,gb` | Git blame |
+| **Context Menu** | `<RightMouse>` | Open context menu (LSP, Git, File ops) |
 | **Pane Navigation** | `Shift+Arrows` | Move between splits (all modes) |
 | **Utilities** | `<CR>` | Clear search highlight |
 | | `,fw` | Fix whitespace |
@@ -171,12 +178,13 @@ After running setup, verify:
 
 *Neovim-specific:*
 - `nvim-tree` - File explorer
-- `telescope` - Fuzzy finder
-- `treesitter` - Advanced syntax highlighting
+- `telescope` - Fuzzy finder with ui-select extension
+- `treesitter` - Advanced syntax highlighting (20+ parsers)
 - `lualine` - Status line
-- `mason` - LSP installer
+- `mason` + `mason-lspconfig` - Auto-installs 14 LSP servers
 - `nvim-lspconfig` - LSP configuration
 - `nvim-cmp` - Autocompletion
+- `toggleterm` - Integrated terminal
 
 *Vim-specific:*
 - `NERDTree` - File explorer
@@ -213,11 +221,12 @@ Comprehensive configuration (2,800+ lines) in `kitty.conf`:
 Lua-based configuration in `wezterm/` directory. Main config is `wezterm/wezterm.lua`.
 The entire directory is symlinked to support additional themes, plugins, and helper files.
 
-Customize with:
-- Font settings
-- Color schemes
-- Keybindings
-- Window behavior
+**Key Features:**
+- **Theme:** Dracula color scheme
+- **Font:** FantasqueSansM Nerd Font Mono (14pt)
+- **Performance:** WebGPU acceleration, 60fps animations
+- **Scrollback:** 10,000 lines
+- **Keybindings:** CMD-based (macOS-friendly) - pane splitting (CMD+D), tab navigation, pane movement
 
 ## Cleanup/Uninstall
 
@@ -327,6 +336,7 @@ git pull
 
 **Config File Locations:**
 - Shell: `.zshrc`, `.profile`, `.bash_prompt`, `.inputrc`
+- Git: `.gitconfig`, `themes.gitconfig`
 - Vim/Neovim: `config/*.vim`, `ftplugin/*.vim`
 - Tmux: `.tmux.conf`
 - Terminal: `kitty.conf`, `wezterm/`

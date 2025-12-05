@@ -72,6 +72,9 @@
 - `gvim-init.vim` - GUI vim settings (~/.gvimrc symlink target)
 - `config/` - Shared vim/nvim configuration modules
   - `config/plugins.vim` - Plugin declarations (vim-plug)
+  - `config/plugin_options.vim` - Plugin configurations (telescope, treesitter, LSP, etc.)
+  - `config/terminal.vim` - Built-in terminal configuration (toggle, keybindings)
+  - `config/helpers/context_menu.vim` - Right-click context menu (LSP, Git, File ops)
   - `config/*.vim` - Feature-specific configs (keybindings, LSP, etc.)
 - `ftplugin/` - Filetype-specific settings (symlinked to both ~/.vim/ and ~/.config/nvim/)
 
@@ -82,6 +85,8 @@
 - `.inputrc` - Readline configuration for terminal input
 
 ### Git Tooling
+- `.gitconfig` - Main git configuration (delta pager, merge settings, fetch prune)
+- `themes.gitconfig` - Delta theme configuration (gruvmax-fang Gruvbox theme)
 - `git-completion.bash`, `git-completion.zsh`, `git-prompt.bash` - Downloaded by setup.sh (git-ignored)
 - `.tern-config` - Tern (JavaScript tooling) configuration
 
@@ -91,6 +96,7 @@
 
 ### Required
 - **Git** - Version control
+- **git-delta** - Syntax-highlighted diff pager (configured in .gitconfig)
 - **Node.js & npm** - For LSP servers
   - `typescript-language-server`
   - `typescript`
@@ -138,6 +144,14 @@
 
 ## Recent Discoveries
 
+### 2025-12-04
+- **Git delta integration:** Added `.gitconfig` with delta as pager for syntax-highlighted diffs. Uses `gruvmax-fang` Gruvbox theme from `themes.gitconfig`. Features: line numbers, navigation, hyperlinks, `zdiff3` merge conflict style, auto-prune on fetch.
+- **Neovim terminal:** Added `config/terminal.vim` with built-in `:terminal` support. Horizontal split at 30% height, toggle with `<Leader>z/x`, exit terminal mode with `;;q` or `<ESC><ESC>`.
+- **Telescope context menu:** Added `config/helpers/context_menu.vim` with right-click context menu. Dynamic sections for LSP (definition, references, rename), Diagnostics, Git (blame, stage, diff), File ops, Edit ops. Uses `vim.ui.select()` → Telescope ui-select.
+- **Mason/LSP expansion:** Expanded to 14 auto-installed language servers via mason-lspconfig: ts_ls, eslint, cssls, htmlls, jsonls, pylsp, dockerls, docker_language_server, docker_compose_language_service, lua_ls, vimls, yamlls.
+- **Treesitter parsers:** Comprehensive parser list: typescript, tsx, html, css, json, markdown, markdown_inline, jsdoc, vimdoc, yaml, vim, lua, bash, dockerfile, go, git_config, git_rebase, gitignore, gitcommit, comment, tsv.
+- **WezTerm enhancements:** Expanded configuration with Dracula theme, FantasqueSansM Nerd Font, WebGPU acceleration, CMD-based macOS keybindings for pane/tab management.
+
 ### 2025-11-26
 - **Setup.sh optimizations:** Added idempotency checks for npm package installation and git completion file downloads. Repeat runs now skip these operations if already completed, reducing setup time from ~60 seconds to ~5 seconds. Fixed recursive symlink bug by using `ln -sfn` instead of `ln -sf`. Extracted npm packages to variable for maintainability. Added verbose skip messages for transparency.
 - **WezTerm support added:** Added `wezterm/` directory with full directory symlink to `~/.config/wezterm`. This mirrors the pattern used for vim's ftplugin and config directories, allowing future expansion with themes, plugins, and helper Lua files without modifying setup scripts. Fixed missing cleanup for terminal configs in clean.sh.
@@ -152,7 +166,7 @@
 
 *(This section for ad-hoc observations that don't fit above categories)*
 
-- **Git branch structure:** Main branch is `master` (not `main`). PRs should target `master`.
+- **Git branch structure:** Main branch is `main`. PRs should target `main`.
 - **Leader keys:** Vim/Neovim use `,` (leader) and `;` (local leader) for custom mappings
 - **Naming convention:** Config files use lowercase with dashes (`.tmux.conf`, `.bash_profile`)
 - **Symlink pattern:** Setup script creates symlinks FROM `.dotfiles/` TO standard locations (not the reverse)
