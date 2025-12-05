@@ -155,7 +155,16 @@ if has('nvim')
   require("telescope").load_extension("ui-select")
 
   require('nvim-treesitter.configs').setup({
-    ensure_installed = { 'tsx', 'vim', 'tsv', 'bash', 'css', 'json' },
+    ensure_installed = {
+      'tsx',
+      'vim',
+      'tsv',
+      'bash',
+      'css',
+      'json',
+      'markdown',
+      'markdown_inline',
+    },
     highlight = {
       enable = true,
     },
@@ -207,7 +216,20 @@ if has('nvim')
   end
   require('mason').setup()
   require('mason-lspconfig').setup({
-    ensure_installed = { 'lua_ls', 'vimls', 'ts_ls', 'eslint', 'cssls', 'jsonls' },
+    ensure_installed = {
+      'lua_ls',
+      'vimls',
+      'ts_ls',
+      'eslint',
+      'cssls',
+      'jsonls',
+      'docker_compose_language_service',
+      'docker_language_server',
+      'dockerls',
+      'html',
+      'pylsp',
+      'yamlls',
+    },
     automatic_enable = true,
     handlers = { default_setup, },
   })
