@@ -204,6 +204,20 @@ if has('nvim')
   }
 EOF
 
+  " NvimTree helper function to toggle without focusing
+  function! s:toggleNvimTree()
+    execute 'NvimTreeToggle'
+    " Switch back to the previous window after opening
+    execute "normal \<C-w>\<C-w>"
+  endfunction
+
+  " NvimTree helper function to open without focusing
+  function! s:launchNvimTree()
+    execute 'NvimTreeOpen'
+    " Switch back to the previous window after opening
+    execute "normal \<C-w>\<C-w>"
+  endfunction
+
   " Fuzzy finder
   nnoremap <silent> <C-p> :Telescope find_files<CR>
   nnoremap <silent> <C-o> :Telescope live_grep<CR>
@@ -213,9 +227,9 @@ EOF
   nnoremap <silent> <leader>j :Telescope grep_string<CR>
 
   " Nvim-tree keybindings
-  nnoremap <silent> <leader>m :NvimTreeToggle<CR>
+  nnoremap <silent> <leader>m :call <SID>toggleNvimTree()<CR>
   nnoremap <silent> <leader>n :NvimTreeFindFile<CR>
-  nnoremap <silent> <leader>b :NvimTreeOpen<CR>
+  nnoremap <silent> <leader>b :call <SID>launchNvimTree()<CR>
 
   " Git stuff
   nnoremap <silent> <leader>gb :Gitsigns blame_line<CR>
