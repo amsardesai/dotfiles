@@ -74,6 +74,17 @@ plugins=(git npm)
 
 source $ZSH/oh-my-zsh.sh
 
+# Trigger git prompt update for Graphite CLI commands
+# (steeef theme only updates for git/hub/svn commands by default)
+function graphite_preexec {
+    case "$2" in
+        gt\ *|gt)
+            PR_GIT_UPDATE=1
+            ;;
+    esac
+}
+add-zsh-hook preexec graphite_preexec
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
