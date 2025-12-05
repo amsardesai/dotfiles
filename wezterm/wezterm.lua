@@ -18,8 +18,8 @@ end
 config.color_scheme = 'Dracula'
 
 -- Font configuration
-config.font = wezterm.font('FantasqueSansM Nerd Font Mono', { weight = 'Regular' })
-config.font_size = 15.0
+config.font = wezterm.font('FantasqueSansM Nerd Font Mono')
+config.font_size = 14
 
 -- Window appearance
 config.window_decorations = 'RESIZE'
@@ -30,12 +30,19 @@ config.window_padding = {
   bottom = 5,
 }
 config.use_resize_increments = true
--- config.integrated_title_buttons = { 'Close' }
+config.enable_scroll_bar = true
 
 -- Tab bar
 config.enable_tab_bar = true
-config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = true
+
+-- Security
+config.detect_password_input = true
+config.window_close_confirmation = 'AlwaysPrompt'
+
+-- GPU
+config.front_end = "WebGpu"
+config.webgpu_power_preference = 'HighPerformance'
 
 -- =============================================================================
 -- Behavior

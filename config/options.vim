@@ -65,6 +65,7 @@ set incsearch " Highlight dynamically as pattern is typed.
 set laststatus=2 " Always show status line
 set magic " Enable extended regexes.
 set mouse=a " Enable moouse in all in all modes.
+set clipboard=unnamed,unnamedplus " Use system clipboard for yank/paste operations
 set noerrorbells " Disable error bells.
 set nojoinspaces " Only insert single space after a '.', '?' and '!' with a join command.
 set noshowmode " Don't show the current mode (Powerline takes care of us)
@@ -97,6 +98,7 @@ if has('nvim')
   set updatetime=200 " This is so GitGutter updates really fast
   set mousemoveevent
   set termguicolors
+  set guicursor=n-v-c:block-blinkwait700-blinkon400-blinkoff250,i-ci-ve:ver25-blinkwait700-blinkon400-blinkoff250,r-cr-o:hor20-blinkwait700-blinkon400-blinkoff250
 else
   set encoding=utf-8 nobomb " BOM often causes trouble
 endif
