@@ -14,6 +14,7 @@ call plug#begin($VIMPATH . 'bundle')
   Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
 
   if has('nvim')
+    Plug 'folke/snacks.nvim'
     Plug 'nvim-lualine/lualine.nvim'
     Plug 'akinsho/bufferline.nvim'
     Plug 'nvim-tree/nvim-tree.lua'

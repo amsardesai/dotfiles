@@ -91,6 +91,22 @@ if has('nvim')
     },
   })
 
+  -- Integrate snacks.nvim rename with nvim-tree
+  -- When files are renamed in nvim-tree, notify LSP to update imports/references
+  local prev_rename = { new_name = "", old_name = "" }
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "NvimTreeSetup",
+    callback = function()
+      local events = require("nvim-tree.api").events
+      events.subscribe(events.Event.NodeRenamed, function(data)
+        if prev_rename.new_name ~= data.new_name or prev_rename.old_name ~= data.old_name then
+          prev_rename = data
+          Snacks.rename.on_rename_file(data.old_name, data.new_name)
+        end
+      end)
+    end,
+  })
+
   require("lualine").setup({
     theme = "tomorrow_night",
     sections = {
@@ -189,7 +205,7 @@ if has('nvim')
   -- so these can be global keybindings
   vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
   vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>')
-  vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>') 
+  vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>')
 
   vim.api.nvim_create_autocmd('LspAttach', {
     desc = 'LSP actions',
@@ -271,6 +287,61 @@ if has('nvim')
   vim.g.neominimap = {
     current_line_position = "percent",
   }
+
+  -- Snacks.nvim - Collection of small QoL plugins
+  require("snacks").setup({
+    -- Better buffer deletion (preserves window layout)
+    bufdelete = { enabled = true },
+    -- Optimizations for large files
+    bigfile = { enabled = true },
+    -- Quick file picker from recent files
+    quickfile = { enabled = true },
+    -- Notifications
+    notifier = {
+      enabled = true,
+      timeout = 3000,
+    },
+    -- Better LSP rename (shows preview)
+    rename = { enabled = true },
+    -- Highlight words under cursor
+    words = { enabled = true },
+    -- Git browse (open file in GitHub)
+    gitbrowse = { enabled = true },
+    -- Input UI improvement
+    input = { enabled = true },
+    -- Scope-based animations/dimming
+    scope = {
+      enabled = true
+    },
+    -- Smooth scrolling
+    scroll = {
+      enabled = true,
+      animate = {
+        duration = { step = 10, total = 100 },
+      },
+      animate_repeat = {
+        duration = { step = 10, total = 80 },
+      },
+    },
+    -- Indent guides
+    indent = {
+      enabled = true,
+      char = "│",
+      scope = { char = "│" },
+      animate = {
+        duration = { step = 10, total = 200 },
+      },
+    },
+    -- Dashboard (startup screen)
+    dashboard = { enabled = false }, -- disable if you prefer empty buffer
+  })
+
+  -- Snacks keybindings
+  vim.keymap.set('n', '<leader>bd', function() Snacks.bufdelete() end, { desc = 'Delete buffer' })
+  vim.keymap.set('n', '<leader>go', function() Snacks.gitbrowse() end, { desc = 'Open in GitHub' })
+  vim.keymap.set('n', '<leader>rn', function() Snacks.rename.rename_file() end, { desc = 'Rename file' })
+  vim.keymap.set('n', ']]', function() Snacks.words.jump(1) end, { desc = 'Next reference' })
+  vim.keymap.set('n', '[[', function() Snacks.words.jump(-1) end, { desc = 'Prev reference' })
 EOF
 
   " NvimTree helper function to toggle without focusing
