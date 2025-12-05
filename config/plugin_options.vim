@@ -58,6 +58,12 @@ if !has('nvim')
   " Fugitive
   nnoremap <silent> <Leader>gl :silent Git log<CR>
   nnoremap <silent> <Leader>gb :Git blame<CR>
+
+  " GitGutter (Vim only)
+  nmap ) <Plug>GitGutterNextHunk
+  nmap ( <Plug>GitGutterPrevHunk
+  let g:gitgutter_realtime = 0
+  let g:gitgutter_eager = 0
 endif
 
 " Nvim-tree configuration (Neovim only)
@@ -235,6 +241,10 @@ EOF
   nnoremap <silent> <leader>gb :Gitsigns blame_line<CR>
 endif
 
+" ============================================================
+" Shared Plugin Configuration (Vim + Neovim)
+" ============================================================
+
 " Latex
 let g:tex_flavor = 'latex'
 
@@ -243,10 +253,6 @@ set conceallevel=2
 
 " Vim markdown
 let g:vim_markdown_folding_disabled = 1
-
-" GitGutter
-nmap ) <Plug>GitGutterNextHunk
-nmap ( <Plug>GitGutterPrevHunk
 
 " vim-sneak
 let g:sneak#s_next = 1
@@ -257,16 +263,3 @@ let g:jsx_ext_required = 0
 
 " vim-flow
 let g:flow#autoclose = 1
-
-" Syntastic
-let b:syntastic_mode = 'passive'
-let g:syntastic_enable_signs = 1
-let g:syntastic_javascript_checkers = ['eslint']
-nnoremap <Leader>sk :SyntasticToggleMode<CR>
-nnoremap <Leader>sr :SyntasticReset<CR>
-nnoremap <Leader>si :SyntasticInfo<CR>
-nnoremap <Leader>sc :SyntasticCheck<CR>
-
-" GitGutter
-let g:gitgutter_realtime = 0
-let g:gitgutter_eager = 0
