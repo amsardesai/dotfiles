@@ -7,7 +7,7 @@ set background=dark " Use dark background for color scheme
 " let base16colorspace=256
 
 if has('nvim')
-  colorscheme hybrid
+  colorscheme tokyonight-night
 else
   colorscheme hybrid_reverse
 endif

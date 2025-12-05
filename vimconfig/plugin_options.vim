@@ -108,7 +108,7 @@ if has('nvim')
   })
 
   require("lualine").setup({
-    theme = "tomorrow_night",
+    theme = "tokyonight",
     sections = {
       lualine_x = {'encoding', 'fileformat', 'filetype', 'lsp_status'},
     },

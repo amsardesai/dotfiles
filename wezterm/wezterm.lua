@@ -15,7 +15,7 @@ end
 
 -- Color scheme
 -- Browse schemes at: https://wezfurlong.org/wezterm/colorschemes/index.html
-config.color_scheme = 'Dracula'
+config.color_scheme = 'tokyonight_night'
 
 -- Font configuration
 config.font = wezterm.font('FantasqueSansM Nerd Font Mono')

@@ -40,7 +40,7 @@ call plug#begin($VIMPATH . 'bundle')
     Plug 'nvim-telescope/telescope-ui-select.nvim'
 
     " Theme
-    Plug 'HoNamDuong/hybrid.nvim'
+    Plug 'folke/tokyonight.nvim'
   endif
 
   if !has('nvim')
