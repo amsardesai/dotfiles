@@ -1,211 +1,242 @@
 #!/bin/bash
 
 SCRIPTPATH=$(pwd -P)
-COLOR_ARROW=6
-COLOR_INFO=3
-COLOR_TASK=2
-COLOR_MESSAGE=5
 NPM_PACKAGES="typescript-language-server typescript vscode-langservers-extracted vim-language-server"
 
-echo_info() {
-	tput setaf $COLOR_ARROW && printf "\n => "
-	tput setaf $COLOR_INFO && printf "$@\n"
-	tput sgr0
+# Counters for summary output
+DOWNLOAD_COUNT=0
+DOWNLOAD_SKIP=0
+LINK_COUNT=0
+LINK_SKIP=0
+
+# Colors
+GREEN=2
+YELLOW=3
+CYAN=6
+
+echo_section() {
+    printf "\n"
+    tput setaf $CYAN && printf "$1"
+    tput sgr0 && printf "\n"
 }
 
-echo_task() {
-	tput setaf $COLOR_ARROW && printf "\n => "
-	tput setaf $COLOR_TASK && printf "$@\n"
-	tput sgr0
+echo_success() {
+    printf "   "
+    tput setaf $GREEN && printf "✓ $1"
+    tput sgr0 && printf "\n"
 }
 
-echo_message() {
-	printf "    "
-	tput setaf $COLOR_MESSAGE && printf "$@\n"
+echo_warn() {
+    printf "   "
+    tput setaf $YELLOW && printf "⚠ $1"
+    tput sgr0 && printf "\n"
 }
 
-download_file() {
-	if [ -f "$2" ]; then
-		echo_message "File $2 already exists, skipping..."
-		return 0
-	fi
-	printf "    "
-	tput setaf $COLOR_MESSAGE && printf "Downloading file "
-	tput sgr0 && printf "$2\n"
-
-	# Download with error checking
-	if curl -fsSL "$1" -o "$2"; then
-		# Verify file has content
-		if [ -s "$2" ]; then
-			return 0
-		else
-			echo_message "ERROR: Downloaded file is empty"
-			rm -f "$2"
-			return 1
-		fi
-	else
-		echo_message "ERROR: curl failed to download $1"
-		return 1
-	fi
+echo_error() {
+    printf "   "
+    tput setaf 1 && printf "✗ $1"
+    tput sgr0 && printf "\n"
 }
 
-link_file() {
-	printf "    "
-	tput setaf $COLOR_MESSAGE && printf "Linking file "
-	tput sgr0 && printf "$2"
-	tput setaf $COLOR_MESSAGE && printf " to "
-	tput sgr0 && printf "$1\n"
-	ln -sfn $1 $2
+download_file_quiet() {
+    if [ -f "$2" ]; then
+        DOWNLOAD_SKIP=$((DOWNLOAD_SKIP + 1))
+        return 0
+    fi
+    if curl -fsSL "$1" -o "$2" 2>/dev/null; then
+        if [ -s "$2" ]; then
+            DOWNLOAD_COUNT=$((DOWNLOAD_COUNT + 1))
+            return 0
+        else
+            rm -f "$2"
+            return 1
+        fi
+    else
+        return 1
+    fi
 }
 
-make_dir() {
-	printf "    "
-	tput setaf $COLOR_MESSAGE && printf "Creating directory "
-	tput sgr0 && printf "$1\n"
-	mkdir -p $1
+link_file_quiet() {
+    mkdir -p "$(dirname "$2")"
+    if [ -L "$2" ] && [ "$(readlink "$2")" = "$1" ]; then
+        LINK_SKIP=$((LINK_SKIP + 1))
+    else
+        ln -sfn "$1" "$2"
+        LINK_COUNT=$((LINK_COUNT + 1))
+    fi
 }
 
-copy_dir() {
-	printf "    "
-	tput setaf $COLOR_MESSAGE && printf "Copying to "
-	tput sgr0 && printf "$2\n"
-	cp -a $1 $2
+make_dir_quiet() {
+    mkdir -p "$1"
+}
+
+reset_link_counters() {
+    LINK_COUNT=0
+    LINK_SKIP=0
+}
+
+print_link_summary() {
+    if [ $LINK_COUNT -gt 0 ] && [ $LINK_SKIP -gt 0 ]; then
+        echo_success "Created $LINK_COUNT symlinks ($LINK_SKIP unchanged)"
+    elif [ $LINK_COUNT -gt 0 ]; then
+        echo_success "Created $LINK_COUNT symlinks"
+    elif [ $LINK_SKIP -gt 0 ]; then
+        echo_success "All symlinks exist"
+    fi
+    reset_link_counters
 }
 
 set -e
 
-# Safety check: If current TERM's terminfo doesn't exist, use xterm-256color temporarily
-# This prevents "tput: unknown terminal" errors when installing wezterm terminfo
+# Safety check: If current TERM's terminfo doesn't exist, use xterm-256color
 if ! infocmp "$TERM" >/dev/null 2>&1; then
-	echo "WARNING: Terminal type '$TERM' not found, using xterm-256color for setup"
-	export TERM=xterm-256color
+    export TERM=xterm-256color
 fi
 
-echo_info "Checking for dependencies..."
+# =============================================================================
+# Dependencies
+# =============================================================================
+echo_section "🔍 Checking dependencies..."
 
-echo_task "Checking node installation..."
-node -e "process.exit(0)"
-
-echo_info "Directory with scripts is $SCRIPTPATH"
-
-echo_task "Checking npm packages..."
-
-# Check if all required packages are already installed
-if npm list -g $NPM_PACKAGES >/dev/null 2>&1; then
-	echo_message "All npm packages already installed, skipping..."
+if node -e "process.exit(0)" 2>/dev/null; then
+    echo_success "Node.js found"
 else
-	echo_message "Installing missing npm packages..."
-	npm install -g $NPM_PACKAGES
+    echo_error "Node.js not found"
+    exit 1
 fi
 
-echo_task "Setting up files..."
+if npm list -g $NPM_PACKAGES >/dev/null 2>&1; then
+    echo_success "npm packages installed"
+else
+    echo_success "Installing npm packages..."
+    npm install -g $NPM_PACKAGES >/dev/null 2>&1
+    echo_success "npm packages installed"
+fi
 
-download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh" git-prompt.bash
-download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash" git-completion.bash
-download_file "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.zsh" git-completion.zsh
+# =============================================================================
+# Git Completion Files
+# =============================================================================
+echo_section "📦 Setting up files..."
 
-echo_task "Setting up wezterm terminfo..."
+download_file_quiet "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh" git-prompt.bash
+download_file_quiet "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash" git-completion.bash
+download_file_quiet "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.zsh" git-completion.zsh
 
-# Download wezterm terminfo file
+if [ $DOWNLOAD_COUNT -gt 0 ]; then
+    echo_success "Downloaded $DOWNLOAD_COUNT git completion files"
+elif [ $DOWNLOAD_SKIP -gt 0 ]; then
+    echo_success "Git completion files exist"
+fi
+
+# =============================================================================
+# WezTerm Terminfo
+# =============================================================================
 WEZTERM_TERMINFO_URL="https://raw.githubusercontent.com/wez/wezterm/main/termwiz/data/wezterm.terminfo"
 WEZTERM_TERMINFO_FILE="$SCRIPTPATH/wezterm.terminfo"
 
-download_file "$WEZTERM_TERMINFO_URL" "$WEZTERM_TERMINFO_FILE"
-
-# Verify download succeeded and file has content
-if [ ! -f "$WEZTERM_TERMINFO_FILE" ]; then
-    echo_message "ERROR: Failed to download wezterm terminfo file"
-    echo_message "Falling back to xterm-256color"
-    # Add temporary fallback in shell configs
-    export TERM=xterm-256color
-elif [ ! -s "$WEZTERM_TERMINFO_FILE" ]; then
-    echo_message "ERROR: Downloaded file is empty"
-    echo_message "Falling back to xterm-256color"
-    export TERM=xterm-256color
+if [ -f "$HOME/.terminfo/w/wezterm" ]; then
+    echo_success "WezTerm terminfo exists"
 else
-    # Compile and install terminfo to user directory
-    make_dir "$HOME/.terminfo"
+    # Download if needed
+    if [ ! -f "$WEZTERM_TERMINFO_FILE" ]; then
+        curl -fsSL "$WEZTERM_TERMINFO_URL" -o "$WEZTERM_TERMINFO_FILE" 2>/dev/null
+    fi
 
-    # Show tic errors instead of suppressing them
-    if tic -o "$HOME/.terminfo" "$WEZTERM_TERMINFO_FILE"; then
-        echo_message "Successfully compiled wezterm terminfo"
-
-        # Verify installation
-        if [ -f "$HOME/.terminfo/w/wezterm" ]; then
-            echo_message "✓ Verified: ~/.terminfo/w/wezterm installed"
+    if [ -f "$WEZTERM_TERMINFO_FILE" ] && [ -s "$WEZTERM_TERMINFO_FILE" ]; then
+        make_dir_quiet "$HOME/.terminfo"
+        if tic -o "$HOME/.terminfo" "$WEZTERM_TERMINFO_FILE" 2>/dev/null; then
+            echo_success "WezTerm terminfo compiled"
         else
-            echo_message "WARNING: tic succeeded but terminfo file not found"
+            echo_warn "WezTerm terminfo failed (using fallback)"
         fi
     else
-        echo_message "ERROR: Failed to compile terminfo with tic command"
-        echo_message "Falling back to xterm-256color"
-        export TERM=xterm-256color
+        echo_warn "WezTerm terminfo download failed (using fallback)"
     fi
 fi
 
-echo_task "Setting up bash_profile..."
+# =============================================================================
+# Shell Configuration
+# =============================================================================
+echo_section "🐚 Configuring shell..."
 
-if ! [ -f ~/.bash_profile ] || ! ( grep -Fxq "Source Ankit's profile" ~/.bash_profile ); then
-	echo_message "Adding source script to ~/.bash_profile"
-	echo "" >> ~/.bash_profile
-	echo "# Source Ankit's profile" >> ~/.bash_profile
-	echo "source $SCRIPTPATH/.profile" >> ~/.bash_profile
-	echo "" >> ~/.bash_profile
+SHELL_UPDATED=0
+
+if ! [ -f ~/.bash_profile ] || ! grep -Fxq "Source Ankit's profile" ~/.bash_profile 2>/dev/null; then
+    echo "" >> ~/.bash_profile
+    echo "# Source Ankit's profile" >> ~/.bash_profile
+    echo "source $SCRIPTPATH/.profile" >> ~/.bash_profile
+    echo "" >> ~/.bash_profile
+    SHELL_UPDATED=$((SHELL_UPDATED + 1))
 fi
 
-if ! [ -f ~/.zshrc ] || ! ( grep -Fxq "Source Ankit's zshrc" ~/.zshrc ); then
-	echo_message "Adding source script to ~/.zshrc"
-	echo "" >> ~/.zshrc
-	echo "# Source Ankit's zshrc" >> ~/.zshrc
-	echo "source $SCRIPTPATH/.zshrc" >> ~/.zshrc
-	echo "" >> ~/.zshrc
+if ! [ -f ~/.zshrc ] || ! grep -Fxq "Source Ankit's zshrc" ~/.zshrc 2>/dev/null; then
+    echo "" >> ~/.zshrc
+    echo "# Source Ankit's zshrc" >> ~/.zshrc
+    echo "source $SCRIPTPATH/.zshrc" >> ~/.zshrc
+    echo "" >> ~/.zshrc
+    SHELL_UPDATED=$((SHELL_UPDATED + 1))
 fi
 
-echo_task "⚙️ Creating aliases..."
-
-link_file "$SCRIPTPATH/.inputrc" "$HOME/.inputrc"
-link_file "$SCRIPTPATH/.tern-config" "$HOME/.tern-config"
-link_file "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
-make_dir "$HOME/.claude/"
-link_file "$SCRIPTPATH/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-make_dir "$HOME/.config/kitty/"
-link_file "$SCRIPTPATH/kitty.conf" "$HOME/.config/kitty/kitty.conf"
-make_dir "$HOME/.config/"
-link_file "$SCRIPTPATH/wezterm" "$HOME/.config/wezterm"
-
-echo_task "📝 Setting up vim..."
-
-link_file "$SCRIPTPATH/init-vim.vim" "$HOME/.vimrc"
-link_file "$SCRIPTPATH/init-gvim.vim" "$HOME/.gvimrc"
-make_dir "$HOME/.vim/"
-link_file "$SCRIPTPATH/ftplugin" "$HOME/.vim/ftplugin"
-link_file "$SCRIPTPATH/vimconfig" "$HOME/.vim/vimconfig"
-
-echo_task "📝 Setting up neovim..."
-
-make_dir "$HOME/.config/nvim/"
-link_file "$SCRIPTPATH/init-nvim.vim" "$HOME/.config/nvim/init.vim"
-link_file "$SCRIPTPATH/ftplugin" "$HOME/.config/nvim/ftplugin"
-link_file "$SCRIPTPATH/vimconfig" "$HOME/.config/nvim/vimconfig"
-
-echo_task "⚙️ Setting up gitconfig..."
-
-# Create ~/.gitconfig if it doesn't exist
-if ! [ -f ~/.gitconfig ]; then
-	echo_message "Creating ~/.gitconfig"
-	touch ~/.gitconfig
-fi
-
-# Check if include directive already exists
-if ! grep -q "path = $SCRIPTPATH/.gitconfig" ~/.gitconfig; then
-	echo_message "Adding include directive to ~/.gitconfig"
-	echo "" >> ~/.gitconfig
-	echo "[include]" >> ~/.gitconfig
-	echo "	path = $SCRIPTPATH/.gitconfig" >> ~/.gitconfig
-	echo "" >> ~/.gitconfig
+if [ $SHELL_UPDATED -gt 0 ]; then
+    echo_success "Updated shell profiles"
 else
-	echo_message "Include directive already exists, skipping..."
+    echo_success "Shell profiles configured"
 fi
 
-echo_info "To finish, open vim and/or neovim and it should set up itself."
+# =============================================================================
+# Symlinks
+# =============================================================================
+echo_section "🔗 Creating symlinks..."
 
+# General config files
+link_file_quiet "$SCRIPTPATH/.inputrc" "$HOME/.inputrc"
+link_file_quiet "$SCRIPTPATH/.tern-config" "$HOME/.tern-config"
+link_file_quiet "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
+link_file_quiet "$SCRIPTPATH/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+link_file_quiet "$SCRIPTPATH/kitty.conf" "$HOME/.config/kitty/kitty.conf"
+link_file_quiet "$SCRIPTPATH/wezterm" "$HOME/.config/wezterm"
+
+# Vim
+link_file_quiet "$SCRIPTPATH/init-vim.vim" "$HOME/.vimrc"
+link_file_quiet "$SCRIPTPATH/init-gvim.vim" "$HOME/.gvimrc"
+link_file_quiet "$SCRIPTPATH/ftplugin" "$HOME/.vim/ftplugin"
+link_file_quiet "$SCRIPTPATH/vimconfig" "$HOME/.vim/vimconfig"
+
+# Neovim
+link_file_quiet "$SCRIPTPATH/init-nvim.vim" "$HOME/.config/nvim/init.vim"
+link_file_quiet "$SCRIPTPATH/ftplugin" "$HOME/.config/nvim/ftplugin"
+link_file_quiet "$SCRIPTPATH/vimconfig" "$HOME/.config/nvim/vimconfig"
+
+print_link_summary
+
+# =============================================================================
+# Git Configuration
+# =============================================================================
+echo_section "⚙️  Configuring git..."
+
+GIT_UPDATED=0
+
+if ! [ -f ~/.gitconfig ]; then
+    touch ~/.gitconfig
+    GIT_UPDATED=$((GIT_UPDATED + 1))
+fi
+
+if ! grep -q "path = $SCRIPTPATH/.gitconfig" ~/.gitconfig 2>/dev/null; then
+    echo "" >> ~/.gitconfig
+    echo "[include]" >> ~/.gitconfig
+    echo "	path = $SCRIPTPATH/.gitconfig" >> ~/.gitconfig
+    echo "" >> ~/.gitconfig
+    GIT_UPDATED=$((GIT_UPDATED + 1))
+fi
+
+if [ $GIT_UPDATED -gt 0 ]; then
+    echo_success "Git configured"
+else
+    echo_success "Git already configured"
+fi
+
+# =============================================================================
+# Done
+# =============================================================================
+echo_section "✨ Done! Open vim/neovim to install plugins."
+echo ""
