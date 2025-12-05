@@ -334,6 +334,14 @@ if has('nvim')
     },
     -- Dashboard (startup screen)
     dashboard = { enabled = false }, -- disable if you prefer empty buffer
+    -- Terminal (replaces vimconfig/terminal.vim functions)
+    terminal = {
+      enabled = true,
+      win = {
+        position = "bottom",
+        height = 0.3,  -- 30% height (matches previous behavior)
+      },
+    },
   })
 
   -- Snacks keybindings
@@ -342,6 +350,15 @@ if has('nvim')
   vim.keymap.set('n', '<leader>rn', function() Snacks.rename.rename_file() end, { desc = 'Rename file' })
   vim.keymap.set('n', ']]', function() Snacks.words.jump(1) end, { desc = 'Next reference' })
   vim.keymap.set('n', '[[', function() Snacks.words.jump(-1) end, { desc = 'Prev reference' })
+
+  -- Snacks terminal keybindings (replaces vimconfig/terminal.vim functions)
+  vim.keymap.set({'n', 'v'}, '<leader>z', function() Snacks.terminal.toggle() end, { desc = 'Toggle terminal' })
+  vim.keymap.set('t', '<leader>z', function() Snacks.terminal.toggle() end, { desc = 'Toggle terminal' })
+  vim.keymap.set({'n', 'v', 't'}, '<leader>x', function()
+    for _, term in ipairs(Snacks.terminal.list()) do
+      term:close()
+    end
+  end, { desc = 'Close terminal' })
 EOF
 
   " NvimTree helper function to toggle without focusing

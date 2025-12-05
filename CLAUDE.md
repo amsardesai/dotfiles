@@ -173,3 +173,4 @@
 - **Leader keys:** Vim/Neovim use `,` (leader) and `;` (local leader) for custom mappings
 - **Naming convention:** Config files use lowercase with dashes (`.tmux.conf`, `.bash_profile`)
 - **Symlink pattern:** Setup script creates symlinks FROM `.dotfiles/` TO standard locations (not the reverse)
+- Always remember that as I improve my neovim setup, i want to maintain as much backward compatibility with vim. Be mindful of the fact that most of the code runs on both nvim and vim.
