@@ -3,5 +3,32 @@
 # Machine-specific settings in ~/.gitconfig will override these
 
 [user]
-	name = Ankit Sardesai
-	email = amsardesai@gmail.com
+  name = Ankit Sardesai
+  email = amsardesai@gmail.com
+
+[include]
+  path = ./themes.gitconfig
+
+[fetch]
+  prune = true
+
+[core]
+  pager = delta
+
+[interactive]
+  diffFilter = delta --color-only
+
+[merge]
+  conflictstyle = zdiff3
+
+[diff]
+  colorMoved = default
+
+[delta]
+  features = gruvmax-fang
+  navigate = true
+  dark = true
+  line-numbers = true
+  side-by-side = false
+  hyperlinks = true
+
