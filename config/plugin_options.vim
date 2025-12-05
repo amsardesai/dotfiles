@@ -237,8 +237,10 @@ EOF
   nnoremap <silent> <leader>n :NvimTreeFindFile<CR>
   nnoremap <silent> <leader>b :call <SID>launchNvimTree()<CR>
 
-  " Git stuff
+  " Gitsigns stuff
   nnoremap <silent> <leader>gb :Gitsigns blame_line<CR>
+  nmap ) :Gitsigns next_hunk<CR>
+  nmap ( :Gitsigns prev_hunk<CR>
 endif
 
 " ============================================================
