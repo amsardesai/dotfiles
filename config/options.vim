@@ -124,7 +124,46 @@ if has('nvim')
   set updatetime=200 " Faster update time for git signs and other plugins
   set mousemoveevent " Enable mouse move events (required for some plugins)
   set termguicolors " Enable 24-bit RGB colors in terminal
-  set guicursor=n-v-c:block-blinkwait700-blinkon400-blinkoff250,i-ci-ve:ver25-blinkwait700-blinkon400-blinkoff250,r-cr-o:hor20-blinkwait700-blinkon400-blinkoff250 " Configure cursor shape and blinking in different modes
+  set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr-o:hor20 " Cursor shape per mode (blink timing controlled by terminal)
+
+  " Cursor shape escape sequences for terminals with incomplete terminfo (e.g., WezTerm)
+  " Matches guicursor: n-v-c=block, i-ci-ve=bar, r-cr-o=underline
+  lua << EOF
+  local function set_cursor_shape(shape)
+    io.write(string.format("\27[%d q", shape))
+    io.flush()
+  end
+
+  local cursor_group = vim.api.nvim_create_augroup("TerminalCursorShape", { clear = true })
+
+  vim.api.nvim_create_autocmd("ModeChanged", {
+    group = cursor_group,
+    pattern = "*",
+    callback = function()
+      local mode = vim.fn.mode()
+      if mode:match("^i") then
+        -- Insert modes: i, ic, ix (guicursor: i-ci-ve)
+        set_cursor_shape(5) -- blinking bar
+      elseif mode:match("^R") or mode:match("^no") then
+        -- Replace: R, Rc, Rv, etc. + Operator-pending: no, nov, noV (guicursor: r-cr-o)
+        set_cursor_shape(3) -- blinking underline
+      else
+        -- Normal, visual, select, command, etc. (guicursor: n-v-c)
+        set_cursor_shape(1) -- blinking block
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("VimLeave", {
+    group = cursor_group,
+    callback = function() set_cursor_shape(0) end,
+  })
+
+  vim.api.nvim_create_autocmd("VimEnter", {
+    group = cursor_group,
+    callback = function() set_cursor_shape(1) end,
+  })
+EOF
 else
   set encoding=utf-8 nobomb " Use UTF-8 encoding without byte order mark (Vim only, Neovim defaults to UTF-8)
 endif
