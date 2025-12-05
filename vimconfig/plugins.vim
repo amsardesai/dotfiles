@@ -22,6 +22,7 @@ call plug#begin($VIMPATH . 'bundle')
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'nvim-treesitter/nvim-treesitter'
     Plug 'petertriho/nvim-scrollbar'
+    Plug 'lukas-reineke/headlines.nvim'
 
     " LSP plugins
     Plug 'neovim/nvim-lspconfig'
