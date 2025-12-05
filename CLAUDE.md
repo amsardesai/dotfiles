@@ -43,13 +43,13 @@
 - **Idempotent scripts:** `setup.sh` and `clean.sh` can be run multiple times safely
 
 ### Editor Philosophy
-- **Shared config:** Vim and Neovim use the same base configuration (`config/*.vim`, `ftplugin/*.vim`)
+- **Shared config:** Vim and Neovim use the same base configuration (`vimconfig/*.vim`, `ftplugin/*.vim`)
 - **Dual plugin ecosystems:**
   - Neovim → Modern Lua plugins (telescope, treesitter, native LSP)
   - Vim → Async alternatives (CtrlP, vim-lsp, NERDTree)
 - **Entry points:**
-  - Neovim: `nvim-init.vim` → sources shared configs
-  - Vim: `vim-init.vim` → sources shared configs
+  - Neovim: `init-nvim.vim` → sources shared configs
+  - Vim: `init-vim.vim` → sources shared configs
 
 ### Shell Environment Design
 - **Layered sourcing:** `.zshrc`/`.bash_profile` source `.profile` which loads modular configs
@@ -67,15 +67,15 @@
 - `.zshrc` - Zsh-specific configuration (git aliases, oh-my-zsh integration)
 
 ### Editor Configurations
-- `vim-init.vim` - Vim entry point (~/.vimrc symlink target)
-- `nvim-init.vim` - Neovim entry point (~/.config/nvim/init.vim symlink target)
-- `gvim-init.vim` - GUI vim settings (~/.gvimrc symlink target)
-- `config/` - Shared vim/nvim configuration modules
-  - `config/plugins.vim` - Plugin declarations (vim-plug)
-  - `config/plugin_options.vim` - Plugin configurations (telescope, treesitter, LSP, etc.)
-  - `config/terminal.vim` - Built-in terminal configuration (toggle, keybindings)
-  - `config/helpers/context_menu.vim` - Right-click context menu (LSP, Git, File ops)
-  - `config/*.vim` - Feature-specific configs (keybindings, LSP, etc.)
+- `init-vim.vim` - Vim entry point (~/.vimrc symlink target)
+- `init-nvim.vim` - Neovim entry point (~/.config/nvim/init.vim symlink target)
+- `init-gvim.vim` - GUI vim settings (~/.gvimrc symlink target)
+- `vimconfig/` - Shared vim/nvim configuration modules
+  - `vimconfig/plugins.vim` - Plugin declarations (vim-plug)
+  - `vimconfig/plugin_options.vim` - Plugin configurations (telescope, treesitter, LSP, etc.)
+  - `vimconfig/terminal.vim` - Built-in terminal configuration (toggle, keybindings)
+  - `vimconfig/helpers/context_menu.vim` - Right-click context menu (LSP, Git, File ops)
+  - `vimconfig/*.vim` - Feature-specific configs (keybindings, LSP, etc.)
 - `ftplugin/` - Filetype-specific settings (symlinked to both ~/.vim/ and ~/.config/nvim/)
 
 ### Terminal & Multiplexer
@@ -144,17 +144,20 @@
 
 ## Recent Discoveries
 
+### 2025-12-05
+- **WezTerm cursor shape workaround:** The `wezterm` terminfo is missing `Ss`/`Se` capabilities, so Neovim's `guicursor` setting doesn't send cursor shape escape sequences. Added Lua workaround in `vimconfig/options.vim` that writes DECSCUSR sequences directly via `io.write()`. Cursor shapes: block (normal/visual/command), bar (insert), underline (replace/operator-pending).
+
 ### 2025-12-04
 - **Git delta integration:** Added `.gitconfig` with delta as pager for syntax-highlighted diffs. Uses `gruvmax-fang` Gruvbox theme from `themes.gitconfig`. Features: line numbers, navigation, hyperlinks, `zdiff3` merge conflict style, auto-prune on fetch.
-- **Neovim terminal:** Added `config/terminal.vim` with built-in `:terminal` support. Horizontal split at 30% height, toggle with `<Leader>z/x`, exit terminal mode with `;;q` or `<ESC><ESC>`.
-- **Telescope context menu:** Added `config/helpers/context_menu.vim` with right-click context menu. Dynamic sections for LSP (definition, references, rename), Diagnostics, Git (blame, stage, diff), File ops, Edit ops. Uses `vim.ui.select()` → Telescope ui-select.
+- **Neovim terminal:** Added `vimconfig/terminal.vim` with built-in `:terminal` support. Horizontal split at 30% height, toggle with `<Leader>z/x`, exit terminal mode with `;;q` or `<ESC><ESC>`.
+- **Telescope context menu:** Added `vimconfig/helpers/context_menu.vim` with right-click context menu. Dynamic sections for LSP (definition, references, rename), Diagnostics, Git (blame, stage, diff), File ops, Edit ops. Uses `vim.ui.select()` → Telescope ui-select.
 - **Mason/LSP expansion:** Expanded to 14 auto-installed language servers via mason-lspconfig: ts_ls, eslint, cssls, htmlls, jsonls, pylsp, dockerls, docker_language_server, docker_compose_language_service, lua_ls, vimls, yamlls.
 - **Treesitter parsers:** Comprehensive parser list: typescript, tsx, html, css, json, markdown, markdown_inline, jsdoc, vimdoc, yaml, vim, lua, bash, dockerfile, go, git_config, git_rebase, gitignore, gitcommit, comment, tsv.
 - **WezTerm enhancements:** Expanded configuration with Dracula theme, FantasqueSansM Nerd Font, WebGPU acceleration, CMD-based macOS keybindings for pane/tab management.
 
 ### 2025-11-26
 - **Setup.sh optimizations:** Added idempotency checks for npm package installation and git completion file downloads. Repeat runs now skip these operations if already completed, reducing setup time from ~60 seconds to ~5 seconds. Fixed recursive symlink bug by using `ln -sfn` instead of `ln -sf`. Extracted npm packages to variable for maintainability. Added verbose skip messages for transparency.
-- **WezTerm support added:** Added `wezterm/` directory with full directory symlink to `~/.config/wezterm`. This mirrors the pattern used for vim's ftplugin and config directories, allowing future expansion with themes, plugins, and helper Lua files without modifying setup scripts. Fixed missing cleanup for terminal configs in clean.sh.
+- **WezTerm support added:** Added `wezterm/` directory with full directory symlink to `~/.config/wezterm`. This mirrors the pattern used for vim's ftplugin and vimconfig directories, allowing future expansion with themes, plugins, and helper Lua files without modifying setup scripts. Fixed missing cleanup for terminal configs in clean.sh.
 
 ### 2025-11-25
 - **Documentation system established:** Created this CLAUDE.md with automatic maintenance instructions. Claude instances should now proactively update documentation as they discover patterns and make changes.

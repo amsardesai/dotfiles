@@ -175,18 +175,18 @@ link_file "$SCRIPTPATH/wezterm" "$HOME/.config/wezterm"
 
 echo_task "📝 Setting up vim..."
 
-link_file "$SCRIPTPATH/vim-init.vim" "$HOME/.vimrc"
-link_file "$SCRIPTPATH/gvim-init.vim" "$HOME/.gvimrc"
+link_file "$SCRIPTPATH/init-vim.vim" "$HOME/.vimrc"
+link_file "$SCRIPTPATH/init-gvim.vim" "$HOME/.gvimrc"
 make_dir "$HOME/.vim/"
 link_file "$SCRIPTPATH/ftplugin" "$HOME/.vim/ftplugin"
-link_file "$SCRIPTPATH/config" "$HOME/.vim/config"
+link_file "$SCRIPTPATH/vimconfig" "$HOME/.vim/vimconfig"
 
 echo_task "📝 Setting up neovim..."
 
 make_dir "$HOME/.config/nvim/"
-link_file "$SCRIPTPATH/nvim-init.vim" "$HOME/.config/nvim/init.vim"
+link_file "$SCRIPTPATH/init-nvim.vim" "$HOME/.config/nvim/init.vim"
 link_file "$SCRIPTPATH/ftplugin" "$HOME/.config/nvim/ftplugin"
-link_file "$SCRIPTPATH/config" "$HOME/.config/nvim/config"
+link_file "$SCRIPTPATH/vimconfig" "$HOME/.config/nvim/vimconfig"
 
 echo_task "⚙️ Setting up gitconfig..."
 

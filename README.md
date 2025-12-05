@@ -83,10 +83,10 @@ nvim
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
 | `kitty.conf` | `~/.config/kitty/kitty.conf` |
 | `wezterm/` | `~/.config/wezterm` |
-| `vim-init.vim` | `~/.vimrc` |
-| `gvim-init.vim` | `~/.gvimrc` |
-| `nvim-init.vim` | `~/.config/nvim/init.vim` |
-| `config/`, `ftplugin/` | `~/.vim/` and `~/.config/nvim/` |
+| `init-vim.vim` | `~/.vimrc` |
+| `init-gvim.vim` | `~/.gvimrc` |
+| `init-nvim.vim` | `~/.config/nvim/init.vim` |
+| `vimconfig/`, `ftplugin/` | `~/.vim/` and `~/.config/nvim/` |
 
 ## Post-Install Checklist
 
@@ -192,7 +192,7 @@ After running setup, verify:
 - `vim-airline` - Status line
 - `vim-lsp` - LSP support
 
-**Full plugin list:** See `config/plugins.vim`
+**Full plugin list:** See `vimconfig/plugins.vim`
 
 ### Tmux Configuration
 
@@ -337,7 +337,7 @@ git pull
 **Config File Locations:**
 - Shell: `.zshrc`, `.profile`, `.bash_prompt`, `.inputrc`
 - Git: `.gitconfig`, `themes.gitconfig`
-- Vim/Neovim: `config/*.vim`, `ftplugin/*.vim`
+- Vim/Neovim: `vimconfig/*.vim`, `ftplugin/*.vim`
 - Tmux: `.tmux.conf`
 - Terminal: `kitty.conf`, `wezterm/`
 - Scripts: `setup.sh`, `clean.sh`
