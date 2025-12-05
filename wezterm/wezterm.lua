@@ -40,9 +40,37 @@ config.use_fancy_tab_bar = true
 config.detect_password_input = true
 config.window_close_confirmation = 'AlwaysPrompt'
 
--- GPU
+-- =============================================================================
+-- Performance
+-- =============================================================================
+
+-- GPU acceleration
 config.front_end = "WebGpu"
 config.webgpu_power_preference = 'HighPerformance'
+
+-- ProMotion display support (120Hz)
+config.max_fps = 120
+config.animation_fps = 120
+
+-- Font rendering (crisper on Retina)
+config.freetype_load_target = "Light"
+config.freetype_load_flags = "NO_HINTING"
+
+-- =============================================================================
+-- Neovim Support
+-- =============================================================================
+
+-- Kitty keyboard protocol - better modifier key handling
+config.enable_kitty_keyboard = true
+
+-- CSI u encoding - distinguishes Ctrl+I from Tab, Ctrl+M from Enter, etc.
+config.enable_csi_u_key_encoding = true
+
+-- Better Unicode/emoji rendering
+config.allow_square_glyphs_to_overflow_width = "WhenFollowedBySpace"
+
+-- Use wezterm terminfo for enhanced capabilities (undercurl, etc.)
+config.term = 'wezterm'
 
 -- =============================================================================
 -- Behavior
@@ -55,11 +83,49 @@ config.scrollback_lines = 10000
 config.default_cursor_style = 'BlinkingBlock'
 config.cursor_blink_rate = 500
 
--- Use wezterm terminfo for enhanced capabilities (undercurl, etc.)
-config.term = 'wezterm'
+-- =============================================================================
+-- Aesthetics
+-- =============================================================================
 
--- Cursor movement easing (subtle animation)
-config.animation_fps = 60
+-- Transparency with blur (macOS)
+config.window_background_opacity = 0.9
+config.macos_window_background_blur = 40
+
+-- Dim inactive panes for focus clarity
+config.inactive_pane_hsb = {
+  saturation = 0.9,
+  brightness = 0.7,
+}
+
+-- =============================================================================
+-- Quality of Life
+-- =============================================================================
+
+-- Disable audible bell, use visual flash instead
+config.audible_bell = "Disabled"
+config.visual_bell = {
+  fade_in_duration_ms = 75,
+  fade_out_duration_ms = 75,
+  target = "CursorColor",
+}
+
+-- Hot reload config on save
+config.automatically_reload_config = true
+
+-- Native macOS fullscreen
+config.native_macos_fullscreen_mode = true
+
+-- Don't resize window when changing font size
+config.adjust_window_size_when_changing_font_size = false
+
+-- Better double-click word selection
+config.selection_word_boundary = " \t\n{}[]()\"'`,;:@│"
+
+-- Quick select patterns (CMD+SHIFT+Space to activate)
+config.quick_select_patterns = {
+  '[0-9a-f]{7,40}',  -- Git commit hashes
+  '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',  -- UUIDs
+}
 
 -- =============================================================================
 -- Keybindings
@@ -153,24 +219,58 @@ config.keys = {
       mode = 'SwapWithActive',
     },
   },
+
+  -- Font size
+  {
+    key = '=',
+    mods = 'CMD',
+    action = wezterm.action.IncreaseFontSize,
+  },
+  {
+    key = '-',
+    mods = 'CMD',
+    action = wezterm.action.DecreaseFontSize,
+  },
+  {
+    key = '0',
+    mods = 'CMD',
+    action = wezterm.action.ResetFontSize,
+  },
+
+  -- Quick select (select text patterns with keyboard)
+  {
+    key = 'Space',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action.QuickSelect,
+  },
+
+  -- Search scrollback
+  {
+    key = 'f',
+    mods = 'CMD',
+    action = wezterm.action.Search { CaseInSensitiveString = '' },
+  },
+
+  -- Copy mode (vim-like scrollback navigation)
+  {
+    key = 'x',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action.ActivateCopyMode,
+  },
+
+  -- Clear scrollback
+  {
+    key = 'k',
+    mods = 'CMD',
+    action = wezterm.action.ClearScrollback 'ScrollbackAndViewport',
+  },
+
+  -- Reload config
+  {
+    key = 'r',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action.ReloadConfiguration,
+  },
 }
-
--- =============================================================================
--- Additional Configuration
--- =============================================================================
-
--- Uncomment to enable more features:
-
--- Mouse bindings
--- config.mouse_bindings = { ... }
-
--- Advanced font configuration
--- config.font_rules = { ... }
-
--- Custom color overrides
--- config.colors = { ... }
-
--- Launch menu (useful for multiple shells/environments)
--- config.launch_menu = { ... }
 
 return config
