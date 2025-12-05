@@ -225,6 +225,9 @@ if has('nvim')
       vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
       vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
       vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+      vim.keymap.set('n', '<leader>gh', function()
+        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+      end, { buffer = event.buf, desc = 'Toggle inlay hints' })
     end
   })
 
@@ -237,10 +240,10 @@ if has('nvim')
     float = true,
   })
 
-  local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+  local capabilities = require('cmp_nvim_lsp').default_capabilities()
   local default_setup = function(server)
     require('lspconfig')[server].setup({
-      capabilities = lsp_capabilities,
+      capabilities = capabilities,
     })
   end
   require('mason').setup()
@@ -255,12 +258,41 @@ if has('nvim')
       'jsonls',
       'lua_ls',
       'pylsp',
-      'ts_ls',
       'vimls',
       'yamlls',
     },
     automatic_enable = true,
-    handlers = { default_setup, },
+    handlers = { default_setup },
+  })
+
+  -- TypeScript support via typescript-tools.nvim (direct tsserver communication)
+  -- This bypasses typescript-language-server and talks directly to tsserver
+  require("typescript-tools").setup({
+    capabilities = capabilities,
+    settings = {
+      -- Spawn additional tsserver instance for diagnostics (better performance)
+      separate_diagnostic_server = true,
+      -- Memory limit (16GB)
+      tsserver_max_memory = 16384,
+      -- Auto-close JSX tags
+      jsx_close_tag = {
+        enable = true,
+        filetypes = { "javascriptreact", "typescriptreact" },
+      },
+      -- Code lens (reference counts above functions)
+      code_lens = "all",
+      -- Inlay hints configuration
+      tsserver_file_preferences = {
+        includeInlayParameterNameHints = "all",
+        includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayVariableTypeHints = true,
+        includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      },
+    },
   })
 
   local cmp = require('cmp')

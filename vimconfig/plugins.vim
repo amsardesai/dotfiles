@@ -34,6 +34,7 @@ call plug#begin($VIMPATH . 'bundle')
     Plug 'mason-org/mason.nvim'
     Plug 'mason-org/mason-lspconfig.nvim'
     Plug 'L3MON4D3/LuaSnip'
+    Plug 'pmizio/typescript-tools.nvim'
 
     " Fuzzy finder
     Plug 'nvim-lua/plenary.nvim'
