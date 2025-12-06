@@ -83,70 +83,44 @@ require("bufferline").setup({
   },
 })
 
-require('telescope').setup({
-  defaults = {
-    mappings = {
-      i = {
-        ["<esc>"] = require('telescope.actions').close,
-      },
-    },
+-- fzf-lua setup
+local fzf = require('fzf-lua')
 
-    -- Preview: render on selection, fail fast if slow
+fzf.setup({
+  -- Use native fzf binary (significantly faster for 100k+ files)
+  fzf_bin = "fzf",
+
+  files = {
+    -- Git repos: use git ls-files (instant, uses git's index)
+    -- Non-git: fallback to fd
+    cmd = "git ls-files --cached --others --exclude-standard 2>/dev/null || fd --type f --strip-cwd-prefix --hidden --exclude .git --exclude node_modules --exclude build",
+    -- Disable git status icons for speed in large repos
+    git_icons = false,
+  },
+  grep = {
+    cmd = "rg --column --line-number --no-heading --color=always --smart-case --hidden -g '!.git' -g '!node_modules' -g '!build'",
+  },
+  winopts = {
+    height = 0.8,
+    width = 0.8,
     preview = {
-      timeout = 200,
-      filesize_limit = 1,
-      treesitter = false,
-    },
-
-    -- Cache picker results for instant re-open
-    cache_picker = {
-      num_pickers = 10,
-      limit_entries = 1000,
-    },
-
-    -- Layout
-    layout_strategy = 'horizontal',
-    layout_config = {
-      horizontal = { preview_width = 0.5 },
-      width = 0.8,
-      height = 0.8,
-    },
-
-    -- Reduce UI overhead
-    dynamic_preview_title = false,
-  },
-
-  pickers = {
-    find_files = {
-      -- fd is faster than git ls-files, respects .gitignore
-      find_command = { 'fd', '--type', 'f', '--strip-cwd-prefix', '--hidden', '--exclude', '.git' },
-    },
-    live_grep = {
-      additional_args = function()
-        return { '--hidden', '--glob', '!.git/*', '--smart-case' }
-      end,
+      horizontal = "right:50%",
+      delay = 100,
     },
   },
-
-  extensions = {
-    -- fzf-native: 10-100x faster sorting
-    fzf = {
-      fuzzy = true,
-      override_generic_sorter = true,
-      override_file_sorter = true,
-      case_mode = "smart_case",
-    },
-    ["ui-select"] = {
-      require("telescope.themes").get_dropdown({
-        layout_config = { width = 0.6, height = 0.5 },
-      })
-    }
-  }
+  oldfiles = {
+    include_current_session = true,
+    -- Frecency note: fzf-lua's oldfiles is recency-only (most recently opened).
+    -- For true frecency (frequency + recency), consider adding smart-open.nvim
+  },
+  fzf_opts = {
+    ["--layout"] = "reverse",
+  },
 })
 
--- Load extensions (order matters: fzf must load for speed gains)
-require("telescope").load_extension("fzf")
-require("telescope").load_extension("ui-select")
+-- Replace telescope-ui-select for vim.ui.select
+fzf.register_ui_select()
+
 
 require('nvim-treesitter.configs').setup({
   ensure_installed = {
@@ -436,21 +410,27 @@ require("claudecode").setup({
     provider = "snacks",
   },
 })
+
 -- Toggle Claude Code terminal (drawer behavior with editor context)
 vim.keymap.set({'n', 'v'}, '<leader>a', ':ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
 vim.keymap.set('t', '<leader>a', '<C-\\><C-n>:ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
 -- Send visual selection to Claude
-vim.keymap.set('v', '<leader>sa', ':ClaudeCodeSend<CR>', { desc = 'Send selection to Claude' })
+vim.keymap.set('v', '<leader>a', ':ClaudeCodeSend<CR>', { desc = 'Send selection to Claude' })
 -- Add current file to Claude context
 vim.keymap.set('n', '<leader>sa', ':ClaudeCodeAdd<CR>', { desc = 'Add file to Claude context' })
 
--- Fuzzy finder (Telescope)
-vim.keymap.set({'n', 'i'}, '<C-p>', ':Telescope find_files<CR>', { silent = true, desc = 'Find files' })
-vim.keymap.set({'n', 'i'}, '<C-o>', ':Telescope live_grep<CR>', { silent = true, desc = 'Live grep' })
-vim.keymap.set({'n', 'i'}, '<C-i>', ':Telescope grep_string<CR>', { silent = true, desc = 'Grep string under cursor' })
-vim.keymap.set('n', '<leader>l', ':Telescope find_files<CR>', { silent = true, desc = 'Find files' })
-vim.keymap.set('n', '<leader>k', ':Telescope live_grep<CR>', { silent = true, desc = 'Live grep' })
-vim.keymap.set('n', '<leader>j', ':Telescope grep_string<CR>', { silent = true, desc = 'Grep string under cursor' })
+-- Fuzzy finder (fzf-lua)
+-- Primary file picker
+vim.keymap.set({'n', 'i', 'v', 't'}, '<C-p>', fzf.files, { silent = true, desc = 'Find files' })
+vim.keymap.set('n', '<leader>l', fzf.files, { silent = true, desc = 'Find files' })
+
+-- Grep
+vim.keymap.set({'n', 'i', 't'}, '<C-o>', fzf.live_grep, { silent = true, desc = 'Live grep' })
+vim.keymap.set('n', '<leader>p', fzf.live_grep, { silent = true, desc = 'Live grep' })
+vim.keymap.set('n', '<C-i>', fzf.grep_cword, { silent = true, desc = 'Grep word under cursor' })
+vim.keymap.set('n', '<leader>j', fzf.grep_cword, { silent = true, desc = 'Grep word under cursor' })
+vim.keymap.set('v', '<C-o>', fzf.grep_visual, { silent = true, desc = 'Grep visual selection' })
+vim.keymap.set('v', '<C-i>', fzf.grep_visual, { silent = true, desc = 'Grep visual selection' })
 
 -- Right-click context menu
 local function showContextMenu()

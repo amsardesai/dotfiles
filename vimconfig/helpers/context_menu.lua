@@ -104,7 +104,7 @@ function M.show()
   table.insert(actions, function() vim.cmd("bdelete") end)
 
   table.insert(menu_items, "  Find Files")
-  table.insert(actions, function() vim.cmd("Telescope find_files") end)
+  table.insert(actions, function() require('fzf-lua').files() end)
 
   -- Editing Operations
   table.insert(menu_items, "──── Edit ────")

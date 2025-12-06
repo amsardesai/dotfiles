@@ -38,11 +38,9 @@ call plug#begin($VIMPATH . 'bundle')
     Plug 'pmizio/typescript-tools.nvim'
     Plug 'VidocqH/lsp-lens.nvim'
 
-    " Fuzzy finder
+    " Fuzzy finder (fzf-lua - faster than telescope for large repos)
     Plug 'nvim-lua/plenary.nvim'
-    Plug 'nvim-telescope/telescope.nvim'
-    Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
-    Plug 'nvim-telescope/telescope-ui-select.nvim'
+    Plug 'ibhagwan/fzf-lua'
 
     " Theme
     Plug 'folke/tokyonight.nvim'
