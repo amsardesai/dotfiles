@@ -1,7 +1,9 @@
 -- Neovim plugin configurations
 -- Loaded from main.vim via luafile
 
-local vim = vim
+local vim = vim ---@diagnostic disable-line: undefined-global
+
+local NvimTreeApi = require('nvim-tree.api')
 local Snacks = require('snacks')
 
 -- Disable netrw
@@ -362,9 +364,15 @@ vim.keymap.set('n', ']]', function() Snacks.words.jump(1) end, { desc = 'Next re
 vim.keymap.set('n', '[[', function() Snacks.words.jump(-1) end, { desc = 'Prev reference' })
 
 -- Snacks terminal keybindings
+
 -- Bottom terminal (default shell)
-vim.keymap.set({'n', 'v'}, '<leader>z', function() Snacks.terminal.toggle() end, { desc = 'Toggle terminal' })
-vim.keymap.set('t', '<leader>z', function() Snacks.terminal.toggle() end, { desc = 'Toggle terminal' })
+local function toggleBottomTerminal()
+  Snacks.terminal.toggle()
+end
+
+vim.keymap.set({'n', 'v'}, '<leader>z', toggleBottomTerminal, { desc = 'Toggle terminal' })
+vim.keymap.set('t', '<leader>z', toggleBottomTerminal, { desc = 'Toggle terminal' })
+
 -- Hide all terminals (preserves session)
 vim.keymap.set({'n', 'v', 't'}, '<leader>x', function()
   for _, term in ipairs(Snacks.terminal.list()) do
@@ -406,16 +414,14 @@ vim.keymap.set('n', '<leader>j', ':Telescope grep_string<CR>', { silent = true, 
 vim.keymap.set('n', '<RightMouse>', '<LeftMouse><Cmd>lua show_context_menu()<CR>', { desc = 'Context menu' })
 vim.keymap.set('v', '<RightMouse>', '<LeftMouse><Cmd>lua show_context_menu()<CR>', { desc = 'Context menu' })
 
--- NvimTree helper function to toggle without focusing
 local function toggleNvimTree()
-  vim.cmd('NvimTreeToggle')
-  vim.cmd('wincmd w')
+  NvimTreeApi.tree.toggle()
+  vim.cmd.wincmd('w')
 end
 
--- NvimTree helper function to open without focusing
 local function launchNvimTree()
-  vim.cmd('NvimTreeOpen')
-  vim.cmd('wincmd w')
+  NvimTreeApi.tree.open()
+  vim.cmd.wincmd('w')
 end
 
 -- NvimTree keybindings
