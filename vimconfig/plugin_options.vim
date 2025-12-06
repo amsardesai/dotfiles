@@ -323,7 +323,7 @@ if has('nvim')
         filetypes = { "javascriptreact", "typescriptreact" },
       },
       -- Code lens disabled (using lensline.nvim instead)
-      code_lens = "all",
+      code_lens = "off",
       -- Inlay hints configuration
       tsserver_file_preferences = {
         includeInlayParameterNameHints = "all",
