@@ -38,6 +38,11 @@ echo_error() {
 	tput sgr0 && printf "\n"
 }
 
+# Print indented output (for showing progress)
+echo_progress() {
+	tput setaf 8 && printf "     $1" && tput sgr0 && printf "\n"
+}
+
 download_file_quiet() {
 	if [ -f "$2" ]; then
 		DOWNLOAD_SKIP=$((DOWNLOAD_SKIP + 1))
@@ -102,13 +107,30 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	if command -v brew &>/dev/null; then
 		echo_success "Homebrew found"
 
+		# Update Homebrew itself
+		BREW_UPDATE=$(brew update 2>&1) || true
+		if echo "$BREW_UPDATE" | grep -q "Already up-to-date"; then
+			echo_success "Homebrew up-to-date"
+		else
+			echo_success "Updating Homebrew..."
+			echo "$BREW_UPDATE" | while read -r line; do
+				[ -n "$line" ] && echo_progress "$line"
+			done
+			echo_success "Homebrew updated"
+		fi
+
 		if [ -f "$SCRIPTPATH/Brewfile" ]; then
-			echo_success "Installing Brewfile packages..."
-			if brew bundle --file="$SCRIPTPATH/Brewfile" >/dev/null 2>&1; then
-				echo_success "Brewfile packages installed"
-			else
-				echo_warn "Some Brewfile packages failed (run 'brew bundle' manually for details)"
-			fi
+			echo_success "Running brew bundle..."
+
+			# Capture output first (piping directly can break brew bundle)
+			BREW_OUTPUT=$(brew bundle --file="$SCRIPTPATH/Brewfile" 2>&1) || true
+
+			# Show all output (gray, indented)
+			echo "$BREW_OUTPUT" | while read -r line; do
+				[ -n "$line" ] && echo_progress "$line"
+			done
+
+			echo_success "Brewfile complete"
 		fi
 	else
 		echo_warn "Homebrew not found (skipping Brewfile)"
@@ -128,10 +150,14 @@ else
 fi
 
 if npm list -g $NPM_PACKAGES >/dev/null 2>&1; then
-	echo_success "npm packages installed"
+	echo_success "npm packages already installed"
 else
 	echo_success "Installing npm packages..."
-	npm install -g $NPM_PACKAGES >/dev/null 2>&1
+	# Show each package being installed
+	for pkg in $NPM_PACKAGES; do
+		echo_progress "Installing $pkg..."
+		npm install -g "$pkg" >/dev/null 2>&1
+	done
 	echo_success "npm packages installed"
 fi
 

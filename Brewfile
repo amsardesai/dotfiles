@@ -21,5 +21,11 @@ brew "imagemagick"  # For image.nvim
 brew "shellcheck"
 brew "tflint"
 
+# CLI tools
+tap "withgraphite/tap"
+brew "withgraphite/tap/graphite"
+cask "claude-code"
+cask "1password-cli"
+
 # GUI apps
 cask "wezterm"

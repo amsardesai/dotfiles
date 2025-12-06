@@ -31,6 +31,19 @@ require("nvim-tree").setup({
 			},
 		},
 	},
+	on_attach = function(bufnr)
+		local api = require("nvim-tree.api")
+
+		-- Apply default nvim-tree keybindings first
+		api.config.mappings.default_on_attach(bufnr)
+
+		-- Add buffer-local Shift+Arrow navigation (matches global mappings in mappings.vim)
+		local opts = { buffer = bufnr, noremap = true, silent = true }
+		vim.keymap.set("n", "<S-Up>", "<C-w><Up>", opts)
+		vim.keymap.set("n", "<S-Down>", "<C-w><Down>", opts)
+		vim.keymap.set("n", "<S-Left>", "<C-w><Left>", opts)
+		vim.keymap.set("n", "<S-Right>", "<C-w><Right>", opts)
+	end,
 })
 
 -- Integrate snacks.nvim rename with nvim-tree
