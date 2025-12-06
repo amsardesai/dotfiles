@@ -90,6 +90,13 @@ fzf.setup({
 	-- Use native fzf binary (significantly faster for 100k+ files)
 	fzf_bin = "fzf",
 
+	-- Use bat with Tokyo Night theme for fast previews
+	previewers = {
+		bat = {
+			theme = "tokyonight_night",
+		},
+	},
+
 	files = {
 		-- Git repos: use git ls-files (instant, uses git's index)
 		-- Non-git: fallback to fd
@@ -122,11 +129,101 @@ fzf.setup({
 -- Replace telescope-ui-select for vim.ui.select
 fzf.register_ui_select()
 
--- File cache for instant file picker (avoids running git ls-files each time)
+-- File cache for instant file picker (persisted across sessions)
 local file_cache = nil
 local cache_job = nil
+local cache_dir = vim.fn.stdpath("cache") .. "/fzf_file_cache"
+local cached_index_mtime = nil
 
-local function refresh_file_cache()
+-- Get git index path for current repo
+local function get_git_index_path()
+	local git_root = vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
+	if git_root and git_root ~= "" then
+		return git_root .. "/.git/index"
+	end
+	return nil
+end
+
+-- Get .git/index mtime (changes on commits, staging, checkouts)
+local function get_index_mtime()
+	local index_path = get_git_index_path()
+	if index_path then
+		local stat = vim.uv.fs_stat(index_path)
+		if stat then
+			return stat.mtime.sec
+		end
+	end
+	return nil
+end
+
+-- Get cache file path based on git root (or cwd)
+local function get_cache_path()
+	local git_root = vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
+	local project_id
+	if git_root and git_root ~= "" then
+		project_id = git_root:gsub("/", "%%")
+	else
+		project_id = vim.fn.getcwd():gsub("/", "%%")
+	end
+	return cache_dir .. "/" .. project_id
+end
+
+-- Load cache from disk (instant)
+local function load_cache_from_disk()
+	local cache_path = get_cache_path()
+	local files_path = cache_path .. ".txt"
+	local mtime_path = cache_path .. ".mtime"
+
+	if vim.uv.fs_stat(files_path) then
+		local lines = vim.fn.readfile(files_path)
+		if #lines > 0 then
+			file_cache = lines
+			-- Load saved mtime
+			if vim.uv.fs_stat(mtime_path) then
+				local mtime_lines = vim.fn.readfile(mtime_path)
+				if #mtime_lines > 0 then
+					cached_index_mtime = tonumber(mtime_lines[1])
+				end
+			end
+			return true
+		end
+	end
+	return false
+end
+
+-- Save cache to disk
+local function save_cache_to_disk()
+	if file_cache and #file_cache > 0 then
+		vim.fn.mkdir(cache_dir, "p")
+		local cache_path = get_cache_path()
+		vim.fn.writefile(file_cache, cache_path .. ".txt")
+		-- Save current mtime
+		local mtime = get_index_mtime()
+		if mtime then
+			vim.fn.writefile({ tostring(mtime) }, cache_path .. ".mtime")
+			cached_index_mtime = mtime
+		end
+	end
+end
+
+-- Check if cache needs refresh based on .git/index mtime
+local function cache_needs_refresh()
+	local current_mtime = get_index_mtime()
+	if not current_mtime then
+		return true -- Not a git repo, always refresh
+	end
+	if not cached_index_mtime then
+		return true -- No cached mtime, need refresh
+	end
+	return current_mtime ~= cached_index_mtime
+end
+
+local function refresh_file_cache(force)
+	-- Skip if cache is fresh (unless forced)
+	if not force and file_cache and not cache_needs_refresh() then
+		return
+	end
+
 	-- Cancel any in-progress refresh
 	if cache_job then
 		pcall(vim.fn.jobstop, cache_job)
@@ -139,6 +236,8 @@ local function refresh_file_cache()
 				file_cache = vim.tbl_filter(function(l)
 					return l ~= ""
 				end, data)
+				-- Persist to disk after refresh
+				save_cache_to_disk()
 			end
 		end,
 		on_exit = function()
@@ -147,16 +246,24 @@ local function refresh_file_cache()
 	})
 end
 
--- Warm cache on startup (slight delay to not block UI)
+-- Load from disk first, then refresh in background
 vim.api.nvim_create_autocmd("VimEnter", {
 	callback = function()
-		vim.defer_fn(refresh_file_cache, 100)
+		local loaded = load_cache_from_disk()
+		if not loaded then
+			vim.notify("Building file cache for the first time...", vim.log.levels.INFO)
+		end
+		-- Refresh in background after short delay
+		vim.defer_fn(refresh_file_cache, 500)
 	end,
 })
 
--- Refresh on directory change
+-- Refresh on directory change (load from disk first, then refresh)
 vim.api.nvim_create_autocmd("DirChanged", {
-	callback = refresh_file_cache,
+	callback = function()
+		load_cache_from_disk()
+		refresh_file_cache()
+	end,
 })
 
 -- Refresh periodically (every 60s) for external changes
@@ -242,14 +349,16 @@ local function cached_files()
 		})
 	else
 		-- Fallback if cache not ready
+		vim.notify("File cache not ready, searching without cache...", vim.log.levels.WARN)
 		fzf.files()
 	end
 end
 
--- Manual cache refresh
+-- Manual cache refresh (bypasses mtime check)
 local function force_refresh_cache()
 	file_cache = nil
-	refresh_file_cache()
+	cached_index_mtime = nil
+	refresh_file_cache(true)
 	vim.notify("File cache refreshing...", vim.log.levels.INFO)
 end
 
@@ -343,6 +452,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "gh", function()
 			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
 		end, opts("Toggle inlay hints"))
+
+		-- Ctrl+Click to go to definition (like VS Code)
+		vim.keymap.set("n", "<C-LeftMouse>", "<LeftMouse><cmd>lua vim.lsp.buf.definition()<cr>", opts("Go to definition"))
 	end,
 })
 

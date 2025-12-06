@@ -8,10 +8,11 @@ brew "tmux"
 brew "node"
 
 # Terminal enhancements
-brew "fzf"
-brew "ripgrep"
+brew "bat"
 brew "fd"
+brew "fzf"
 brew "git-delta"
+brew "ripgrep"
 
 # Neovim dependencies
 brew "imagemagick"  # For image.nvim
