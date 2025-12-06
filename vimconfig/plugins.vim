@@ -41,6 +41,7 @@ call plug#begin($VIMPATH . 'bundle')
     " Fuzzy finder
     Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim'
+    Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
     Plug 'nvim-telescope/telescope-ui-select.nvim'
 
     " Theme

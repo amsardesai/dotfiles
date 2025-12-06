@@ -85,32 +85,67 @@ require("bufferline").setup({
 
 require('telescope').setup({
   defaults = {
-    -- Make ESC close immediately instead of needing two presses
     mappings = {
       i = {
         ["<esc>"] = require('telescope.actions').close,
       },
     },
+
+    -- Preview: render on selection, fail fast if slow
+    preview = {
+      timeout = 200,
+      filesize_limit = 1,
+      treesitter = false,
+    },
+
+    -- Cache picker results for instant re-open
+    cache_picker = {
+      num_pickers = 10,
+      limit_entries = 1000,
+    },
+
+    -- Layout
+    layout_strategy = 'horizontal',
+    layout_config = {
+      horizontal = { preview_width = 0.5 },
+      width = 0.8,
+      height = 0.8,
+    },
+
+    -- Reduce UI overhead
+    dynamic_preview_title = false,
   },
+
   pickers = {
     find_files = {
-      -- Only show git-tracked files (excludes .git, node_modules, untracked files)
-      find_command = { 'git', 'ls-files', '--cached', '--others', '--exclude-standard' },
+      -- fd is faster than git ls-files, respects .gitignore
+      find_command = { 'fd', '--type', 'f', '--strip-cwd-prefix', '--hidden', '--exclude', '.git' },
+    },
+    live_grep = {
+      additional_args = function()
+        return { '--hidden', '--glob', '!.git/*', '--smart-case' }
+      end,
     },
   },
+
   extensions = {
+    -- fzf-native: 10-100x faster sorting
+    fzf = {
+      fuzzy = true,
+      override_generic_sorter = true,
+      override_file_sorter = true,
+      case_mode = "smart_case",
+    },
     ["ui-select"] = {
       require("telescope.themes").get_dropdown({
-        layout_config = {
-          width = 0.6,
-          height = 0.5,
-        },
+        layout_config = { width = 0.6, height = 0.5 },
       })
     }
   }
 })
 
--- Load telescope-ui-select extension
+-- Load extensions (order matters: fzf must load for speed gains)
+require("telescope").load_extension("fzf")
 require("telescope").load_extension("ui-select")
 
 require('nvim-treesitter.configs').setup({
@@ -210,15 +245,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 vim.api.nvim_set_hl(0, 'DiagnosticDeprecated', { strikethrough = true, fg = '#5c6370' })
 
 vim.diagnostic.config({
-  virtual_text = {
-    format = function(diagnostic)
-      -- Hide deprecated messages since we have strikethrough
-      if diagnostic.code == 6385 or diagnostic.message:match("deprecated") then
-        return ""
-      end
-      return diagnostic.message
-    end,
-  },
+  virtual_text = true,
   signs = true,
   update_in_insert = false,
   underline = true,
