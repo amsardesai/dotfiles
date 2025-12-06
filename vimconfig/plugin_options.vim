@@ -201,10 +201,43 @@ if has('nvim')
 
   require("scrollbar").setup()
 
+  -- LSP Lens - show references/implementations above functions and types
+  local SymbolKind = vim.lsp.protocol.SymbolKind
+  require("lsp-lens").setup({
+    enable = true,
+    include_declaration = false,
+    -- Show on functions, methods, interfaces, classes, types
+    target_symbol_kinds = {
+      SymbolKind.Function,
+      SymbolKind.Method,
+      SymbolKind.Interface,
+      SymbolKind.Class,
+      SymbolKind.Struct,
+      SymbolKind.TypeParameter,
+    },
+    wrapper_symbol_kinds = { SymbolKind.Class, SymbolKind.Struct, SymbolKind.Module },
+    sections = {
+      definition = false,
+      references = function(count)
+        return " " .. count
+      end,
+      implements = function(count)
+        return " " .. count
+      end,
+      git_authors = function(latest_author, count)
+        if count > 1 then
+          return " " .. latest_author .. " +" .. (count - 1)
+        end
+        return " " .. latest_author
+      end,
+    },
+  })
+
   -- Diagnostic keybindings (global, not LSP-specific)
   vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>', { desc = 'Show diagnostic' })
   vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>', { desc = 'Previous diagnostic' })
   vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>', { desc = 'Next diagnostic' })
+  vim.keymap.set('n', 'gL', '<cmd>LspLensToggle<cr>', { desc = 'Toggle LSP lens' })
 
   vim.api.nvim_create_autocmd('LspAttach', {
     desc = 'LSP actions',
@@ -224,14 +257,25 @@ if has('nvim')
       vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts('Rename symbol'))
       vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts('Format document'))
       vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts('Code actions'))
-      vim.keymap.set('n', '<leader>gh', function()
+      vim.keymap.set('n', 'gh', function()
         vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
       end, opts('Toggle inlay hints'))
     end
   })
 
+  -- Strike through deprecated variables
+  vim.api.nvim_set_hl(0, 'DiagnosticDeprecated', { strikethrough = true, fg = '#5c6370' })
+
   vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = {
+      format = function(diagnostic)
+        -- Hide deprecated messages since we have strikethrough
+        if diagnostic.code == 6385 or diagnostic.message:match("deprecated") then
+          return ""
+        end
+        return diagnostic.message
+      end,
+    },
     signs = true,
     update_in_insert = false,
     underline = true,
@@ -278,7 +322,7 @@ if has('nvim')
         enable = true,
         filetypes = { "javascriptreact", "typescriptreact" },
       },
-      -- Code lens (reference counts above functions)
+      -- Code lens disabled (using lensline.nvim instead)
       code_lens = "all",
       -- Inlay hints configuration
       tsserver_file_preferences = {
@@ -312,12 +356,6 @@ if has('nvim')
       end,
     },
   })
-
-  -- Minimap
-  vim.opt.sidescrolloff = 36
-  vim.g.neominimap = {
-    current_line_position = "percent",
-  }
 
   -- Snacks.nvim - Collection of small QoL plugins
   require("snacks").setup({
@@ -360,7 +398,7 @@ if has('nvim')
       char = "│",
       scope = { char = "│" },
       animate = {
-        duration = { step = 10, total = 200 },
+        duration = { step = 10, total = 250 },
       },
     },
     -- Dashboard (startup screen)
