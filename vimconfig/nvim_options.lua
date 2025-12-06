@@ -109,7 +109,7 @@ fzf.setup({
     width = 0.8,
     preview = {
       horizontal = "right:50%",
-      delay = 400,
+      delay = 250,
     },
     files = {
       file_icon_padding = '',
@@ -385,11 +385,84 @@ require('mason-lspconfig').setup({
     'jsonls',
     'lua_ls',
     'pylsp',
+    'terraformls',
     'vimls',
     'yamlls',
   },
   automatic_enable = true,
   handlers = { default_setup },
+})
+
+-- none-ls: Linters & Formatters via LSP
+local null_ls = require("null-ls")
+
+null_ls.setup({
+  -- Debug mode to see what's happening
+  debug = true,
+  -- Explicitly list filetypes to attach to
+  filetypes = {
+    "javascript", "typescript", "javascriptreact", "typescriptreact",
+    "css", "html", "json", "yaml", "markdown", "lua", "sh", "dockerfile",
+    "terraform", "tf",
+  },
+  sources = {
+    -- Linters (diagnostics)
+    null_ls.builtins.diagnostics.hadolint,
+    null_ls.builtins.diagnostics.shellcheck,
+    null_ls.builtins.diagnostics.markdownlint,
+    null_ls.builtins.diagnostics.yamllint,
+    null_ls.builtins.diagnostics.actionlint,
+
+    -- Terraform
+    null_ls.builtins.diagnostics.tflint,
+    null_ls.builtins.formatting.terraform_fmt,
+
+    -- Formatters
+    -- Prettier for all web files (fallback formatter)
+    null_ls.builtins.formatting.prettier.with({
+      filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact", "css", "html", "json", "yaml", "markdown" },
+      -- Run even without a prettier config file
+      condition = function()
+        return true
+      end,
+    }),
+    -- Biome for JS/TS/JSON (will take precedence if biome.json exists in project)
+    null_ls.builtins.formatting.biome.with({
+      filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact", "json" },
+      condition = function(utils)
+        return utils.root_has_file({ "biome.json", "biome.jsonc" })
+      end,
+    }),
+    null_ls.builtins.formatting.stylua,
+    null_ls.builtins.formatting.shfmt,
+  },
+})
+
+-- Explicitly register eslint_d sources (none-ls-extras)
+null_ls.register(require("none-ls.diagnostics.eslint_d"))
+null_ls.register(require("none-ls.formatting.eslint_d"))
+
+-- Mason integration for auto-installing linters/formatters
+require("mason-null-ls").setup({
+  ensure_installed = {
+    "hadolint", "shellcheck", "markdownlint", "yamllint", "actionlint", "eslint_d",
+    "prettier", "biome", "stylua", "shfmt", "tflint",
+  },
+  automatic_installation = true,
+  handlers = {},
+})
+
+-- Format on save (runs eslint --fix + prettier/biome via null-ls)
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = { "*.js", "*.jsx", "*.ts", "*.tsx", "*.css", "*.html", "*.json", "*.yaml", "*.yml", "*.md", "*.lua", "*.sh", "*.tf" },
+  callback = function(args)
+    vim.lsp.buf.format({
+      bufnr = args.buf,
+      filter = function(client)
+        return client.name == "null-ls"
+      end,
+    })
+  end,
 })
 
 -- TypeScript support via typescript-tools.nvim (direct tsserver communication)
@@ -470,10 +543,10 @@ Snacks.setup({
   scroll = {
     enabled = true,
     animate = {
-      duration = { step = 10, total = 100 },
+      duration = { step = 15, total = 100 },
     },
     animate_repeat = {
-      duration = { step = 10, total = 80 },
+      duration = { step = 15, total = 50 },
     },
   },
   -- Indent guides
