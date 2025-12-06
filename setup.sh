@@ -238,6 +238,7 @@ echo_section "🔗 Creating symlinks..."
 
 # General config files
 link_file_quiet "$SCRIPTPATH/.inputrc" "$HOME/.inputrc"
+link_file_quiet "$SCRIPTPATH/.lesskey" "$HOME/.lesskey"
 link_file_quiet "$SCRIPTPATH/.tern-config" "$HOME/.tern-config"
 link_file_quiet "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
 link_file_quiet "$SCRIPTPATH/.markdownlintrc" "$HOME/.markdownlintrc"

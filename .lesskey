@@ -1,0 +1,8 @@
+#env
+LESS = -x2RMS --mouse
+
+#command
+_ back-screen
++ forw-screen
+{ back-scroll
+} forw-scroll

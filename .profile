@@ -26,9 +26,6 @@ export CLICOLOR_FORCE=1
 export CLICOLOR=1
 export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
 
-# LESS
-export LESS="-RMS --mouse"
-
 # Config files
 export XDG_CONFIG_HOME="$HOME/.config"
 

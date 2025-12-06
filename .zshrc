@@ -127,9 +127,6 @@ export CLICOLOR_FORCE=1
 export CLICOLOR=1
 export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
 
-# LESS
-export LESS="-x2RMS"
-
 # My aliases
 alias ls='ls -alFh'
 alias ll='ls'
