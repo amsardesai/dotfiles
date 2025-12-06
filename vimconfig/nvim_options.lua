@@ -10,6 +10,9 @@ local Snacks = require('snacks')
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- Auto-reload files when changed externally
+vim.o.autoread = true
+
 -- Setup nvim-tree
 require("nvim-tree").setup({
   view = {
@@ -411,16 +414,18 @@ vim.keymap.set('v', '<leader>sa', ':ClaudeCodeSend<CR>', { desc = 'Send selectio
 vim.keymap.set('n', '<leader>sa', ':ClaudeCodeAdd<CR>', { desc = 'Add file to Claude context' })
 
 -- Fuzzy finder (Telescope)
-vim.keymap.set('n', '<C-p>', ':Telescope find_files<CR>', { silent = true, desc = 'Find files' })
-vim.keymap.set('n', '<C-o>', ':Telescope live_grep<CR>', { silent = true, desc = 'Live grep' })
-vim.keymap.set('n', '<C-i>', ':Telescope grep_string<CR>', { silent = true, desc = 'Grep string under cursor' })
+vim.keymap.set({'n', 'i'}, '<C-p>', ':Telescope find_files<CR>', { silent = true, desc = 'Find files' })
+vim.keymap.set({'n', 'i'}, '<C-o>', ':Telescope live_grep<CR>', { silent = true, desc = 'Live grep' })
+vim.keymap.set({'n', 'i'}, '<C-i>', ':Telescope grep_string<CR>', { silent = true, desc = 'Grep string under cursor' })
 vim.keymap.set('n', '<leader>l', ':Telescope find_files<CR>', { silent = true, desc = 'Find files' })
 vim.keymap.set('n', '<leader>k', ':Telescope live_grep<CR>', { silent = true, desc = 'Live grep' })
 vim.keymap.set('n', '<leader>j', ':Telescope grep_string<CR>', { silent = true, desc = 'Grep string under cursor' })
 
--- Right-click context menu (implementation in helpers/context_menu.vim)
-vim.keymap.set('n', '<RightMouse>', '<LeftMouse><Cmd>lua show_context_menu()<CR>', { desc = 'Context menu' })
-vim.keymap.set('v', '<RightMouse>', '<LeftMouse><Cmd>lua show_context_menu()<CR>', { desc = 'Context menu' })
+-- Right-click context menu
+local function showContextMenu()
+  dofile(vim.fn.expand('$VIMCONFIG/helpers/context_menu.lua')).show()
+end
+vim.keymap.set({'n', 'v'}, '<RightMouse>', showContextMenu, { desc = 'Context menu' })
 
 local function toggleNvimTree()
   NvimTreeApi.tree.toggle()
