@@ -180,3 +180,25 @@ endif
 if has('mouse_sgr') && !has('nvim')
   set ttymouse=sgr " Use SGR mouse protocol for better mouse support in terminals (Vim only)
 endif
+
+" NERD Commenter
+let NERDSpaceDelims=1
+
+" Latex
+let g:tex_flavor = 'latex'
+
+" vim-json
+set conceallevel=2
+
+" Vim markdown
+let g:vim_markdown_folding_disabled = 1
+
+" vim-sneak
+let g:sneak#s_next = 1
+let g:sneak#use_ic_scs = 1
+
+" vim-jsx
+let g:jsx_ext_required = 0
+
+" vim-flow
+let g:flow#autoclose = 1

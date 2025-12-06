@@ -1,7 +1,4 @@
 
-" NERD Commenter
-let NERDSpaceDelims=1
-
 " Vim-only configuration
 if !has('nvim')
   " CtrlP.vim
@@ -72,7 +69,6 @@ if has('nvim')
   -- Disable netrw
   vim.g.loaded_netrw = 1
   vim.g.loaded_netrwPlugin = 1
-
 
   -- Setup nvim-tree
   require("nvim-tree").setup({
@@ -402,7 +398,14 @@ if has('nvim')
       },
     },
     -- Dashboard (startup screen)
-    dashboard = { enabled = false }, -- disable if you prefer empty buffer
+    dashboard = {
+      sections = {
+        { section = "header" },
+        { section = "keys", gap = 1 },
+        { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = { 2, 2 } },
+        { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 2 },
+      },
+    }, -- disable if you prefer empty buffer
     -- Terminal (replaces vimconfig/terminal.vim functions)
     terminal = {
       enabled = true,
@@ -449,67 +452,43 @@ if has('nvim')
   vim.keymap.set({'n', 'v'}, '<leader>a', ':ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
   vim.keymap.set('t', '<leader>a', '<C-\\><C-n>:ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
   -- Send visual selection to Claude
-  vim.keymap.set('v', '<leader>ca', ':ClaudeCodeSend<CR>', { desc = 'Send selection to Claude' })
+  vim.keymap.set('v', '<leader>sa', ':ClaudeCodeSend<CR>', { desc = 'Send selection to Claude' })
   -- Add current file to Claude context
-  vim.keymap.set('n', '<leader>ca', ':ClaudeCodeAdd<CR>', { desc = 'Add file to Claude context' })
+  vim.keymap.set('n', '<leader>sa', ':ClaudeCodeAdd<CR>', { desc = 'Add file to Claude context' })
+
+  -- NvimTree helper function to toggle without focusing
+  local function toggleNvimTree()
+    vim.cmd('NvimTreeToggle')
+    vim.cmd('wincmd w')
+  end
+
+  -- NvimTree helper function to open without focusing
+  local function launchNvimTree()
+    vim.cmd('NvimTreeOpen')
+    vim.cmd('wincmd w')
+  end
+
+  -- Fuzzy finder (Telescope)
+  vim.keymap.set('n', '<C-p>', ':Telescope find_files<CR>', { silent = true, desc = 'Find files' })
+  vim.keymap.set('n', '<C-o>', ':Telescope live_grep<CR>', { silent = true, desc = 'Live grep' })
+  vim.keymap.set('n', '<C-i>', ':Telescope grep_string<CR>', { silent = true, desc = 'Grep string under cursor' })
+  vim.keymap.set('n', '<leader>l', ':Telescope find_files<CR>', { silent = true, desc = 'Find files' })
+  vim.keymap.set('n', '<leader>k', ':Telescope live_grep<CR>', { silent = true, desc = 'Live grep' })
+  vim.keymap.set('n', '<leader>j', ':Telescope grep_string<CR>', { silent = true, desc = 'Grep string under cursor' })
+
+  -- Right-click context menu (implementation in helpers/context_menu.vim)
+  vim.keymap.set('n', '<RightMouse>', '<LeftMouse><Cmd>lua show_context_menu()<CR>', { desc = 'Context menu' })
+  vim.keymap.set('v', '<RightMouse>', '<LeftMouse><Cmd>lua show_context_menu()<CR>', { desc = 'Context menu' })
+
+  -- NvimTree keybindings
+  vim.keymap.set('n', '<leader>m', toggleNvimTree, { silent = true, desc = 'Toggle NvimTree' })
+  vim.keymap.set('n', '<leader>n', ':NvimTreeFindFile<CR>', { silent = true, desc = 'Find file in NvimTree' })
+  vim.keymap.set('n', '<leader>b', launchNvimTree, { silent = true, desc = 'Open NvimTree' })
+
+  -- Gitsigns keybindings
+  vim.keymap.set('n', '<leader>gb', ':Gitsigns blame_line<CR>', { silent = true, desc = 'Git blame line' })
+  vim.keymap.set('n', ')', ':Gitsigns next_hunk<CR>', { desc = 'Next git hunk' })
+  vim.keymap.set('n', '(', ':Gitsigns prev_hunk<CR>', { desc = 'Prev git hunk' })
 EOF
-
-  " NvimTree helper function to toggle without focusing
-  function! s:toggleNvimTree()
-    execute 'NvimTreeToggle'
-    " Switch back to the previous window after opening
-    execute "normal \<C-w>\<C-w>"
-  endfunction
-
-  " NvimTree helper function to open without focusing
-  function! s:launchNvimTree()
-    execute 'NvimTreeOpen'
-    " Switch back to the previous window after opening
-    execute "normal \<C-w>\<C-w>"
-  endfunction
-
-  " Fuzzy finder
-  nnoremap <silent> <C-p> :Telescope find_files<CR>
-  nnoremap <silent> <C-o> :Telescope live_grep<CR>
-  nnoremap <silent> <C-i> :Telescope grep_string<CR>
-  nnoremap <silent> <leader>l :Telescope find_files<CR>
-  nnoremap <silent> <leader>k :Telescope live_grep<CR>
-  nnoremap <silent> <leader>j :Telescope grep_string<CR>
-
-  " Right-click context menu (implementation in helpers/context_menu.vim)
-  nnoremap <RightMouse> <LeftMouse><Cmd>lua show_context_menu()<CR>
-  vnoremap <RightMouse> <LeftMouse><Cmd>lua show_context_menu()<CR>
-
-  " Nvim-tree keybindings
-  nnoremap <silent> <leader>m :call <SID>toggleNvimTree()<CR>
-  nnoremap <silent> <leader>n :NvimTreeFindFile<CR>
-  nnoremap <silent> <leader>b :call <SID>launchNvimTree()<CR>
-
-  " Gitsigns stuff
-  nnoremap <silent> <leader>gb :Gitsigns blame_line<CR>
-  nmap ) :Gitsigns next_hunk<CR>
-  nmap ( :Gitsigns prev_hunk<CR>
 endif
 
-" ============================================================
-" Shared Plugin Configuration (Vim + Neovim)
-" ============================================================
-
-" Latex
-let g:tex_flavor = 'latex'
-
-" vim-json
-set conceallevel=2
-
-" Vim markdown
-let g:vim_markdown_folding_disabled = 1
-
-" vim-sneak
-let g:sneak#s_next = 1
-let g:sneak#use_ic_scs = 1
-
-" vim-jsx
-let g:jsx_ext_required = 0
-
-" vim-flow
-let g:flow#autoclose = 1
