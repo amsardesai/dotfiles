@@ -3,28 +3,34 @@
 Personal configuration files for shell, vim/neovim, tmux, and development tools. Optimized for web development with comprehensive git workflows, modern LSP support, and productivity shortcuts.
 
 **Quick Start:**
+
 ```bash
 ./setup.sh    # Install and configure
 ./clean.sh    # Uninstall and cleanup
 ```
 
+
 ## Prerequisites
 
 **Required:**
+
 - **Git** - Version control
 - **Node.js & npm** - For LSP servers and language tools
 
 **Recommended:**
+
 - **Zsh** with oh-my-zsh - Full shell experience with themes
 - **Neovim** - Primary editor (or Vim as fallback)
 - **Tmux** - Terminal multiplexer
 - **Kitty** or **WezTerm** - Terminal emulator
 
 **Optional:**
+
 - **git-delta** - Syntax-highlighted diffs (used as git pager)
 - Graphite CLI - Enhanced git workflow
 - LM Studio CLI - Local LLM integration
 - 1Password CLI - Password management
+
 
 ## Installation
 
@@ -67,14 +73,16 @@ nvim
    - Adds source line to `~/.zshrc` (zsh)
 
 **Optimization behavior:**
+
 - Skips npm package installation if all packages are already installed
 - Skips downloading git completion files if they already exist
 - Re-running setup.sh is fast and safe
 
+
 ### Symlink Map
 
 | Source (in .dotfiles) | Destination |
-|----------------------|-------------|
+| --------------------- | ----------- |
 | `.inputrc` | `~/.inputrc` |
 | `.tern-config` | `~/.tern-config` |
 | `.tmux.conf` | `~/.tmux.conf` |
@@ -103,6 +111,7 @@ After running setup, verify:
 ### Shell Configuration
 
 **Git Aliases** (50+ shortcuts in `.zshrc`):
+
 - Common: `co` (checkout), `br` (branch), `st` (status), `dif` (diff with smart options)
 - Commit: `com`/`cam` (commit), `caam` (amend no-edit), `chp` (cherry-pick)
 - Log: `lg` (formatted log), `lb` (branch log), `lgm` (my commits)
@@ -111,17 +120,21 @@ After running setup, verify:
 - **See `.zshrc` for complete list**
 
 **Safety Aliases:**
+
 - `mv="mv -i"`, `cp="cp -i"`, `rm="rm -i"` - Interactive mode prompts
 
 **Navigation Shortcuts:**
+
 - `..`, `...`, `....`, `.....` - Go up 1-4 directories
 - `l`/`ll`/`ls` - Detailed listing with colors (`ls -alFh`)
 
 **Editor Shortcuts:**
+
 - `v`, `vi`, `n` - Launch neovim
 - `v.`, `n.` - Open neovim in current directory
 
 **Utilities:**
+
 - `c='clear'` - Clear screen
 - `rmswaps` - Remove vim swap files
 - `rebash` - Reload shell config
@@ -132,13 +145,14 @@ After running setup, verify:
 **Philosophy:** Shared config with dual plugin ecosystems. Neovim uses modern Lua plugins (telescope, treesitter, LSP), while Vim uses async alternatives.
 
 **Leader Keys:**
+
 - Leader: `,`
 - Local Leader: `;`
 
 **Essential Keybindings:**
 
 | Category | Keybinding | Action |
-|----------|------------|--------|
+| -------- | ---------- | ------ |
 | **Buffer Management** | `,]` | Next buffer |
 | | `,[` | Previous buffer |
 | | `,\` | Close buffer |
@@ -170,6 +184,7 @@ After running setup, verify:
 **Plugin Highlights:**
 
 *Shared (Vim & Neovim):*
+
 - `auto-pairs` - Auto-close brackets
 - `nerdcommenter` - Toggle comments
 - `vim-surround` - Manipulate surrounding delimiters
@@ -177,6 +192,7 @@ After running setup, verify:
 - `prettier` - Code formatting
 
 *Neovim-specific:*
+
 - `nvim-tree` - File explorer
 - `telescope` - Fuzzy finder with ui-select extension
 - `treesitter` - Advanced syntax highlighting (20+ parsers)
@@ -187,6 +203,7 @@ After running setup, verify:
 - `toggleterm` - Integrated terminal
 
 *Vim-specific:*
+
 - `NERDTree` - File explorer
 - `CtrlP` - Fuzzy finder
 - `vim-airline` - Status line
@@ -197,6 +214,7 @@ After running setup, verify:
 ### Tmux Configuration
 
 **Key Settings:**
+
 - **Prefix:** `Ctrl+A` (unbinds default `Ctrl+B`)
 - **Vi mode:** Enabled for copy-mode
 - **Mouse support:** Full mouse integration with scroll
@@ -211,6 +229,7 @@ After running setup, verify:
 #### Kitty
 
 Comprehensive configuration (2,800+ lines) in `kitty.conf`:
+
 - Custom fonts and symbol mappings
 - Color scheme
 - Keyboard shortcuts
@@ -222,6 +241,7 @@ Lua-based configuration in `wezterm/` directory. Main config is `wezterm/wezterm
 The entire directory is symlinked to support additional themes, plugins, and helper files.
 
 **Key Features:**
+
 - **Theme:** Dracula color scheme
 - **Font:** FantasqueSansM Nerd Font Mono (14pt)
 - **Performance:** WebGPU acceleration, 60fps animations
@@ -235,6 +255,7 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 ```
 
 **What clean.sh does:**
+
 - Removes all symlinks created by setup.sh
 - Cleans git completion files (git-ignored)
 - Removes vim/neovim configuration directories
@@ -245,7 +266,9 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 ### Plugins not installing in vim/neovim
 
 **Symptoms:** Empty editor, missing commands
+
 **Solutions:**
+
 - Manually run `:PlugInstall` inside vim/neovim
 - Check network connection (downloads from GitHub)
 - Verify vim-plug installed: `ls ~/.vim/autoload/plug.vim` or `~/.config/nvim/autoload/plug.vim`
@@ -253,7 +276,9 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 ### Shell aliases not working
 
 **Symptoms:** `v` command not found, git aliases don't work
+
 **Solutions:**
+
 - Verify shell sources dotfiles: `grep dotfiles ~/.zshrc` or `~/.bash_profile`
 - Restart shell: `exec $SHELL`
 - Manually source: `source ~/.zshrc`
@@ -261,7 +286,9 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 ### LSP not working in neovim
 
 **Symptoms:** No autocomplete, no go-to-definition
+
 **Solutions:**
+
 - Check npm packages: `npm list -g | grep language-server`
 - Run `:LspInfo` (neovim) or `:LspStatus` (vim) to see server status
 - Check Mason installation (neovim): `:Mason`
@@ -270,7 +297,9 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 ### Git completion not working
 
 **Symptoms:** Tab completion doesn't work for git commands
+
 **Solutions:**
+
 - Verify completion files exist: `ls ~/.dotfiles/git-completion.*`
 - Check `.profile` sources them correctly
 - Restart shell
@@ -279,7 +308,9 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 ### Tmux prefix not Ctrl+A
 
 **Symptoms:** `Ctrl+B` still works, `Ctrl+A` doesn't
+
 **Solutions:**
+
 - Verify symlink: `ls -la ~/.tmux.conf` (should point to dotfiles)
 - Reload tmux config: `tmux source-file ~/.tmux.conf`
 - Restart tmux completely: exit all sessions and relaunch
@@ -287,7 +318,9 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 ### Permission errors during setup
 
 **Symptoms:** setup.sh fails with permission denied
+
 **Solutions:**
+
 - Check write permissions in home directory
 - Remove existing symlink destinations manually if they exist
 - Ensure script is executable: `chmod +x setup.sh`
@@ -297,11 +330,13 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 ### Updating Plugins
 
 **Vim/Neovim:**
+
 ```vim
 :PlugUpdate
 ```
 
 **Shell/Config:**
+
 ```bash
 cd ~/.dotfiles
 git pull
@@ -312,21 +347,25 @@ git pull
 1. Edit files in `~/.dotfiles/`
 2. Changes automatically reflected (symlinked)
 3. Commit changes:
+
    ```bash
    git add .
    git commit -m "Add feature X"
    git push
    ```
 
+
 ### Syncing Across Devices
 
 **On device with changes:**
+
 ```bash
 cd ~/.dotfiles
 git push
 ```
 
 **On other devices:**
+
 ```bash
 cd ~/.dotfiles
 git pull
@@ -335,6 +374,7 @@ git pull
 ---
 
 **Config File Locations:**
+
 - Shell: `.zshrc`, `.profile`, `.bash_prompt`, `.inputrc`
 - Git: `.gitconfig`, `themes.gitconfig`
 - Vim/Neovim: `vimconfig/*.vim`, `ftplugin/*.vim`

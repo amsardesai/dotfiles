@@ -584,8 +584,15 @@ require("claudecode").setup({
 	log_level = "warn",
 	terminal = {
 		split_side = "right",
-		split_width_percentage = 0.40,
+		split_width_percentage = 0.40, -- Fallback for non-Snacks providers
 		provider = "snacks",
+		snacks_win_opts = {
+			width = function()
+				local editor_width = vim.o.columns
+				local percentage_width = math.floor(editor_width * 0.40)
+				return math.min(percentage_width, 50) -- Cap at 50 columns
+			end,
+		},
 	},
 })
 

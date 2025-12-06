@@ -45,6 +45,7 @@ delete_file "$HOME/.gvimrc"
 delete_file "$HOME/.inputrc"
 delete_file "$HOME/.tern-config"
 delete_file "$HOME/.tmux.conf"
+delete_file "$HOME/.markdownlintrc"
 delete_file "$HOME/.claude/CLAUDE.md"
 
 echo_task "Deleting vim stuff..."
