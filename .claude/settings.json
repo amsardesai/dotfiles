@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch",
+      "WebSearch",
+      "Edit(file:README.md)",
+      "Edit(file:CLAUDE.md)",
+      "Edit(file:.claude/CLAUDE.md)",
+      "Write(file:README.md)",
+      "Write(file:CLAUDE.md)",
+      "Write(file:.claude/CLAUDE.md)"
+    ]
+  }
+}

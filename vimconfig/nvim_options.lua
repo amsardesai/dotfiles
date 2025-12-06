@@ -65,7 +65,7 @@ require("bufferline").setup({
     color_icons = false,
     hover = {
       enabled = true,
-      delay = 200,
+      delay = 50,
       reveal = {'close'},
     },
     offsets = {
@@ -217,6 +217,14 @@ vim.diagnostic.config({
   underline = true,
   severity_sort = false,
   float = true,
+})
+
+-- Auto-show diagnostics on cursor hold
+vim.o.updatetime = 250
+vim.api.nvim_create_autocmd('CursorHold', {
+  callback = function()
+    vim.diagnostic.open_float(nil, { focusable = false })
+  end,
 })
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
