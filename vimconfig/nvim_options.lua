@@ -3,8 +3,12 @@
 
 local vim = vim ---@diagnostic disable-line: undefined-global
 
+-- Get the directory of this file for relative imports
+local current_dir = vim.fn.fnamemodify(debug.getinfo(1, 'S').source:sub(2), ':h')
+
 local NvimTreeApi = require('nvim-tree.api')
 local Snacks = require('snacks')
+local context_menu = dofile(current_dir .. '/helpers/context_menu.lua')
 
 -- Disable netrw
 vim.g.loaded_netrw = 1
@@ -423,7 +427,7 @@ vim.keymap.set('n', '<leader>j', ':Telescope grep_string<CR>', { silent = true, 
 
 -- Right-click context menu
 local function showContextMenu()
-  dofile(vim.fn.expand('$VIMCONFIG/helpers/context_menu.lua')).show()
+  context_menu.show()
 end
 vim.keymap.set({'n', 'v'}, '<RightMouse>', showContextMenu, { desc = 'Context menu' })
 
