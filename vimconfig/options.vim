@@ -27,6 +27,14 @@ set backup " Create backup files before overwriting
 set undofile " Persist undo history across sessions
 set autoread " Automatically reload file if changed externally
 
+" Auto-reload files changed externally (e.g., by AI tools)
+" Check on focus, buffer enter, and periodically when idle
+augroup AutoReloadFiles
+  autocmd!
+  autocmd FocusGained,BufEnter * checktime
+  autocmd CursorHold,CursorHoldI * checktime
+augroup END
+
 " ============================================================
 " Indentation Settings
 " ============================================================

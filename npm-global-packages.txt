@@ -1,0 +1,7 @@
+# Global npm packages for development
+# One package per line, comments start with #
+
+typescript-language-server
+typescript
+vscode-langservers-extracted
+vim-language-server

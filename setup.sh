@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPTPATH=$(pwd -P)
-NPM_PACKAGES="typescript-language-server typescript vscode-langservers-extracted vim-language-server"
+NPM_PACKAGES=$(grep -v '^#' "$SCRIPTPATH/npm-global-packages.txt" | grep -v '^$' | tr '\n' ' ')
 
 # Counters for summary output
 DOWNLOAD_COUNT=0
@@ -104,7 +104,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
 		if [ -f "$SCRIPTPATH/Brewfile" ]; then
 			echo_success "Installing Brewfile packages..."
-			if brew bundle --file="$SCRIPTPATH/Brewfile" --no-lock >/dev/null 2>&1; then
+			if brew bundle --file="$SCRIPTPATH/Brewfile" >/dev/null 2>&1; then
 				echo_success "Brewfile packages installed"
 			else
 				echo_warn "Some Brewfile packages failed (run 'brew bundle' manually for details)"

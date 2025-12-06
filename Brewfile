@@ -15,3 +15,6 @@ brew "git-delta"
 
 # Neovim dependencies
 brew "imagemagick"  # For image.nvim
+
+# GUI apps
+cask "wezterm"
