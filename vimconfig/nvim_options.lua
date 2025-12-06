@@ -33,7 +33,7 @@ local prev_rename = { new_name = "", old_name = "" }
 vim.api.nvim_create_autocmd("User", {
   pattern = "NvimTreeSetup",
   callback = function()
-    local events = require("nvim-tree.api").events
+    local events = NvimTreeApi.events
     events.subscribe(events.Event.NodeRenamed, function(data)
       if prev_rename.new_name ~= data.new_name or prev_rename.old_name ~= data.old_name then
         prev_rename = data
