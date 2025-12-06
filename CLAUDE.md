@@ -48,11 +48,12 @@
 ### Editor Philosophy
 
 - **Shared config:** Vim and Neovim use the same base configuration (`vimconfig/*.vim`, `ftplugin/*.vim`)
+- **Lua-first for Neovim:** All Neovim-specific config now lives in `vimconfig/nvim_options.lua` (~660 lines)
 - **Dual plugin ecosystems:**
-  - Neovim → Modern Lua plugins (telescope, treesitter, native LSP)
+  - Neovim → Modern Lua plugins (fzf-lua, treesitter, native LSP, snacks.nvim)
   - Vim → Async alternatives (CtrlP, vim-lsp, NERDTree)
 - **Entry points:**
-  - Neovim: `init-nvim.vim` → sources shared configs
+  - Neovim: `init-nvim.vim` → sources shared configs → loads `nvim_options.lua`
   - Vim: `init-vim.vim` → sources shared configs
 
 ### Shell Environment Design
@@ -79,11 +80,15 @@
 - `init-gvim.vim` - GUI vim settings (~/.gvimrc symlink target)
 - `vimconfig/` - Shared vim/nvim configuration modules
   - `vimconfig/plugins.vim` - Plugin declarations (vim-plug)
-  - `vimconfig/plugin_options.vim` - Plugin configurations (telescope, treesitter, LSP, etc.)
-  - `vimconfig/terminal.vim` - Built-in terminal configuration (toggle, keybindings)
-  - `vimconfig/helpers/context_menu.vim` - Right-click context menu (LSP, Git, File ops)
-  - `vimconfig/*.vim` - Feature-specific configs (keybindings, LSP, etc.)
+  - `vimconfig/nvim_options.lua` - **All Neovim Lua config** (~660 lines): nvim-tree, lualine, gitsigns, bufferline, fzf-lua, treesitter, LSP, mason, cmp, snacks, typescript-tools, none-ls, image.nvim, claudecode
+  - `vimconfig/options.vim` - Shared vim/nvim options + cursor shape workaround
+  - `vimconfig/mappings.vim` - Keybindings shared between vim/nvim
+  - `vimconfig/terminal.vim` - Vim-only terminal config (Neovim uses snacks.terminal)
+  - `vimconfig/helpers/context_menu.lua` - Right-click context menu (Lua, uses fzf-lua)
+  - `vimconfig/helpers/file_cache.lua` - Persisted file cache for instant file picker
+  - `vimconfig/helpers/behave_zz.vim` - Helper for zz behavior
 - `ftplugin/` - Filetype-specific settings (symlinked to both ~/.vim/ and ~/.config/nvim/)
+  - `ftplugin/markdown.vim` - Soft wrapping, display-line navigation
 
 ### Terminal & Multiplexer
 
@@ -106,12 +111,20 @@
 ### Required
 
 - **Git** - Version control
-- **git-delta** - Syntax-highlighted diff pager (configured in .gitconfig)
-- **Node.js & npm** - For LSP servers
-  - `typescript-language-server`
-  - `typescript`
+- **Node.js & npm** - For LSP servers (see `npm-global-packages.txt`)
+  - `typescript-language-server`, `typescript`
   - `vscode-langservers-extracted` (HTML/CSS/JSON/ESLint)
   - `vim-language-server`
+
+### Brewfile (macOS)
+
+`Brewfile` provides declarative dependency management. Run `brew bundle` to install all:
+
+- **Core:** git, neovim, tmux, node
+- **Terminal enhancements:** bat, fd, fzf, git-delta, ripgrep
+- **Neovim deps:** imagemagick (for image.nvim)
+- **Linters:** shellcheck, tflint
+- **GUI apps:** wezterm
 
 ### Recommended
 
@@ -119,6 +132,9 @@
 - **Neovim** - Primary editor (Vim as fallback)
 - **Tmux** - Terminal multiplexer
 - **Kitty** or **WezTerm** - Terminal emulator (choose one or both)
+- **bat** - Syntax-highlighted cat (used by fzf-lua previewer)
+- **fd** - Fast file finder (fzf-lua fallback for non-git dirs)
+- **ripgrep** - Fast grep (used by fzf-lua live grep)
 
 ### Optional Tools
 
@@ -126,11 +142,18 @@
 - **LM Studio CLI** - Local LLM integration
 - **1Password CLI** - Password management
 
+### Mason-managed Tools (auto-installed)
+
+**LSP servers:** cssls, docker_compose_language_service, dockerls, eslint, html, jsonls, lua_ls, pylsp, terraformls, vimls, yamlls
+
+**Linters/Formatters (via none-ls):** actionlint, biome, eslint_d, hadolint, markdownlint, prettier, shellcheck, shfmt, stylua, tflint, yamllint
+
 ### Plugin Managers
 
 - **vim-plug** - Vim/Neovim plugin management (auto-installs on first launch)
 - **TPM (Tmux Plugin Manager)** - Tmux plugin management
 - **oh-my-zsh** - Zsh plugin framework (if installed)
+- **Mason** - LSP/linter/formatter installer for Neovim
 
 ---
 
@@ -159,6 +182,91 @@
 ---
 
 ## Recent Discoveries
+
+### 2025-12-06
+
+#### Major Lua Migration
+
+- **`nvim_options.lua` (~660 lines):** Consolidated ALL Neovim-specific configuration into single Lua file. Replaces the old VimScript `plugin_options.vim`. Contains setup for: nvim-tree, lualine, gitsigns, bufferline, fzf-lua, treesitter, LSP, mason, cmp, snacks.nvim, typescript-tools, none-ls, image.nvim, claudecode.nvim, lsp-lens.nvim.
+- **`context_menu.lua`:** Rewrote right-click context menu in Lua. Now uses fzf-lua's `vim.ui.select()` integration instead of Telescope.
+- **`file_cache.lua` (NEW):** Persisted file cache system for instant file picker. Caches `git ls-files` results to disk, watches `.git/index` for automatic invalidation using `vim.uv.new_fs_event()`. Provides sub-50ms file picker in large repos.
+
+#### fzf-lua Migration (Replaced Telescope)
+
+- **Why:** Much faster for large repos (100k+ files). Native fzf binary + bat previewer.
+- **Features:**
+  - `git ls-files` for instant file listing in git repos, `fd` fallback for non-git
+  - `rg` for live grep with smart-case and hidden files
+  - bat previewer with Tokyo Night theme
+  - `vim.ui.select()` integration (replaces telescope-ui-select)
+- **Keybindings:** `<C-p>` (cached files), `<C-o>` (live grep), `<leader>ll/lk/lj/lr`
+
+#### snacks.nvim Integration (QoL Plugin Collection)
+
+Folke's snacks.nvim replaces several individual plugins:
+
+- `bufdelete` - Better buffer deletion (preserves window layout)
+- `bigfile` - Large file optimizations (disables slow features)
+- `quickfile` - Quick file picker from recent files
+- `notifier` - Toast notifications
+- `rename` - LSP rename with preview, integrates with nvim-tree file renames
+- `words` - Highlight word under cursor across buffer
+- `gitbrowse` - Open current file in GitHub
+- `input` - Better input UI
+- `scope` - Scope-based animations/dimming
+- `scroll` - Smooth scrolling with configurable animation
+- `indent` - Animated indent guides
+- `dashboard` - Startup screen with recent files and projects
+- `terminal` - Replaces custom `terminal.vim` functions, used by claudecode.nvim
+
+#### none-ls Integration (Linters & Formatters via LSP)
+
+- **Linters:** hadolint, shellcheck, markdownlint, yamllint, actionlint, tflint
+- **Formatters:** prettier (web files), biome (JS/TS if biome.json exists), stylua, shfmt, terraform_fmt
+- **eslint_d:** Via none-ls-extras for fast eslint
+- **Format on save:** Auto-formats on `:w` for supported filetypes
+- **Mason integration:** `mason-null-ls` auto-installs all tools
+
+#### typescript-tools.nvim
+
+- Direct tsserver communication (bypasses typescript-language-server npm package)
+- Separate diagnostic server for better performance
+- 16GB memory limit for large projects
+- Auto-close JSX tags
+- Inlay hints for parameters, return types, variable types
+
+#### New Plugins
+
+- **image.nvim:** View images (PNG, JPG, GIF, WebP) in terminal using kitty graphics protocol. Requires ImageMagick.
+- **claudecode.nvim:** Claude Code editor integration. `<leader>a` toggles Claude terminal (via snacks), `<leader>sa` adds current file to context.
+- **lsp-lens.nvim:** Shows reference/implementation counts above functions. Git author info. Toggle with `gL`.
+
+#### Brewfile & setup.sh Improvements
+
+- **Brewfile:** Declarative Homebrew deps - git, neovim, tmux, node, bat, fd, fzf, git-delta, ripgrep, imagemagick, shellcheck, tflint, wezterm.
+- **setup.sh now:**
+  - Runs `brew bundle` if Brewfile exists
+  - Installs bat Tokyo Night theme to `$(bat --config-dir)/themes/`
+  - Compiles WezTerm terminfo to `~/.terminfo`
+  - Symlinks `.markdownlintrc`
+
+#### WezTerm Enhancements
+
+- Theme: Tokyo Night (was Dracula)
+- New keybindings:
+  - `CMD+SHIFT+S` - Pane swap mode (select which pane to swap with)
+  - `CMD+ALT+Arrows` - Tab navigation
+  - `CMD+F` - Search scrollback
+  - `CMD+SHIFT+X` - Copy mode (vim-like navigation)
+  - `CMD+K` - Clear scrollback
+- Quick select patterns for git hashes, UUIDs
+
+#### Markdown Support
+
+- `ftplugin/markdown.vim` - Soft wrapping for comfortable reading
+- `j`/`k` navigate by display lines (not file lines)
+- No colorcolumn (looks weird with wrap)
+- `.markdownlintrc` - Disables line-length rule (MD013)
 
 ### 2025-12-05
 

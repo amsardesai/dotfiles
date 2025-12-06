@@ -9,13 +9,13 @@ Personal configuration files for shell, vim/neovim, tmux, and development tools.
 ./clean.sh    # Uninstall and cleanup
 ```
 
-
 ## Prerequisites
 
 **Required:**
 
 - **Git** - Version control
 - **Node.js & npm** - For LSP servers and language tools
+- **Homebrew** (macOS) - Package manager for dependencies
 
 **Recommended:**
 
@@ -24,13 +24,19 @@ Personal configuration files for shell, vim/neovim, tmux, and development tools.
 - **Tmux** - Terminal multiplexer
 - **Kitty** or **WezTerm** - Terminal emulator
 
+**Terminal tools (installed via Brewfile):**
+
+- **bat** - Syntax-highlighted cat (used by file picker)
+- **fd** - Fast file finder
+- **fzf** - Fuzzy finder
+- **ripgrep** - Fast grep
+- **git-delta** - Syntax-highlighted diffs
+
 **Optional:**
 
-- **git-delta** - Syntax-highlighted diffs (used as git pager)
 - Graphite CLI - Enhanced git workflow
 - LM Studio CLI - Local LLM integration
 - 1Password CLI - Password management
-
 
 ## Installation
 
@@ -53,31 +59,40 @@ nvim
 
 ### What setup.sh Does
 
-1. **Downloads git completion files** from official git repository
+1. **Installs Brewfile packages** (macOS only):
+   - Core: git, neovim, tmux, node
+   - Terminal tools: bat, fd, fzf, git-delta, ripgrep
+   - Linters: shellcheck, tflint
+   - Apps: wezterm
+
+2. **Downloads git completion files** from official git repository
    - git-completion.bash, git-completion.zsh, git-prompt.bash
 
-2. **Installs npm packages globally:**
-   - `typescript-language-server`
-   - `typescript`
+3. **Installs npm packages globally** (from `npm-global-packages.txt`):
+   - `typescript-language-server`, `typescript`
    - `vscode-langservers-extracted`
    - `vim-language-server`
 
-3. **Creates symlinks** to dotfiles:
-   - Shell: `.inputrc`
+4. **Compiles WezTerm terminfo** for proper cursor/undercurl support
+
+5. **Installs bat Tokyo Night theme** for syntax-highlighted previews
+
+6. **Creates symlinks** to dotfiles:
+   - Shell: `.inputrc`, `.markdownlintrc`
    - Terminal: `.tmux.conf`, `kitty.conf`, `wezterm/`
    - Editors: vim and nvim configurations
-   - Git: completion scripts
+   - Claude: `.claude/CLAUDE.md`
 
-4. **Updates shell configs** to source dotfiles:
+7. **Updates shell configs** to source dotfiles:
    - Adds source line to `~/.bash_profile` (bash)
    - Adds source line to `~/.zshrc` (zsh)
 
 **Optimization behavior:**
 
-- Skips npm package installation if all packages are already installed
-- Skips downloading git completion files if they already exist
-- Re-running setup.sh is fast and safe
-
+- Skips Brewfile if packages already installed
+- Skips npm packages if already installed
+- Skips downloads if files already exist
+- Re-running setup.sh is fast and safe (~5 seconds)
 
 ### Symlink Map
 
@@ -142,7 +157,7 @@ After running setup, verify:
 
 ### Vim/Neovim Setup
 
-**Philosophy:** Shared config with dual plugin ecosystems. Neovim uses modern Lua plugins (telescope, treesitter, LSP), while Vim uses async alternatives.
+**Philosophy:** Shared config with dual plugin ecosystems. Neovim uses modern Lua plugins (fzf-lua, treesitter, native LSP), while Vim uses async alternatives. All Neovim config lives in `vimconfig/nvim_options.lua`.
 
 **Leader Keys:**
 
@@ -155,10 +170,13 @@ After running setup, verify:
 | -------- | ---------- | ------ |
 | **Buffer Management** | `,]` | Next buffer |
 | | `,[` | Previous buffer |
-| | `,\` | Close buffer |
-| **Fuzzy Finder** | `<C-p>` | Find files |
+| | `,bd` | Delete buffer (preserves layout) |
+| **Fuzzy Finder (fzf-lua)** | `<C-p>` | Find files (cached, instant) |
 | | `<C-o>` | Live grep |
-| | `<C-i>` | Grep for string |
+| | `,ll` | Find files |
+| | `,lk` | Live grep |
+| | `,lj` | Grep word under cursor |
+| | `,lr` | Refresh file cache |
 | **File Explorer** | `,m` | Toggle file tree |
 | | `,n` | Find current file |
 | | `,b` | Open tree |
@@ -169,17 +187,27 @@ After running setup, verify:
 | | `<F2>` | Rename symbol |
 | | `<F3>` | Format document |
 | | `<F4>` | Code actions |
-| **Terminal** | `,z` | Open terminal (horizontal split) |
-| | `,x` | Close terminal |
-| | `;;q` / `<ESC><ESC>` | Exit terminal mode |
+| | `gh` | Toggle inlay hints |
+| | `gL` | Toggle LSP lens |
+| | `<C-LeftMouse>` | Go to definition (like VS Code) |
+| **Terminal (snacks)** | `,z` | Toggle terminal |
+| | `,x` | Hide all terminals |
+| | `,X` | Kill all terminals |
+| **Claude Code** | `,a` | Toggle Claude Code terminal |
+| | `,sa` | Add file to Claude context |
 | **Git** | `(` | Previous hunk |
 | | `)` | Next hunk |
 | | `,gb` | Git blame |
+| | `,go` | Open in GitHub |
+| | `[[` / `]]` | Prev/next reference |
 | **Context Menu** | `<RightMouse>` | Open context menu (LSP, Git, File ops) |
+| **Diagnostics** | `gl` | Show diagnostic float |
+| | `[d` / `]d` | Prev/next diagnostic |
 | **Pane Navigation** | `Shift+Arrows` | Move between splits (all modes) |
 | **Utilities** | `<CR>` | Clear search highlight |
 | | `,fw` | Fix whitespace |
 | | `,rs` | Reload vim config |
+| | `,rn` | Rename file (with LSP) |
 
 **Plugin Highlights:**
 
@@ -189,18 +217,22 @@ After running setup, verify:
 - `nerdcommenter` - Toggle comments
 - `vim-surround` - Manipulate surrounding delimiters
 - `vim-sneak` - Fast motion search
-- `prettier` - Code formatting
 
 *Neovim-specific:*
 
+- `fzf-lua` - Fast fuzzy finder (replaces telescope)
+- `snacks.nvim` - QoL collection (bufdelete, terminal, scroll, indent, dashboard, rename, gitbrowse, notifications)
 - `nvim-tree` - File explorer
-- `telescope` - Fuzzy finder with ui-select extension
 - `treesitter` - Advanced syntax highlighting (20+ parsers)
-- `lualine` - Status line
-- `mason` + `mason-lspconfig` - Auto-installs 14 LSP servers
-- `nvim-lspconfig` - LSP configuration
+- `lualine` - Status line with LSP status
+- `bufferline` - Tab bar with diagnostics
+- `mason` + `mason-lspconfig` - Auto-installs 11 LSP servers
+- `typescript-tools` - Direct tsserver (faster than ts-language-server)
+- `none-ls` - Linters/formatters via LSP (prettier, eslint_d, biome, stylua, etc.)
 - `nvim-cmp` - Autocompletion
-- `toggleterm` - Integrated terminal
+- `lsp-lens` - Reference counts above functions
+- `image.nvim` - View images in terminal
+- `claudecode.nvim` - Claude Code integration
 
 *Vim-specific:*
 
@@ -242,11 +274,29 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 
 **Key Features:**
 
-- **Theme:** Dracula color scheme
+- **Theme:** Tokyo Night
 - **Font:** FantasqueSansM Nerd Font Mono (14pt)
-- **Performance:** WebGPU acceleration, 60fps animations
+- **Performance:** WebGPU acceleration, 120fps animations (ProMotion)
 - **Scrollback:** 10,000 lines
-- **Keybindings:** CMD-based (macOS-friendly) - pane splitting (CMD+D), tab navigation, pane movement
+- **Transparency:** 90% opacity with blur (macOS)
+
+**Keybindings (macOS-friendly):**
+
+| Keybinding | Action |
+| ---------- | ------ |
+| `CMD+D` | Split horizontal |
+| `CMD+SHIFT+D` | Split vertical |
+| `CMD+SHIFT+Arrows` | Navigate panes |
+| `CMD+W` | Close pane |
+| `CMD+T` | New tab |
+| `CMD+SHIFT+[/]` | Navigate tabs |
+| `CMD+ALT+Arrows` | Navigate tabs |
+| `CMD+SHIFT+S` | Swap pane (select mode) |
+| `CMD+SHIFT+Return` | Toggle pane zoom |
+| `CMD+F` | Search scrollback |
+| `CMD+SHIFT+X` | Copy mode (vim navigation) |
+| `CMD+K` | Clear scrollback |
+| `CMD+SHIFT+Space` | Quick select (git hashes, UUIDs) |
 
 ## Cleanup/Uninstall
 
@@ -353,7 +403,6 @@ git pull
    git commit -m "Add feature X"
    git push
    ```
-
 
 ### Syncing Across Devices
 
