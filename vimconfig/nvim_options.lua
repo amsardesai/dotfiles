@@ -87,6 +87,9 @@ require("bufferline").setup({
 local fzf = require('fzf-lua')
 
 fzf.setup({
+  -- Profiles: fzf-native uses bat for fast previews, hide keeps fzf in background
+  { "fzf-native", "hide" },
+
   -- Use native fzf binary (significantly faster for 100k+ files)
   fzf_bin = "fzf",
 
@@ -101,11 +104,15 @@ fzf.setup({
     cmd = "rg --column --line-number --no-heading --color=always --smart-case --hidden -g '!.git' -g '!node_modules' -g '!build'",
   },
   winopts = {
+    backdrop = 30,
     height = 0.8,
     width = 0.8,
     preview = {
       horizontal = "right:50%",
-      delay = 100,
+      delay = 400,
+    },
+    files = {
+      file_icon_padding = '',
     },
   },
   oldfiles = {
@@ -113,13 +120,138 @@ fzf.setup({
     -- Frecency note: fzf-lua's oldfiles is recency-only (most recently opened).
     -- For true frecency (frequency + recency), consider adding smart-open.nvim
   },
-  fzf_opts = {
-    ["--layout"] = "reverse",
-  },
 })
 
 -- Replace telescope-ui-select for vim.ui.select
 fzf.register_ui_select()
+
+-- File cache for instant file picker (avoids running git ls-files each time)
+local file_cache = nil
+local cache_job = nil
+
+local function refresh_file_cache()
+  -- Cancel any in-progress refresh
+  if cache_job then
+    pcall(vim.fn.jobstop, cache_job)
+  end
+
+  cache_job = vim.fn.jobstart(
+    "git ls-files --cached --others --exclude-standard",
+    {
+      stdout_buffered = true,
+      on_stdout = function(_, data)
+        if data then
+          file_cache = vim.tbl_filter(function(l) return l ~= "" end, data)
+        end
+      end,
+      on_exit = function()
+        cache_job = nil
+      end,
+    }
+  )
+end
+
+-- Warm cache on startup (slight delay to not block UI)
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    vim.defer_fn(refresh_file_cache, 100)
+  end,
+})
+
+-- Refresh on directory change
+vim.api.nvim_create_autocmd("DirChanged", {
+  callback = refresh_file_cache,
+})
+
+-- Refresh periodically (every 60s) for external changes
+local cache_timer = vim.uv.new_timer()
+cache_timer:start(60000, 60000, vim.schedule_wrap(refresh_file_cache))
+
+-- Watch .git/HEAD (checkouts, branch switches) and .git/index (commits, staging)
+local git_watchers = {}
+
+local function setup_git_watchers()
+  -- Clean up existing watchers
+  for _, watcher in ipairs(git_watchers) do
+    watcher:stop()
+  end
+  git_watchers = {}
+
+  local cwd = vim.fn.getcwd()
+  local git_entry = cwd .. '/.git'
+
+  -- Check if .git exists
+  local stat = vim.uv.fs_stat(git_entry)
+  if not stat then return end
+
+  local git_dir
+
+  -- Handle worktrees: .git is a file containing "gitdir: /path/to/git/dir"
+  if stat.type == 'file' then
+    local content = vim.fn.readfile(git_entry)[1] or ''
+    local gitdir = content:match('gitdir: (.+)')
+    if not gitdir then return end
+
+    -- Resolve relative paths
+    if not gitdir:match('^/') then
+      gitdir = vim.fn.fnamemodify(cwd .. '/' .. gitdir, ':p')
+    end
+    git_dir = gitdir:gsub('/$', '') .. '/'
+  else
+    git_dir = git_entry .. '/'
+  end
+
+  local debounce_timer = nil
+
+  local function debounced_refresh()
+    if debounce_timer then
+      debounce_timer:stop()
+    end
+    debounce_timer = vim.defer_fn(refresh_file_cache, 200)
+  end
+
+  -- Watch HEAD and index
+  for _, file in ipairs({ 'HEAD', 'index' }) do
+    local filepath = git_dir .. file
+    if vim.uv.fs_stat(filepath) then
+      local watcher = vim.uv.new_fs_event()
+      watcher:start(filepath, {}, vim.schedule_wrap(debounced_refresh))
+      table.insert(git_watchers, watcher)
+    end
+  end
+end
+
+-- Setup git watchers on startup and directory change
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = setup_git_watchers,
+})
+
+vim.api.nvim_create_autocmd("DirChanged", {
+  callback = setup_git_watchers,
+})
+
+-- Cached file picker
+local function cached_files()
+  if file_cache and #file_cache > 0 then
+    fzf.fzf_exec(file_cache, {
+      prompt = "Files❯ ",
+      previewer = "builtin",
+      actions = fzf.defaults.actions.files,
+      file_icons = true,
+      color_icons = true,
+    })
+  else
+    -- Fallback if cache not ready
+    fzf.files()
+  end
+end
+
+-- Manual cache refresh
+local function force_refresh_cache()
+  file_cache = nil
+  refresh_file_cache()
+  vim.notify("File cache refreshing...", vim.log.levels.INFO)
+end
 
 
 require('nvim-treesitter.configs').setup({
@@ -420,17 +552,14 @@ vim.keymap.set('v', '<leader>a', ':ClaudeCodeSend<CR>', { desc = 'Send selection
 vim.keymap.set('n', '<leader>sa', ':ClaudeCodeAdd<CR>', { desc = 'Add file to Claude context' })
 
 -- Fuzzy finder (fzf-lua)
--- Primary file picker
-vim.keymap.set({'n', 'i', 'v', 't'}, '<C-p>', fzf.files, { silent = true, desc = 'Find files' })
-vim.keymap.set('n', '<leader>l', fzf.files, { silent = true, desc = 'Find files' })
-
--- Grep
-vim.keymap.set({'n', 'i', 't'}, '<C-o>', fzf.live_grep, { silent = true, desc = 'Live grep' })
-vim.keymap.set('n', '<leader>p', fzf.live_grep, { silent = true, desc = 'Live grep' })
-vim.keymap.set('n', '<C-i>', fzf.grep_cword, { silent = true, desc = 'Grep word under cursor' })
-vim.keymap.set('n', '<leader>j', fzf.grep_cword, { silent = true, desc = 'Grep word under cursor' })
+-- Primary file picker (uses cached file list for speed)
+vim.keymap.set({'n', 'i', 'v', 't'}, '<C-p>', cached_files, { silent = true, desc = 'Find files' })
+vim.keymap.set({'n', 'i'}, '<C-o>', fzf.live_grep, { silent = true, desc = 'Live grep' })
 vim.keymap.set('v', '<C-o>', fzf.grep_visual, { silent = true, desc = 'Grep visual selection' })
-vim.keymap.set('v', '<C-i>', fzf.grep_visual, { silent = true, desc = 'Grep visual selection' })
+vim.keymap.set('n', '<leader>ll', cached_files, { silent = true, desc = 'Find files' })
+vim.keymap.set('n', '<leader>lr', force_refresh_cache, { silent = true, desc = 'Refresh file cache' })
+vim.keymap.set('n', '<leader>lk', fzf.live_grep, { silent = true, desc = 'Live grep' })
+vim.keymap.set('n', '<leader>lj', fzf.grep_cword, { silent = true, desc = 'Grep word under cursor' })
 
 -- Right-click context menu
 local function showContextMenu()
