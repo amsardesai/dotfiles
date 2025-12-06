@@ -420,14 +420,38 @@ if has('nvim')
   vim.keymap.set('n', ']]', function() Snacks.words.jump(1) end, { desc = 'Next reference' })
   vim.keymap.set('n', '[[', function() Snacks.words.jump(-1) end, { desc = 'Prev reference' })
 
-  -- Snacks terminal keybindings (replaces vimconfig/terminal.vim functions)
+  -- Snacks terminal keybindings
+  -- Bottom terminal (default shell)
   vim.keymap.set({'n', 'v'}, '<leader>z', function() Snacks.terminal.toggle() end, { desc = 'Toggle terminal' })
   vim.keymap.set('t', '<leader>z', function() Snacks.terminal.toggle() end, { desc = 'Toggle terminal' })
+  -- Hide all terminals (preserves session)
   vim.keymap.set({'n', 'v', 't'}, '<leader>x', function()
+    for _, term in ipairs(Snacks.terminal.list()) do
+      term:hide()
+    end
+  end, { desc = 'Hide all terminals' })
+  -- Kill all terminals (terminates session)
+  vim.keymap.set({'n', 'v', 't'}, '<leader>X', function()
     for _, term in ipairs(Snacks.terminal.list()) do
       term:close()
     end
-  end, { desc = 'Close terminal' })
+  end, { desc = 'Kill all terminals' })
+
+  -- claudecode.nvim setup (editor context integration with Claude Code)
+  require("claudecode").setup({
+    terminal = {
+      split_side = "right",
+      split_width_percentage = 0.40,
+      provider = "snacks",
+    },
+  })
+  -- Toggle Claude Code terminal (drawer behavior with editor context)
+  vim.keymap.set({'n', 'v'}, '<leader>a', ':ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
+  vim.keymap.set('t', '<leader>a', '<C-\\><C-n>:ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
+  -- Send visual selection to Claude
+  vim.keymap.set('v', '<leader>ca', ':ClaudeCodeSend<CR>', { desc = 'Send selection to Claude' })
+  -- Add current file to Claude context
+  vim.keymap.set('n', '<leader>ca', ':ClaudeCodeAdd<CR>', { desc = 'Add file to Claude context' })
 EOF
 
   " NvimTree helper function to toggle without focusing

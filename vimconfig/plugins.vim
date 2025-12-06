@@ -15,6 +15,7 @@ call plug#begin($VIMPATH . 'bundle')
 
   if has('nvim')
     Plug 'folke/snacks.nvim'
+    Plug 'coder/claudecode.nvim'
     Plug 'nvim-lualine/lualine.nvim'
     Plug 'akinsho/bufferline.nvim'
     Plug 'nvim-tree/nvim-tree.lua'
