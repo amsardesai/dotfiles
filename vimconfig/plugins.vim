@@ -47,6 +47,9 @@ call plug#begin($VIMPATH . 'bundle')
 
     " Theme
     Plug 'folke/tokyonight.nvim'
+
+    " Image viewing in terminal
+    Plug '3rd/image.nvim'
   endif
 
   if !has('nvim')

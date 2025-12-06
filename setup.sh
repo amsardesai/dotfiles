@@ -94,6 +94,28 @@ if ! infocmp "$TERM" >/dev/null 2>&1; then
 fi
 
 # =============================================================================
+# Homebrew (macOS)
+# =============================================================================
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo_section "🍺 Checking Homebrew..."
+
+    if command -v brew &>/dev/null; then
+        echo_success "Homebrew found"
+
+        if [ -f "$SCRIPTPATH/Brewfile" ]; then
+            echo_success "Installing Brewfile packages..."
+            if brew bundle --file="$SCRIPTPATH/Brewfile" --no-lock >/dev/null 2>&1; then
+                echo_success "Brewfile packages installed"
+            else
+                echo_warn "Some Brewfile packages failed (run 'brew bundle' manually for details)"
+            fi
+        fi
+    else
+        echo_warn "Homebrew not found (skipping Brewfile)"
+    fi
+fi
+
+# =============================================================================
 # Dependencies
 # =============================================================================
 echo_section "🔍 Checking dependencies..."
