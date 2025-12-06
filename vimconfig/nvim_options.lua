@@ -674,6 +674,7 @@ end, { desc = "Kill all terminals" })
 
 -- claudecode.nvim setup (editor context integration with Claude Code)
 require("claudecode").setup({
+	log_level = "warn",
 	terminal = {
 		split_side = "right",
 		split_width_percentage = 0.40,
