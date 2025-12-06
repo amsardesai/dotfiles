@@ -9,6 +9,12 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
+-- Open links in Chrome instead of system default browser
+wezterm.on('open-uri', function(window, pane, uri)
+  wezterm.open_with(uri, 'Google Chrome')
+  return false
+end)
+
 -- =============================================================================
 -- Appearance
 -- =============================================================================
@@ -126,6 +132,12 @@ config.quick_select_patterns = {
   '[0-9a-f]{7,40}',  -- Git commit hashes
   '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',  -- UUIDs
 }
+
+-- Hyperlink detection (URLs, file paths, etc.)
+config.hyperlink_rules = wezterm.default_hyperlink_rules()
+
+-- Bypass mouse reporting for CMD key (allows CMD+Click links even in tmux/vim)
+config.bypass_mouse_reporting_modifiers = 'SUPER'
 
 -- =============================================================================
 -- Keybindings
@@ -270,6 +282,25 @@ config.keys = {
     key = 'r',
     mods = 'CMD|SHIFT',
     action = wezterm.action.ReloadConfiguration,
+  },
+}
+
+-- =============================================================================
+-- Mouse Bindings
+-- =============================================================================
+
+config.mouse_bindings = {
+  -- CMD+Click opens hyperlinks
+  {
+    event = { Up = { streak = 1, button = 'Left' } },
+    mods = 'SUPER',
+    action = wezterm.action.OpenLinkAtMouseCursor,
+  },
+  -- Prevent Down event from interfering with link clicks
+  {
+    event = { Down = { streak = 1, button = 'Left' } },
+    mods = 'SUPER',
+    action = wezterm.action.Nop,
   },
 }
 
