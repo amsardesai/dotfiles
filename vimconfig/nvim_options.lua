@@ -409,7 +409,10 @@ null_ls.setup({
     -- Linters (diagnostics)
     null_ls.builtins.diagnostics.hadolint,
     null_ls.builtins.diagnostics.shellcheck,
-    null_ls.builtins.diagnostics.markdownlint,
+    null_ls.builtins.diagnostics.markdownlint.with({
+      -- Disable line-length rule (MD013) - too noisy for most markdown
+      extra_args = { "--disable", "MD013" },
+    }),
     null_ls.builtins.diagnostics.yamllint,
     null_ls.builtins.diagnostics.actionlint,
 
@@ -659,3 +662,19 @@ vim.keymap.set('n', '<leader>b', launchNvimTree, { silent = true, desc = 'Open N
 vim.keymap.set('n', '<leader>gb', ':Gitsigns blame_line<CR>', { silent = true, desc = 'Git blame line' })
 vim.keymap.set('n', ')', ':Gitsigns next_hunk<CR>', { desc = 'Next git hunk' })
 vim.keymap.set('n', '(', ':Gitsigns prev_hunk<CR>', { desc = 'Prev git hunk' })
+
+-- Image viewing in terminal (requires ImageMagick: brew install imagemagick)
+require("image").setup({
+  backend = "kitty",  -- WezTerm supports kitty protocol (try "sixel" if issues)
+  processor = "magick_cli",  -- Use ImageMagick CLI
+  integrations = {
+    markdown = { enabled = false },
+    neorg = { enabled = false },
+    typst = { enabled = false },
+    html = { enabled = false },
+    css = { enabled = false },
+  },
+  max_height_window_percentage = 80,
+  max_width_window_percentage = 80,
+  hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.bmp", "*.ico", "*.svg" },
+})
