@@ -7,10 +7,10 @@ nnoremap gQ <nop>
 nnoremap <silent> <CR> :noh<CR><CR>
 
 " Brackets for easier page movement
-nnoremap _ 10k0
-nnoremap + 10j0
-vnoremap _ 10k0
-vnoremap + 10j0
+nnoremap _ <C-b>
+nnoremap + <C-f>
+vnoremap _ <C-b>
+vnoremap + <C-f>
 
 " Remap certain keys
 command! W write
