@@ -153,16 +153,16 @@ require("lsp-lens").setup({
   sections = {
     definition = false,
     references = function(count)
-      return " " .. count
+      return " " .. count
     end,
     implements = function(count)
-      return " " .. count
+      return " " .. count
     end,
     git_authors = function(latest_author, count)
       if count > 1 then
-        return " " .. latest_author .. " +" .. (count - 1)
+        return " " .. latest_author .. " +" .. (count - 1)
       end
-      return " " .. latest_author
+      return " " .. latest_author
     end,
   },
 })
@@ -292,7 +292,7 @@ cmp.setup({
 })
 
 -- Snacks.nvim - Collection of small QoL plugins
-require("snacks").setup({
+Snacks.setup({
   -- Better buffer deletion (preserves window layout)
   bufdelete = { enabled = true },
   -- Optimizations for large files
@@ -340,8 +340,8 @@ require("snacks").setup({
     sections = {
       { section = "header" },
       { section = "keys", gap = 1 },
-      { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = { 2, 2 } },
-      { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 2 },
+      { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = { 2, 2 } },
+      { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 2 },
     },
   }, -- disable if you prefer empty buffer
   -- Terminal (replaces vimconfig/terminal.vim functions)
@@ -394,18 +394,6 @@ vim.keymap.set('v', '<leader>sa', ':ClaudeCodeSend<CR>', { desc = 'Send selectio
 -- Add current file to Claude context
 vim.keymap.set('n', '<leader>sa', ':ClaudeCodeAdd<CR>', { desc = 'Add file to Claude context' })
 
--- NvimTree helper function to toggle without focusing
-local function toggleNvimTree()
-  vim.cmd('NvimTreeToggle')
-  vim.cmd('wincmd w')
-end
-
--- NvimTree helper function to open without focusing
-local function launchNvimTree()
-  vim.cmd('NvimTreeOpen')
-  vim.cmd('wincmd w')
-end
-
 -- Fuzzy finder (Telescope)
 vim.keymap.set('n', '<C-p>', ':Telescope find_files<CR>', { silent = true, desc = 'Find files' })
 vim.keymap.set('n', '<C-o>', ':Telescope live_grep<CR>', { silent = true, desc = 'Live grep' })
@@ -417,6 +405,18 @@ vim.keymap.set('n', '<leader>j', ':Telescope grep_string<CR>', { silent = true, 
 -- Right-click context menu (implementation in helpers/context_menu.vim)
 vim.keymap.set('n', '<RightMouse>', '<LeftMouse><Cmd>lua show_context_menu()<CR>', { desc = 'Context menu' })
 vim.keymap.set('v', '<RightMouse>', '<LeftMouse><Cmd>lua show_context_menu()<CR>', { desc = 'Context menu' })
+
+-- NvimTree helper function to toggle without focusing
+local function toggleNvimTree()
+  vim.cmd('NvimTreeToggle')
+  vim.cmd('wincmd w')
+end
+
+-- NvimTree helper function to open without focusing
+local function launchNvimTree()
+  vim.cmd('NvimTreeOpen')
+  vim.cmd('wincmd w')
+end
 
 -- NvimTree keybindings
 vim.keymap.set('n', '<leader>m', toggleNvimTree, { silent = true, desc = 'Toggle NvimTree' })
