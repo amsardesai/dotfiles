@@ -7,6 +7,11 @@ end
 
 -- Helper: toggle zoom current window to fullscreen float
 local function toggle_zoom()
+	-- Exit terminal mode first if we're in it
+	if vim.fn.mode() == "t" then
+		vim.cmd("stopinsert")
+	end
+
 	local MiniMisc = require("mini.misc")
 	MiniMisc.setup()
 	MiniMisc.zoom(0, {
