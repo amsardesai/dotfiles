@@ -1,9 +1,9 @@
 -- Neovim Plugin Specifications (lazy.nvim)
 -- All plugin configurations are inline for proper lazy-loading
 
--- Helper: get nvimconfig directory path
+-- Helper: get nvim config directory path
 local function get_config_dir()
-  return vim.fn.stdpath("config") .. "/nvimconfig"
+  return vim.fn.stdpath("config") .. "/nvim"
 end
 
 return {

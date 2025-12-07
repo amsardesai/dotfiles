@@ -256,7 +256,7 @@ link_file_quiet "$SCRIPTPATH/vimconfig" "$HOME/.vim/vimconfig"
 link_file_quiet "$SCRIPTPATH/init-nvim.lua" "$HOME/.config/nvim/init.lua"
 link_file_quiet "$SCRIPTPATH/ftplugin" "$HOME/.config/nvim/ftplugin"
 link_file_quiet "$SCRIPTPATH/vimconfig" "$HOME/.config/nvim/vimconfig"
-link_file_quiet "$SCRIPTPATH/nvimconfig" "$HOME/.config/nvim/nvimconfig"
+link_file_quiet "$SCRIPTPATH/nvim" "$HOME/.config/nvim/nvim"
 
 print_link_summary
 

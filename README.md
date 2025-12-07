@@ -110,7 +110,7 @@ nvim
 | `init-vim.vim` | `~/.vimrc` |
 | `init-gvim.vim` | `~/.gvimrc` |
 | `init-nvim.lua` | `~/.config/nvim/init.lua` |
-| `vimconfig/`, `ftplugin/`, `nvimconfig/` | `~/.vim/` and `~/.config/nvim/` |
+| `vimconfig/`, `ftplugin/`, `nvim/` | `~/.vim/` and `~/.config/nvim/` |
 
 ## Post-Install Checklist
 
@@ -167,7 +167,7 @@ After running setup, verify:
 
 ### Vim/Neovim Setup
 
-**Philosophy:** Shared config with dual plugin ecosystems. Neovim uses modern Lua plugins with **lazy.nvim** (lazy-loading, 37ms startup), while Vim uses **vim-plug**. All Neovim config lives in `nvimconfig/` directory.
+**Philosophy:** Shared config with dual plugin ecosystems. Neovim uses modern Lua plugins with **lazy.nvim** (lazy-loading, 37ms startup), while Vim uses **vim-plug**. All Neovim config lives in `nvim/` directory.
 
 **Leader Keys:**
 
@@ -252,7 +252,7 @@ After running setup, verify:
 - `vim-lsp` - LSP support
 
 **Full plugin list:**
-- Neovim: See `nvimconfig/plugins.lua`
+- Neovim: See `nvim/plugins.lua`
 - Vim: See `vimconfig/plugins.vim`
 
 ### Tmux Configuration

@@ -16,7 +16,7 @@ call plug#begin($VIMPATH . 'bundle')
   Plug 'jmcantrell/vim-virtualenv'
   Plug 'justinmk/vim-sneak'
 
-  " Vim-only plugins (Neovim uses lazy.nvim from nvimconfig/plugins.lua)
+  " Vim-only plugins (Neovim uses lazy.nvim from nvim/plugins.lua)
   if !has('nvim')
     Plug 'airblade/vim-gitgutter'
     Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }

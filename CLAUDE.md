@@ -48,7 +48,7 @@
 ### Editor Philosophy
 
 - **Shared config:** Vim and Neovim use the same base configuration (`vimconfig/*.vim`, `ftplugin/*.vim`)
-- **Lua-first for Neovim:** All Neovim-specific config now lives in `nvimconfig/` directory
+- **Lua-first for Neovim:** All Neovim-specific config now lives in `nvim/` directory
 - **Dual plugin managers:**
   - Neovim → **lazy.nvim** (Lua-based, lazy-loading, instant startup)
   - Vim → **vim-plug** (VimScript-based)
@@ -56,7 +56,7 @@
   - Neovim → Modern Lua plugins (fzf-lua, treesitter, native LSP, snacks.nvim)
   - Vim → Async alternatives (CtrlP, vim-lsp, NERDTree)
 - **Entry points:**
-  - Neovim: `init-nvim.lua` → bootstraps lazy.nvim → loads plugins → sources shared configs → requires `nvimconfig/main.lua`
+  - Neovim: `init-nvim.lua` → bootstraps lazy.nvim → loads plugins → sources shared configs → requires `nvim/main.lua`
   - Vim: `init-vim.vim` → sources shared configs
 
 ### Shell Environment Design
@@ -89,12 +89,12 @@
   - `vimconfig/mappings.vim` - Keybindings shared between vim/nvim
   - `vimconfig/terminal.vim` - Vim-only terminal config (Neovim uses snacks.terminal)
   - `vimconfig/helpers/behave_zz.vim` - Helper for zz behavior
-- `nvimconfig/` - Neovim-specific Lua configuration (symlinked to ~/.config/nvim/nvimconfig/)
-  - `nvimconfig/plugins.lua` - **Plugin specs for lazy.nvim** (~780 lines): all plugin declarations with inline configs for proper lazy-loading
-  - `nvimconfig/main.lua` - **Global settings only** (~24 lines): netrw disable, buffer nav, diagnostics keymaps, context menu
-  - `nvimconfig/context_menu.lua` - Right-click context menu (Lua, uses fzf-lua)
-  - `nvimconfig/file_cache.lua` - Persisted file cache for instant file picker
-  - `nvimconfig/keymap.lua` - Keymap helper functions
+- `nvim/` - Neovim-specific Lua configuration (symlinked to ~/.config/nvim/nvim/)
+  - `nvim/plugins.lua` - **Plugin specs for lazy.nvim** (~780 lines): all plugin declarations with inline configs for proper lazy-loading
+  - `nvim/main.lua` - **Global settings only** (~24 lines): netrw disable, buffer nav, diagnostics keymaps, context menu
+  - `nvim/context_menu.lua` - Right-click context menu (Lua, uses fzf-lua)
+  - `nvim/file_cache.lua` - Persisted file cache for instant file picker
+  - `nvim/keymap.lua` - Keymap helper functions
 - `ftplugin/` - Filetype-specific settings (symlinked to both ~/.vim/ and ~/.config/nvim/)
   - `ftplugin/markdown.vim` - Soft wrapping, display-line navigation
 
@@ -202,17 +202,17 @@ Migrated Neovim from **vim-plug** to **lazy.nvim** for proper lazy-loading and i
 
 **Architecture Change:**
 ```
-Before: init-nvim.lua → lazy.setup(plugins) → require('nvimconfig.main')
+Before: init-nvim.lua → lazy.setup(plugins) → require('nvim.main')
         (main.lua did require() at top, loading ALL plugins immediately)
 
-After:  init-nvim.lua → lazy.setup(plugins) → vimconfig/main.vim → require('nvimconfig.main')
+After:  init-nvim.lua → lazy.setup(plugins) → vimconfig/main.vim → require('nvim.main')
         (plugins.lua has inline configs, main.lua is global settings only)
 ```
 
 **Key Files Changed:**
 - `init-nvim.lua` - Now bootstraps lazy.nvim, sets leader keys, configures lazy options
-- `nvimconfig/plugins.lua` (NEW, ~780 lines) - All plugin specs with inline `config`/`opts`/`keys` for lazy-loading
-- `nvimconfig/main.lua` (SLIMMED, ~24 lines) - Only global settings, no plugin configs
+- `nvim/plugins.lua` (NEW, ~780 lines) - All plugin specs with inline `config`/`opts`/`keys` for lazy-loading
+- `nvim/main.lua` (SLIMMED, ~24 lines) - Only global settings, no plugin configs
 - `vimconfig/plugins.vim` - Removed Neovim-specific plugins (now Vim-only)
 
 **Lazy-Loading Triggers Used:**
@@ -255,7 +255,7 @@ After:  init-nvim.lua → lazy.setup(plugins) → vimconfig/main.vim → require
 - **Problem:** Shift+Arrow keys for pane navigation didn't work in NvimTree buffer
 - **Cause:** NvimTree's buffer-local keymaps override global mappings from `mappings.vim`
 - **Fix:** Added `on_attach` function to nvim-tree setup that applies buffer-local Shift+Arrow keybindings
-- **File:** `nvimconfig/main.lua` (nvim-tree on_attach function)
+- **File:** `nvim/main.lua` (nvim-tree on_attach function)
 
 #### Brewfile Additions
 
@@ -273,12 +273,12 @@ After:  init-nvim.lua → lazy.setup(plugins) → vimconfig/main.vim → require
 
 #### Major Lua Migration
 
-- **`nvimconfig/` directory:** All Neovim-specific Lua config moved to dedicated directory (previously scattered in `vimconfig/`)
-- **`nvimconfig/main.lua` (~660 lines):** Consolidated ALL Neovim-specific configuration. Contains setup for: nvim-tree, lualine, gitsigns, bufferline, fzf-lua, treesitter, LSP, mason, cmp, snacks.nvim, typescript-tools, none-ls, image.nvim, claudecode.nvim, lsp-lens.nvim.
-- **`nvimconfig/context_menu.lua`:** Right-click context menu using fzf-lua's `vim.ui.select()` integration.
-- **`nvimconfig/file_cache.lua`:** Persisted file cache system for instant file picker. Caches `git ls-files` results to disk, watches `.git/index` for automatic invalidation using `vim.uv.new_fs_event()`. Provides sub-50ms file picker in large repos.
-- **`nvimconfig/keymap.lua`:** Helper functions for defining keymaps.
-- **`init-nvim.lua`:** New Lua entry point replaces `init-nvim.vim`. Sources shared VimScript config then requires `nvimconfig/main`.
+- **`nvim/` directory:** All Neovim-specific Lua config moved to dedicated directory (previously scattered in `vimconfig/`)
+- **`nvim/main.lua` (~660 lines):** Consolidated ALL Neovim-specific configuration. Contains setup for: nvim-tree, lualine, gitsigns, bufferline, fzf-lua, treesitter, LSP, mason, cmp, snacks.nvim, typescript-tools, none-ls, image.nvim, claudecode.nvim, lsp-lens.nvim.
+- **`nvim/context_menu.lua`:** Right-click context menu using fzf-lua's `vim.ui.select()` integration.
+- **`nvim/file_cache.lua`:** Persisted file cache system for instant file picker. Caches `git ls-files` results to disk, watches `.git/index` for automatic invalidation using `vim.uv.new_fs_event()`. Provides sub-50ms file picker in large repos.
+- **`nvim/keymap.lua`:** Helper functions for defining keymaps.
+- **`init-nvim.lua`:** New Lua entry point replaces `init-nvim.vim`. Sources shared VimScript config then requires `nvim/main`.
 
 #### fzf-lua Migration (Replaced Telescope)
 

@@ -18,6 +18,6 @@ vim.keymap.set("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<cr>", { desc = "P
 vim.keymap.set("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<cr>", { desc = "Next diagnostic" })
 
 -- Context menu (lazy-loads fzf-lua on use via vim.ui.select)
-local config_dir = vim.fn.stdpath("config") .. "/nvimconfig"
+local config_dir = vim.fn.stdpath("config") .. "/nvim"
 local context_menu = dofile(config_dir .. "/context_menu.lua")
 vim.keymap.set({ "n", "v" }, "<RightMouse>", context_menu.show, { desc = "Context menu" })
