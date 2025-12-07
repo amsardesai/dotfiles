@@ -86,8 +86,7 @@
   - `vimconfig/main.vim` - Shared entry point (sources install, plugins, options, mappings)
   - `vimconfig/plugins.vim` - Plugin declarations (vim-plug)
   - `vimconfig/options.vim` - Shared vim/nvim options + cursor shape workaround
-  - `vimconfig/mappings.vim` - Keybindings shared between vim/nvim
-  - `vimconfig/terminal.vim` - Vim-only terminal config (Neovim uses snacks.terminal)
+  - `vimconfig/mappings.vim` - Keybindings shared between vim/nvim (includes terminal mappings)
   - `vimconfig/helpers/behave_zz.vim` - Helper for zz behavior
 - `nvim/` - Neovim-specific Lua configuration (symlinked to ~/.config/nvim/nvim/)
   - `nvim/plugins/` - Plugin specs for lazy.nvim (LazyVim-style organization)

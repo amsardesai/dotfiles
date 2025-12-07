@@ -5,6 +5,23 @@ local function get_config_dir()
 	return vim.fn.stdpath("config") .. "/nvim"
 end
 
+-- Helper: toggle zoom current window to fullscreen float
+local function toggle_zoom()
+	local MiniMisc = require("mini.misc")
+	MiniMisc.setup()
+	MiniMisc.zoom(0, {
+		width = vim.o.columns,
+		height = vim.o.lines,
+		row = 0,
+		col = 0,
+		border = "double",
+		title_pos = "center",
+	})
+	local win = vim.api.nvim_get_current_win()
+	vim.wo[win].winblend = 5
+	vim.wo[win].winhighlight = "Normal:NormalFloat"
+end
+
 return {
 	-- =============================================================================
 	-- NVIM-TREE (on keymap/command)
@@ -210,26 +227,8 @@ return {
 	{
 		"echasnovski/mini.misc",
 		keys = {
-			{
-				"<C-S-CR>",
-				function()
-					local MiniMisc = require("mini.misc")
-					MiniMisc.setup()
-					MiniMisc.zoom(0, {
-						width = vim.o.columns,
-						height = vim.o.lines,
-						row = 0,
-						col = 0,
-						border = "double",
-						title_pos = "center",
-					})
-					local win = vim.api.nvim_get_current_win()
-					vim.wo[win].winblend = 5
-					vim.wo[win].winhighlight = "Normal:NormalFloat"
-				end,
-				mode = { "n", "v", "t" },
-				desc = "Toggle window zoom",
-			},
+			{ "<C-S-CR>", function() toggle_zoom() end, mode = { "n", "v", "t" }, desc = "Toggle window zoom" },
+			{ "<S-CR>", function() toggle_zoom() end, mode = { "n", "v" }, desc = "Toggle window zoom" },
 		},
 	},
 

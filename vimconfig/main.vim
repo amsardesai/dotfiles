@@ -30,9 +30,3 @@ if !has('nvim')
 endif
 call s:source_file('options.vim')
 call s:source_file('mappings.vim')
-
-" Neovim-specific
-if exists(':terminal')
-  call s:source_file('terminal.vim')
-endif
-

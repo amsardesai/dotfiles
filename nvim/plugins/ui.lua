@@ -88,12 +88,12 @@ return {
 	},
 
 	-- =============================================================================
-	-- BUFFERLINE (BufAdd - when buffers exist)
+	-- BUFFERLINE (VeryLazy - load early for consistent tab bar)
 	-- =============================================================================
 
 	{
 		"akinsho/bufferline.nvim",
-		event = "BufAdd",
+		event = "VeryLazy", -- Load early so tab bar is always visible
 		dependencies = "nvim-tree/nvim-web-devicons",
 		opts = {
 			options = {
