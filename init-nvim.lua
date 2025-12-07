@@ -12,18 +12,16 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Add nvim to Lua path (it's symlinked to ~/.config/nvim/nvim)
--- The pattern uses ? for directory name and ?.lua for file, so nvim.plugins -> nvim/plugins.lua
-local config_path = vim.fn.stdpath("config")
-package.path = config_path .. "/nvim/?.lua;" .. config_path .. "/?.lua;" .. package.path
-
 -- Set leader keys before lazy (required by lazy.nvim)
 vim.g.mapleader = ","
 vim.g.maplocalleader = ";"
 
+-- Config directory path
+local config_dir = vim.fn.stdpath("config") .. "/nvim"
+
 -- Load plugins via lazy.nvim
--- Pass the plugin specs directly (lazy.nvim's module loader expects lua/ subdir)
-require("lazy").setup(require("plugins"), {
+-- Use dofile to load plugin specs (handles nested dofile calls properly)
+require("lazy").setup(dofile(config_dir .. "/plugins/init.lua"), {
   -- Plugin installation directory
   root = vim.fn.stdpath("data") .. "/lazy",
   -- Don't notify on config changes
@@ -52,4 +50,5 @@ require("lazy").setup(require("plugins"), {
 vim.cmd('source ~/.dotfiles/vimconfig/main.vim')
 
 -- Load Neovim-specific Lua configuration
-require('nvim.main')
+dofile(config_dir .. "/config/options.lua")
+dofile(config_dir .. "/config/keymaps.lua")

@@ -56,7 +56,7 @@
   - Neovim → Modern Lua plugins (fzf-lua, treesitter, native LSP, snacks.nvim)
   - Vim → Async alternatives (CtrlP, vim-lsp, NERDTree)
 - **Entry points:**
-  - Neovim: `init-nvim.lua` → bootstraps lazy.nvim → loads plugins → sources shared configs → requires `nvim/main.lua`
+  - Neovim: `init-nvim.lua` → bootstraps lazy.nvim → loads `nvim/plugins/init.lua` → sources shared configs → loads `nvim/config/*.lua`
   - Vim: `init-vim.vim` → sources shared configs
 
 ### Shell Environment Design
@@ -90,11 +90,19 @@
   - `vimconfig/terminal.vim` - Vim-only terminal config (Neovim uses snacks.terminal)
   - `vimconfig/helpers/behave_zz.vim` - Helper for zz behavior
 - `nvim/` - Neovim-specific Lua configuration (symlinked to ~/.config/nvim/nvim/)
-  - `nvim/plugins.lua` - **Plugin specs for lazy.nvim** (~780 lines): all plugin declarations with inline configs for proper lazy-loading
-  - `nvim/main.lua` - **Global settings only** (~24 lines): netrw disable, buffer nav, diagnostics keymaps, context menu
-  - `nvim/context_menu.lua` - Right-click context menu (Lua, uses fzf-lua)
-  - `nvim/file_cache.lua` - Persisted file cache for instant file picker
-  - `nvim/keymap.lua` - Keymap helper functions
+  - `nvim/plugins/` - Plugin specs for lazy.nvim (LazyVim-style organization)
+    - `init.lua` - Entry point, combines all category files
+    - `ui.lua` - Theme, lualine, bufferline, snacks, gitsigns, scrollbar
+    - `editor.lua` - nvim-tree, fzf-lua, flash, surround, comment, visual-multi
+    - `lsp.lua` - lspconfig, mason, cmp, none-ls, lsp-lens, autopairs
+    - `lang.lua` - treesitter, typescript-tools, filetype plugins
+    - `tools.lua` - claudecode, image.nvim
+  - `nvim/config/` - Global Neovim settings
+    - `options.lua` - vim.g, vim.o settings (netrw disable, equalalways)
+    - `keymaps.lua` - Global keymaps (buffer nav, diagnostics, context menu)
+  - `nvim/util/` - Utility modules
+    - `file_cache.lua` - Persisted file cache for instant file picker
+    - `context_menu.lua` - Right-click context menu (uses fzf-lua)
 - `ftplugin/` - Filetype-specific settings (symlinked to both ~/.vim/ and ~/.config/nvim/)
   - `ftplugin/markdown.vim` - Soft wrapping, display-line navigation
 
@@ -196,6 +204,35 @@
 
 ### 2025-12-07
 
+#### LazyVim-style Directory Restructure
+
+Reorganized `nvim/` directory following LazyVim conventions for better maintainability.
+
+**New Structure:**
+```
+nvim/
+├── plugins/          # Plugin specs split by category
+│   ├── init.lua      # Combines all specs
+│   ├── ui.lua        # Theme, statusline, visual
+│   ├── editor.lua    # Navigation, editing, search
+│   ├── lsp.lua       # LSP, completion, linting
+│   ├── lang.lua      # Treesitter, language-specific
+│   └── tools.lua     # Claude, image viewer
+├── config/           # Global settings
+│   ├── options.lua   # vim.g, vim.o
+│   └── keymaps.lua   # Global keymaps
+└── util/             # Utility modules
+    ├── file_cache.lua
+    └── context_menu.lua
+```
+
+**Changes:**
+- Split monolithic `plugins.lua` (~850 lines) into 5 category files
+- Moved global settings from `main.lua` to `config/options.lua` and `config/keymaps.lua`
+- Moved utilities to `util/` subdirectory
+- Removed unused `keymap.lua`
+- Updated `init-nvim.lua` to use `dofile()` for loading (better for nested dofile calls)
+
 #### lazy.nvim Migration (Major Refactor)
 
 Migrated Neovim from **vim-plug** to **lazy.nvim** for proper lazy-loading and instant startup.
@@ -205,14 +242,15 @@ Migrated Neovim from **vim-plug** to **lazy.nvim** for proper lazy-loading and i
 Before: init-nvim.lua → lazy.setup(plugins) → require('nvim.main')
         (main.lua did require() at top, loading ALL plugins immediately)
 
-After:  init-nvim.lua → lazy.setup(plugins) → vimconfig/main.vim → require('nvim.main')
-        (plugins.lua has inline configs, main.lua is global settings only)
+After:  init-nvim.lua → lazy.setup(dofile(plugins/init.lua)) → vimconfig/main.vim → dofile(config/*.lua)
+        (plugins split by category, config split into options + keymaps)
 ```
 
 **Key Files Changed:**
-- `init-nvim.lua` - Now bootstraps lazy.nvim, sets leader keys, configures lazy options
-- `nvim/plugins.lua` (NEW, ~780 lines) - All plugin specs with inline `config`/`opts`/`keys` for lazy-loading
-- `nvim/main.lua` (SLIMMED, ~24 lines) - Only global settings, no plugin configs
+- `init-nvim.lua` - Bootstraps lazy.nvim, uses dofile for plugin specs and config
+- `nvim/plugins/*.lua` - Plugin specs split by category (ui, editor, lsp, lang, tools)
+- `nvim/config/options.lua` - Global vim.g/vim.o settings
+- `nvim/config/keymaps.lua` - Global keybindings
 - `vimconfig/plugins.vim` - Removed Neovim-specific plugins (now Vim-only)
 
 **Lazy-Loading Triggers Used:**

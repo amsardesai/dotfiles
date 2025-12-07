@@ -1,12 +1,5 @@
--- Neovim Global Settings
--- Plugin configurations are now in plugins.lua for proper lazy-loading
-
--- Disable netrw (nvim-tree replaces it)
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
--- Prevent automatic window resizing when opening/closing splits
-vim.o.equalalways = false
+-- Neovim Global Keymaps
+-- Keybindings that aren't tied to specific plugins
 
 -- Buffer navigation: Option-Shift-[ and Option-Shift-] (sent as F13/F14 by terminal)
 vim.keymap.set("n", "<F13>", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
@@ -19,5 +12,5 @@ vim.keymap.set("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<cr>", { desc = "N
 
 -- Context menu (lazy-loads fzf-lua on use via vim.ui.select)
 local config_dir = vim.fn.stdpath("config") .. "/nvim"
-local context_menu = dofile(config_dir .. "/context_menu.lua")
+local context_menu = dofile(config_dir .. "/util/context_menu.lua")
 vim.keymap.set({ "n", "v" }, "<RightMouse>", context_menu.show, { desc = "Context menu" })
