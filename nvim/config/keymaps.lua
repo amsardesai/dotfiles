@@ -79,8 +79,14 @@ vim.keymap.set("n", "<Leader>q", "<cmd>cclose<cr><cmd>pclose<cr><cmd>lclose<cr>"
 -- Redraw screen
 vim.keymap.set("n", "<Leader>rd", "<cmd>redraw!<cr>", { desc = "Redraw screen" })
 
--- Reload config (hot-reload plugins via lazy.nvim)
-vim.keymap.set("n", "<Leader>r", "<cmd>Lazy reload<cr>", { desc = "Reload plugins" })
+-- Reload config (re-source all config files)
+vim.keymap.set("n", "<Leader>r", function()
+	local config_dir = vim.fn.stdpath("config")
+	vim.cmd("source " .. config_dir .. "/vimconfig/main.vim")
+	dofile(config_dir .. "/nvim/config/options.lua")
+	dofile(config_dir .. "/nvim/config/keymaps.lua")
+	vim.notify("Config reloaded", vim.log.levels.INFO)
+end, { desc = "Reload config" })
 
 -- Fix whitespace (using mini.trailspace)
 vim.keymap.set("n", "<Leader>fw", function()
@@ -153,8 +159,15 @@ vim.keymap.set("t", "<Leader>\\", "<C-\\><C-n><cmd>bprevious<cr><C-\\><C-n><cmd>
 vim.keymap.set("t", "<Leader>|", "<C-\\><C-n><cmd>bprevious<cr><C-\\><C-n><cmd>bdelete! #<cr>", { desc = "Force delete buffer" })
 vim.keymap.set("t", "<Leader>ls", "<C-\\><C-n><cmd>buffers<cr>", { desc = "List buffers" })
 
--- Terminal utility
-vim.keymap.set("t", "<Leader>r", "<C-\\><C-n><cmd>Lazy reload<cr>", { desc = "Reload plugins" })
+-- Terminal utility (reload config - exits terminal mode first)
+vim.keymap.set("t", "<Leader>r", function()
+	vim.cmd("stopinsert")
+	local config_dir = vim.fn.stdpath("config")
+	vim.cmd("source " .. config_dir .. "/vimconfig/main.vim")
+	dofile(config_dir .. "/nvim/config/options.lua")
+	dofile(config_dir .. "/nvim/config/keymaps.lua")
+	vim.notify("Config reloaded", vim.log.levels.INFO)
+end, { desc = "Reload config" })
 vim.keymap.set("t", "<Leader>rd", "<C-\\><C-n><cmd>redraw!<cr>", { desc = "Redraw screen" })
 
 -- Auto-insert on terminal enter, normal on leave
