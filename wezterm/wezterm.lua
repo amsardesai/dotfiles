@@ -377,17 +377,17 @@ config.keys = {
 		action = wezterm.action.ReloadConfiguration,
 	},
 
-	-- Buffer navigation: Option-Shift-[ and Option-Shift-] send F13/F14
-	-- On US keyboard, Shift+[ = { and Shift+] = }, so match the shifted char
+	-- Buffer navigation: Option-Shift-[ and Option-Shift-]
+	-- Send F13/F14 escape sequences directly (ESC[25~ and ESC[26~)
 	{
-		key = "{",
-		mods = "ALT",
-		action = wezterm.action.SendKey({ key = "F13" }),
+		key = "LeftBracket",
+		mods = "ALT|SHIFT",
+		action = wezterm.action.SendString("\x1b[25~"),
 	},
 	{
-		key = "}",
-		mods = "ALT",
-		action = wezterm.action.SendKey({ key = "F14" }),
+		key = "RightBracket",
+		mods = "ALT|SHIFT",
+		action = wezterm.action.SendString("\x1b[26~"),
 	},
 }
 
