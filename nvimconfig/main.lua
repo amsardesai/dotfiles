@@ -87,6 +87,10 @@ require("gitsigns").setup({
 	},
 })
 
+require("nvim-autopairs").setup({
+	check_ts = true, -- Use treesitter for smarter pairing
+})
+
 require("bufferline").setup({
 	options = {
 		diagnostics = "nvim_lsp",
@@ -195,6 +199,8 @@ require("nvim-treesitter.configs").setup({
 		"lua",
 		"markdown",
 		"markdown_inline",
+		"python",
+		"ruby",
 		"typescript",
 		"tsx",
 		"tsv",
@@ -500,6 +506,10 @@ cmp.setup({
 	},
 })
 
+-- nvim-autopairs + cmp integration: auto-insert ( after selecting function/method
+local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+
 -- Snacks.nvim - Collection of small QoL plugins
 if not vim.g.snacks_setup_done then
 	vim.g.snacks_setup_done = true
@@ -547,14 +557,7 @@ if not vim.g.snacks_setup_done then
 			},
 		},
 		-- Dashboard (startup screen)
-		dashboard = {
-			sections = {
-				{ section = "header" },
-				{ section = "keys", gap = 1 },
-				{ icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = { 2, 2 } },
-				{ icon = " ", title = "Projects", section = "projects", indent = 2, padding = 2 },
-			},
-		}, -- disable if you prefer empty buffer
+		dashboard = { enabled = false }, -- disable if you prefer empty buffer
 		-- Terminal (replaces vimconfig/terminal.vim functions)
 		terminal = {
 			enabled = true,

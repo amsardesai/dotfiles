@@ -28,6 +28,12 @@ require("lazy").setup(require("plugins"), {
   root = vim.fn.stdpath("data") .. "/lazy",
   -- Don't notify on config changes
   change_detection = { notify = false },
+  -- UI customization
+  ui = {
+    keys = {
+      ["<esc>"] = function(self) self:close() end,
+    },
+  },
   -- Performance optimizations
   performance = {
     rtp = {

@@ -174,7 +174,7 @@ return {
   -- =============================================================================
 
   {
-    "jiangmiao/auto-pairs",
+    "windwp/nvim-autopairs",
     event = "InsertEnter",
   },
 
@@ -228,34 +228,17 @@ return {
 
   -- =============================================================================
   -- FILETYPE PLUGINS (lazy-loaded by filetype)
+  -- Treesitter handles: markdown, git, yaml, html, js/ts/jsx/tsx, json,
+  --                     python, ruby, dockerfile
   -- =============================================================================
 
-  { "plasticboy/vim-markdown", ft = "markdown" },
-  { "tpope/vim-git", ft = "git" },
-  { "mattn/emmet-vim", ft = "html" },
-  { "tpope/vim-haml", ft = { "haml", "scss", "sass" } },
+  { "mattn/emmet-vim", ft = { "html", "css", "javascriptreact", "typescriptreact" } },
   { "vim-ruby/vim-ruby", ft = "ruby" },
   { "tpope/vim-rails", ft = "ruby" },
-  { "kchmck/vim-coffee-script", ft = "coffee" },
-  { "groenewege/vim-less", ft = "less" },
-  { "digitaltoad/vim-jade", ft = "jade" },
-  { "avakhov/vim-yaml", ft = "yaml" },
-  { "othree/html5.vim", ft = "html" },
-  { "othree/yajs.vim", ft = { "javascript", "javascript.jsx" } },
-  { "othree/es.next.syntax.vim", ft = { "javascript", "javascript.jsx" } },
-  { "gavocanov/vim-js-indent", ft = { "javascript", "javascript.jsx" } },
-  { "flowtype/vim-flow", ft = { "javascript", "javascript.jsx" } },
-  { "maxmellon/vim-jsx-pretty", ft = { "javascript", "javascript.jsx", "typescript" } },
-  { "leafgarland/typescript-vim", ft = "typescript" },
-  { "elzr/vim-json", ft = "json" },
   { "derekwyatt/vim-scala", ft = "scala" },
   { "LaTeX-Box-Team/LaTeX-Box", ft = "tex" },
   { "vim-scripts/sql.vim--Stinson", ft = "sql" },
   { "vim-scripts/applescript.vim", ft = "applescript" },
-  { "hdima/python-syntax", ft = "python" },
   { "vim-scripts/mako.vim", ft = "html" },
-
-  -- Configuration file plugins
   { "vim-scripts/nginx.vim", ft = "nginx" },
-  { "ekalinin/Dockerfile.vim", ft = "Dockerfile" },
 }
