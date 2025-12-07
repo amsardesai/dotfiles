@@ -61,10 +61,6 @@ echo_task "Deleting terminal configs..."
 delete_file "$HOME/.config/kitty"
 delete_file "$HOME/.config/wezterm"
 
-echo_task "Deleting fontconfig..."
-
-delete_file "$HOME/.config/fontconfig/conf.d/99-dotfiles-fonts.conf"
-
 echo_task "Don't forget to remove the 'source' line from ~/.bash_profile and ~/.zshrc."
 echo_task "Resetting bash in 2 seconds..."
 
