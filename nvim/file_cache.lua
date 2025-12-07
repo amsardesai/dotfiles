@@ -3,10 +3,13 @@
 
 local M = {}
 
-local file_cache = nil
-local cache_job = nil
+-- Use vim.g for state so it persists across dofile() calls
+vim.g._file_cache = vim.g._file_cache or {}
+vim.g._file_cache_job = vim.g._file_cache_job or nil
+vim.g._file_cache_mtime = vim.g._file_cache_mtime or nil
+vim.g._file_cache_setup_done = vim.g._file_cache_setup_done or false
+
 local cache_dir = vim.fn.stdpath("cache") .. "/fzf_file_cache"
-local cached_index_mtime = nil
 local git_watchers = {}
 
 -- Get git index path for current repo
@@ -30,6 +33,27 @@ local function get_index_mtime()
 	return nil
 end
 
+-- Accessors for global state
+local function get_cache()
+	local cache = vim.g._file_cache
+	if cache and #cache > 0 then
+		return cache
+	end
+	return nil
+end
+
+local function set_cache(files)
+	vim.g._file_cache = files or {}
+end
+
+local function get_cached_mtime()
+	return vim.g._file_cache_mtime
+end
+
+local function set_cached_mtime(mtime)
+	vim.g._file_cache_mtime = mtime
+end
+
 -- Get cache file path based on git root (or cwd)
 local function get_cache_path()
 	local git_root = vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
@@ -51,12 +75,12 @@ local function load_cache_from_disk()
 	if vim.uv.fs_stat(files_path) then
 		local lines = vim.fn.readfile(files_path)
 		if #lines > 0 then
-			file_cache = lines
+			set_cache(lines)
 			-- Load saved mtime
 			if vim.uv.fs_stat(mtime_path) then
 				local mtime_lines = vim.fn.readfile(mtime_path)
 				if #mtime_lines > 0 then
-					cached_index_mtime = tonumber(mtime_lines[1])
+					set_cached_mtime(tonumber(mtime_lines[1]))
 				end
 			end
 			return true
@@ -67,15 +91,16 @@ end
 
 -- Save cache to disk
 local function save_cache_to_disk()
-	if file_cache and #file_cache > 0 then
+	local cache = get_cache()
+	if cache and #cache > 0 then
 		vim.fn.mkdir(cache_dir, "p")
 		local cache_path = get_cache_path()
-		vim.fn.writefile(file_cache, cache_path .. ".txt")
+		vim.fn.writefile(cache, cache_path .. ".txt")
 		-- Save current mtime
 		local mtime = get_index_mtime()
 		if mtime then
 			vim.fn.writefile({ tostring(mtime) }, cache_path .. ".mtime")
-			cached_index_mtime = mtime
+			set_cached_mtime(mtime)
 		end
 	end
 end
@@ -86,52 +111,54 @@ local function cache_needs_refresh()
 	if not current_mtime then
 		return true -- Not a git repo, always refresh
 	end
-	if not cached_index_mtime then
+	local cached_mtime = get_cached_mtime()
+	if not cached_mtime then
 		return true -- No cached mtime, need refresh
 	end
-	return current_mtime ~= cached_index_mtime
+	return current_mtime ~= cached_mtime
 end
 
 -- Refresh the file cache
 function M.refresh(force)
 	-- Skip if cache is fresh (unless forced)
-	if not force and file_cache and not cache_needs_refresh() then
+	if not force and get_cache() and not cache_needs_refresh() then
 		return
 	end
 
 	-- Cancel any in-progress refresh
-	if cache_job then
-		pcall(vim.fn.jobstop, cache_job)
+	if vim.g._file_cache_job then
+		pcall(vim.fn.jobstop, vim.g._file_cache_job)
 	end
 
-	cache_job = vim.fn.jobstart("git ls-files --cached --others --exclude-standard", {
+	vim.g._file_cache_job = vim.fn.jobstart("git ls-files --cached --others --exclude-standard", {
 		stdout_buffered = true,
 		on_stdout = function(_, data)
 			if data then
-				file_cache = vim.tbl_filter(function(l)
+				local files = vim.tbl_filter(function(l)
 					return l ~= ""
 				end, data)
+				set_cache(files)
 				-- Persist to disk after refresh
 				save_cache_to_disk()
 			end
 		end,
 		on_exit = function()
-			cache_job = nil
+			vim.g._file_cache_job = nil
 		end,
 	})
 end
 
 -- Force refresh (bypasses mtime check)
 function M.force_refresh()
-	file_cache = nil
-	cached_index_mtime = nil
+	set_cache(nil)
+	set_cached_mtime(nil)
 	M.refresh(true)
 	vim.notify("File cache refreshing...", vim.log.levels.INFO)
 end
 
 -- Get the cached file list
 function M.get()
-	return file_cache
+	return get_cache()
 end
 
 -- Load cache from disk
@@ -197,38 +224,47 @@ end
 
 -- Initialize the cache system (call once on startup)
 function M.setup()
-	-- Load from disk first, then refresh in background
-	vim.api.nvim_create_autocmd("VimEnter", {
-		callback = function()
-			local loaded = load_cache_from_disk()
-			if not loaded then
-				vim.notify("Building file cache for the first time...", vim.log.levels.INFO)
-			end
-			-- Refresh in background after short delay
-			vim.defer_fn(M.refresh, 500)
-		end,
-	})
+	-- Idempotent: only setup once
+	if vim.g._file_cache_setup_done then
+		return
+	end
+	vim.g._file_cache_setup_done = true
 
-	-- Refresh on directory change (load from disk first, then refresh)
+	-- Function to do the actual initialization
+	local function do_init()
+		local loaded = load_cache_from_disk()
+		if not loaded then
+			vim.notify("Building file cache for the first time...", vim.log.levels.INFO)
+		end
+		-- Refresh in background after short delay
+		vim.defer_fn(M.refresh, 500)
+		-- Setup git watchers
+		setup_git_watchers()
+	end
+
+	-- If VimEnter already happened, init immediately
+	if vim.v.vim_did_enter == 1 then
+		do_init()
+	else
+		-- Otherwise, wait for VimEnter
+		vim.api.nvim_create_autocmd("VimEnter", {
+			callback = do_init,
+			once = true,
+		})
+	end
+
+	-- Refresh on directory change (load from disk first, then refresh, setup watchers)
 	vim.api.nvim_create_autocmd("DirChanged", {
 		callback = function()
 			load_cache_from_disk()
 			M.refresh()
+			setup_git_watchers()
 		end,
 	})
 
 	-- Refresh periodically (every 60s) for external changes
 	local cache_timer = vim.uv.new_timer()
 	cache_timer:start(60000, 60000, vim.schedule_wrap(M.refresh))
-
-	-- Setup git watchers on startup and directory change
-	vim.api.nvim_create_autocmd("VimEnter", {
-		callback = setup_git_watchers,
-	})
-
-	vim.api.nvim_create_autocmd("DirChanged", {
-		callback = setup_git_watchers,
-	})
 end
 
 return M
