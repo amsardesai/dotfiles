@@ -53,12 +53,19 @@ return {
 					vim.keymap.set("n", "gr", vim.lsp.buf.references, opts("Find references"))
 					vim.keymap.set("n", "gs", vim.lsp.buf.signature_help, opts("Signature help"))
 					vim.keymap.set("n", "<F2>", vim.lsp.buf.rename, opts("Rename symbol"))
-					vim.keymap.set({ "n", "x" }, "<F3>", function() vim.lsp.buf.format({ async = true }) end, opts("Format"))
+					vim.keymap.set({ "n", "x" }, "<F3>", function()
+						vim.lsp.buf.format({ async = true })
+					end, opts("Format"))
 					vim.keymap.set("n", "<F4>", vim.lsp.buf.code_action, opts("Code actions"))
 					vim.keymap.set("n", "gh", function()
 						vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
 					end, opts("Toggle inlay hints"))
-					vim.keymap.set("n", "<C-LeftMouse>", "<LeftMouse><cmd>lua vim.lsp.buf.definition()<cr>", opts("Go to definition"))
+					vim.keymap.set(
+						"n",
+						"<C-LeftMouse>",
+						"<LeftMouse><cmd>lua vim.lsp.buf.definition()<cr>",
+						opts("Go to definition")
+					)
 				end,
 			})
 
@@ -73,9 +80,20 @@ return {
 
 			require("mason-lspconfig").setup({
 				ensure_installed = {
-					"bashls", "clangd", "cssls", "docker_compose_language_service",
-					"docker_language_server", "dockerls", "eslint", "html", "jsonls",
-					"lua_ls", "pylsp", "terraformls", "vimls", "yamlls",
+					"bashls",
+					"clangd",
+					"cssls",
+					"docker_compose_language_service",
+					"docker_language_server",
+					"dockerls",
+					"eslint",
+					"html",
+					"jsonls",
+					"lua_ls",
+					"pylsp",
+					"terraformls",
+					"vimls",
+					"yamlls",
 				},
 				automatic_enable = true,
 				handlers = { default_setup },
@@ -102,17 +120,27 @@ return {
 				enable = true,
 				include_declaration = false,
 				target_symbol_kinds = {
-					SymbolKind.Function, SymbolKind.Method, SymbolKind.Interface,
-					SymbolKind.Class, SymbolKind.Struct, SymbolKind.TypeParameter,
+					SymbolKind.Function,
+					SymbolKind.Method,
+					SymbolKind.Interface,
+					SymbolKind.Class,
+					SymbolKind.Struct,
+					SymbolKind.TypeParameter,
 				},
 				wrapper_symbol_kinds = { SymbolKind.Class, SymbolKind.Struct, SymbolKind.Module },
 				sections = {
 					definition = false,
 					-- NOTE: These are nerd font icons - do NOT replace with ASCII!
-					references = function(count) return " " .. count end,
-					implements = function(count) return " " .. count end,
+					references = function(count)
+						return " " .. count
+					end,
+					implements = function(count)
+						return " " .. count
+					end,
 					git_authors = function(latest_author, count)
-						if count > 1 then return " " .. latest_author .. " +" .. (count - 1) end
+						if count > 1 then
+							return " " .. latest_author .. " +" .. (count - 1)
+						end
 						return " " .. latest_author
 					end,
 				},
@@ -132,9 +160,20 @@ return {
 			local null_ls = require("null-ls")
 			null_ls.setup({
 				filetypes = {
-					"css", "dockerfile", "html", "javascript", "javascriptreact",
-					"json", "lua", "markdown", "sh", "terraform", "tf",
-					"typescript", "typescriptreact", "yaml",
+					"css",
+					"dockerfile",
+					"html",
+					"javascript",
+					"javascriptreact",
+					"json",
+					"lua",
+					"markdown",
+					"sh",
+					"terraform",
+					"tf",
+					"typescript",
+					"typescriptreact",
+					"yaml",
 				},
 				sources = {
 					null_ls.builtins.diagnostics.hadolint,
@@ -146,10 +185,19 @@ return {
 					null_ls.builtins.formatting.terraform_fmt,
 					null_ls.builtins.formatting.prettier.with({
 						filetypes = {
-							"css", "html", "javascript", "javascriptreact",
-							"json", "markdown", "typescript", "typescriptreact", "yaml",
+							"css",
+							"html",
+							"javascript",
+							"javascriptreact",
+							"json",
+							"markdown",
+							"typescript",
+							"typescriptreact",
+							"yaml",
 						},
-						condition = function() return true end,
+						condition = function()
+							return true
+						end,
 					}),
 					null_ls.builtins.formatting.biome.with({
 						filetypes = { "javascript", "javascriptreact", "json", "typescript", "typescriptreact" },
@@ -168,11 +216,27 @@ return {
 
 			-- Format on save
 			vim.api.nvim_create_autocmd("BufWritePre", {
-				pattern = { "*.css", "*.html", "*.js", "*.json", "*.jsx", "*.lua", "*.md", "*.sh", "*.tf", "*.ts", "*.tsx", "*.yaml", "*.yml" },
+				pattern = {
+					"*.css",
+					"*.html",
+					"*.js",
+					"*.json",
+					"*.jsx",
+					"*.lua",
+					"*.md",
+					"*.sh",
+					"*.tf",
+					"*.ts",
+					"*.tsx",
+					"*.yaml",
+					"*.yml",
+				},
 				callback = function(args)
 					vim.lsp.buf.format({
 						bufnr = args.buf,
-						filter = function(client) return client.name == "null-ls" end,
+						filter = function(client)
+							return client.name == "null-ls"
+						end,
 					})
 				end,
 			})
@@ -187,8 +251,16 @@ return {
 		dependencies = { "mason-org/mason.nvim", "nvimtools/none-ls.nvim" },
 		opts = {
 			ensure_installed = {
-				"actionlint", "biome", "eslint_d", "hadolint", "markdownlint",
-				"prettier", "shellcheck", "shfmt", "stylua", "yamllint",
+				"actionlint",
+				"biome",
+				"eslint_d",
+				"hadolint",
+				"markdownlint",
+				"prettier",
+				"shellcheck",
+				"shfmt",
+				"stylua",
+				"yamllint",
 			},
 			automatic_installation = true,
 			handlers = {},

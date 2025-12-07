@@ -29,18 +29,69 @@ return {
 		"folke/snacks.nvim",
 		event = "VeryLazy",
 		keys = {
-			{ "<leader>bd", function() require("snacks").bufdelete() end, desc = "Delete buffer" },
-			{ "<leader>go", function() require("snacks").gitbrowse() end, desc = "Open in GitHub" },
-			{ "<leader>rn", function() require("snacks").rename.rename_file() end, desc = "Rename file" },
-			{ "]]", function() require("snacks").words.jump(1) end, desc = "Next reference" },
-			{ "[[", function() require("snacks").words.jump(-1) end, desc = "Prev reference" },
-			{ "<leader>z", function() require("snacks").terminal.toggle() end, mode = { "n", "v", "t" }, desc = "Toggle terminal" },
-			{ "<leader>x", function()
-				for _, term in ipairs(require("snacks").terminal.list()) do term:hide() end
-			end, mode = { "n", "v", "t" }, desc = "Hide all terminals" },
-			{ "<leader>X", function()
-				for _, term in ipairs(require("snacks").terminal.list()) do term:close() end
-			end, mode = { "n", "v", "t" }, desc = "Kill all terminals" },
+			{
+				"<leader>bd",
+				function()
+					require("snacks").bufdelete()
+				end,
+				desc = "Delete buffer",
+			},
+			{
+				"<leader>go",
+				function()
+					require("snacks").gitbrowse()
+				end,
+				desc = "Open in GitHub",
+			},
+			{
+				"<leader>rn",
+				function()
+					require("snacks").rename.rename_file()
+				end,
+				desc = "Rename file",
+			},
+			{
+				"]]",
+				function()
+					require("snacks").words.jump(1)
+				end,
+				desc = "Next reference",
+			},
+			{
+				"[[",
+				function()
+					require("snacks").words.jump(-1)
+				end,
+				desc = "Prev reference",
+			},
+			{
+				"<leader>z",
+				function()
+					require("snacks").terminal.toggle()
+				end,
+				mode = { "n", "v", "t" },
+				desc = "Toggle terminal",
+			},
+			{
+				"<leader>x",
+				function()
+					for _, term in ipairs(require("snacks").terminal.list()) do
+						term:hide()
+					end
+				end,
+				mode = { "n", "v", "t" },
+				desc = "Hide all terminals",
+			},
+			{
+				"<leader>X",
+				function()
+					for _, term in ipairs(require("snacks").terminal.list()) do
+						term:close()
+					end
+				end,
+				mode = { "n", "v", "t" },
+				desc = "Kill all terminals",
+			},
 		},
 		opts = {
 			bufdelete = { enabled = true },

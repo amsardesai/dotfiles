@@ -155,8 +155,22 @@ return {
 				mode = { "n", "i", "v", "t" },
 				desc = "Find files",
 			},
-			{ "<C-o>", function() require("fzf-lua").live_grep() end, mode = { "n", "i" }, desc = "Live grep" },
-			{ "<C-o>", function() require("fzf-lua").grep_visual() end, mode = "v", desc = "Grep visual selection" },
+			{
+				"<C-o>",
+				function()
+					require("fzf-lua").live_grep()
+				end,
+				mode = { "n", "i" },
+				desc = "Live grep",
+			},
+			{
+				"<C-o>",
+				function()
+					require("fzf-lua").grep_visual()
+				end,
+				mode = "v",
+				desc = "Grep visual selection",
+			},
 			{
 				"<leader>ll",
 				function()
@@ -185,8 +199,20 @@ return {
 				end,
 				desc = "Refresh file cache",
 			},
-			{ "<leader>lk", function() require("fzf-lua").live_grep() end, desc = "Live grep" },
-			{ "<leader>lj", function() require("fzf-lua").grep_cword() end, desc = "Grep word under cursor" },
+			{
+				"<leader>lk",
+				function()
+					require("fzf-lua").live_grep()
+				end,
+				desc = "Live grep",
+			},
+			{
+				"<leader>lj",
+				function()
+					require("fzf-lua").grep_cword()
+				end,
+				desc = "Grep word under cursor",
+			},
 		},
 		config = function()
 			local fzf = require("fzf-lua")
@@ -227,8 +253,14 @@ return {
 	{
 		"echasnovski/mini.misc",
 		keys = {
-			{ "<C-S-CR>", function() toggle_zoom() end, mode = { "n", "v", "t" }, desc = "Toggle window zoom" },
-			{ "<S-CR>", function() toggle_zoom() end, mode = { "n", "v" }, desc = "Toggle window zoom" },
+			{
+				"<M-S-CR>",
+				function()
+					toggle_zoom()
+				end,
+				mode = { "n", "v", "i", "t" },
+				desc = "Toggle window zoom",
+			},
 		},
 	},
 
@@ -239,10 +271,38 @@ return {
 	{
 		"folke/flash.nvim",
 		keys = {
-			{ "s", function() require("flash").jump() end, mode = { "n", "x", "o" }, desc = "Flash jump" },
-			{ "S", function() require("flash").treesitter() end, mode = { "n", "x", "o" }, desc = "Flash treesitter" },
-			{ "r", function() require("flash").remote() end, mode = "o", desc = "Remote flash" },
-			{ "R", function() require("flash").treesitter_search() end, mode = { "o", "x" }, desc = "Treesitter search" },
+			{
+				"s",
+				function()
+					require("flash").jump()
+				end,
+				mode = { "n", "x", "o" },
+				desc = "Flash jump",
+			},
+			{
+				"S",
+				function()
+					require("flash").treesitter()
+				end,
+				mode = { "n", "x", "o" },
+				desc = "Flash treesitter",
+			},
+			{
+				"r",
+				function()
+					require("flash").remote()
+				end,
+				mode = "o",
+				desc = "Remote flash",
+			},
+			{
+				"R",
+				function()
+					require("flash").treesitter_search()
+				end,
+				mode = { "o", "x" },
+				desc = "Treesitter search",
+			},
 		},
 		opts = {
 			modes = {
@@ -268,8 +328,19 @@ return {
 	{
 		"numToStr/Comment.nvim",
 		keys = {
-			{ "<leader>c", function() require("Comment.api").toggle.linewise.current() end, desc = "Toggle comment" },
-			{ "<leader>c", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<cr>", mode = "v", desc = "Toggle comment" },
+			{
+				"<leader>c",
+				function()
+					require("Comment.api").toggle.linewise.current()
+				end,
+				desc = "Toggle comment",
+			},
+			{
+				"<leader>c",
+				"<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<cr>",
+				mode = "v",
+				desc = "Toggle comment",
+			},
 		},
 		opts = {
 			-- Disable default mappings, we use <leader>c

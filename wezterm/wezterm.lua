@@ -389,6 +389,12 @@ config.keys = {
 		mods = "ALT|SHIFT",
 		action = wezterm.action.SendString("\x1b[26~"),
 	},
+	-- Option-Shift-Enter for zoom (CSI u format: keycode 13, modifier 4 = Alt+Shift)
+	{
+		key = "Return",
+		mods = "ALT|SHIFT",
+		action = wezterm.action.SendString("\x1b[13;4u"),
+	},
 }
 
 -- =============================================================================

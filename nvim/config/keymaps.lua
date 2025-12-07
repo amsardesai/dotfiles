@@ -74,7 +74,12 @@ vim.keymap.set("v", "<S-Right>", "<C-w><Right>", { desc = "Move to right pane" }
 -- =============================================================================
 
 -- Close quickfix, preview, and location windows
-vim.keymap.set("n", "<Leader>q", "<cmd>cclose<cr><cmd>pclose<cr><cmd>lclose<cr>", { desc = "Close quickfix/preview/location" })
+vim.keymap.set(
+	"n",
+	"<Leader>q",
+	"<cmd>cclose<cr><cmd>pclose<cr><cmd>lclose<cr>",
+	{ desc = "Close quickfix/preview/location" }
+)
 
 -- Redraw screen
 vim.keymap.set("n", "<Leader>rd", "<cmd>redraw!<cr>", { desc = "Redraw screen" })
@@ -155,8 +160,18 @@ vim.keymap.set("t", "<C-w><C-w>", "<C-\\><C-n><C-w><C-w>", { desc = "Next pane" 
 vim.keymap.set("t", "<Leader>,", "<C-\\><C-n><C-^>", { desc = "Alternate buffer" })
 vim.keymap.set("t", "<Leader>]", "<C-\\><C-n><cmd>bnext<cr>", { desc = "Next buffer" })
 vim.keymap.set("t", "<Leader>[", "<C-\\><C-n><cmd>bprevious<cr>", { desc = "Previous buffer" })
-vim.keymap.set("t", "<Leader>\\", "<C-\\><C-n><cmd>bprevious<cr><C-\\><C-n><cmd>bdelete #<cr>", { desc = "Delete buffer" })
-vim.keymap.set("t", "<Leader>|", "<C-\\><C-n><cmd>bprevious<cr><C-\\><C-n><cmd>bdelete! #<cr>", { desc = "Force delete buffer" })
+vim.keymap.set(
+	"t",
+	"<Leader>\\",
+	"<C-\\><C-n><cmd>bprevious<cr><C-\\><C-n><cmd>bdelete #<cr>",
+	{ desc = "Delete buffer" }
+)
+vim.keymap.set(
+	"t",
+	"<Leader>|",
+	"<C-\\><C-n><cmd>bprevious<cr><C-\\><C-n><cmd>bdelete! #<cr>",
+	{ desc = "Force delete buffer" }
+)
 vim.keymap.set("t", "<Leader>ls", "<C-\\><C-n><cmd>buffers<cr>", { desc = "List buffers" })
 
 -- Terminal utility (reload config - exits terminal mode first)
