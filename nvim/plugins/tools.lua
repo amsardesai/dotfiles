@@ -17,6 +17,47 @@ return {
 			-- Define highlight groups for Claude Code winbar (orange theme)
 			vim.api.nvim_set_hl(0, "ClaudeCodeTitle", { fg = "#ffffff", bg = "#ea580c", bold = true })
 			vim.api.nvim_set_hl(0, "ClaudeCodeHint", { fg = "#fed7aa", bg = "#ea580c", italic = true })
+
+			-- Apply winbar when Claude Code terminal opens
+			-- Uses retry mechanism since terminal title may not be set immediately
+			vim.api.nvim_create_autocmd("TermOpen", {
+				pattern = "*",
+				callback = function(args)
+					local buf = args.buf
+
+					local function apply_claude_winbar(attempts)
+						attempts = attempts or 0
+						if not vim.api.nvim_buf_is_valid(buf) then
+							return
+						end
+
+						local term_title = vim.b[buf].term_title or ""
+						-- Check if this is a Claude Code terminal
+						if term_title:lower():match("claude") then
+							-- Find window showing this buffer and apply winbar with DYNAMIC title
+							for _, win in ipairs(vim.api.nvim_list_wins()) do
+								if vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == buf then
+									-- %{b:term_title} is evaluated by vim when rendering the winbar
+									vim.wo[win].winbar = "%#ClaudeCodeTitle# %{b:term_title} %#ClaudeCodeHint#(type ,a to toggle) %*"
+									return
+								end
+							end
+						end
+
+						-- Retry up to 20 times (1 second total) - title may take time to appear
+						if attempts < 20 then
+							vim.defer_fn(function()
+								apply_claude_winbar(attempts + 1)
+							end, 50)
+						end
+					end
+
+					-- Start checking after initial delay
+					vim.defer_fn(function()
+						apply_claude_winbar(0)
+					end, 50)
+				end,
+			})
 		end,
 		opts = {
 			log_level = "warn",
