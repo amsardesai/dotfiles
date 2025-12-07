@@ -1,4 +1,28 @@
 #!/bin/bash
+# =============================================================================
+# DOTFILES SETUP SCRIPT
+# =============================================================================
+#
+# IMPORTANT: This script MUST be idempotent (deterministic).
+#
+# Running this script 1 time or 1000 times MUST produce the same result.
+# Every operation must check if work is needed before making changes:
+#   - Downloads: Skip if file exists
+#   - Symlinks: Skip if link already points to correct target
+#   - Shell config: Skip if source line already present (use substring match!)
+#   - Git config: Skip if include path already present
+#
+# When adding new operations, ALWAYS:
+#   1. Check if the operation has already been done
+#   2. Only perform the operation if needed
+#   3. Use idempotent commands (ln -sfn, mkdir -p, etc.)
+#
+# NEVER:
+#   - Append to files without checking if content exists (use grep -Fq, NOT -Fxq)
+#   - Assume the script is running for the first time
+#   - Use commands that fail if run twice
+#
+# =============================================================================
 
 SCRIPTPATH=$(pwd -P)
 NPM_PACKAGES=$(grep -v '^#' "$SCRIPTPATH/npm-global-packages.txt" | grep -v '^$' | tr '\n' ' ')

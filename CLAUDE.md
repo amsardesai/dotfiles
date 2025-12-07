@@ -43,7 +43,11 @@
 
 - **Symlink-based:** All configs symlinked from `~/.dotfiles/` to standard locations (`~/.vimrc`, `~/.config/nvim/`, etc.)
 - **Version controlled:** Entire dotfiles folder is a git repo for easy sync across devices
-- **Idempotent scripts:** `setup.sh` and `clean.sh` can be run multiple times safely
+- **CRITICAL - Idempotent scripts:** `setup.sh` and `clean.sh` MUST be fully idempotent. Running them 1 time or 1000 times MUST produce identical results. See `setup.sh` header for implementation rules. Key patterns:
+  - Check if work is needed before making changes
+  - Use `grep -Fq` (substring match), NOT `grep -Fxq` (whole line match) when checking file contents
+  - Use `ln -sfn` (force, no-deref) for symlinks
+  - Use `mkdir -p` for directories
 
 ### Editor Philosophy
 
@@ -204,6 +208,24 @@
 ## Recent Discoveries
 
 ### 2025-12-07 (Latest)
+
+#### Zsh Startup Time Fix (14s → 0.2s)
+
+Fixed critical bug where `setup.sh` was appending duplicate source lines to `~/.zshrc` on every run.
+
+**Root cause:** `grep -Fxq "Source Ankit's zshrc"` required exact whole-line match, but the file contained `# Source Ankit's zshrc` (with `#` prefix). This caused setup.sh to think the line wasn't present and append it again.
+
+**Result:** `.zshrc` had 23 copies of `source ~/.dotfiles/.zshrc`, loading oh-my-zsh 23 times.
+
+**Fixes applied:**
+1. Cleaned up `~/.zshrc` to single source line
+2. Fixed `setup.sh` to use `grep -Fq` (substring match) instead of `grep -Fxq` (whole line match)
+3. Added lazy-loading for pyenv, rbenv, notion CLI to further speed up startup
+4. Added comprehensive idempotency documentation to `setup.sh` header
+
+**Files changed:**
+- `setup.sh` - Fixed grep pattern, added idempotency header
+- `~/.zshrc` - Cleaned up (not in repo, but user's file)
 
 #### Neo-tree Migration (Replaced nvim-tree)
 
@@ -541,6 +563,11 @@ Folke's snacks.nvim replaces several individual plugins:
 
 **This section for ad-hoc observations that don't fit above categories:**
 
+- **CRITICAL - Idempotency:** `setup.sh` MUST be idempotent. Running it 1000 times must produce the same result as running it once. When modifying setup.sh:
+  - ALWAYS check if work is needed before making changes
+  - Use `grep -Fq` (substring), NOT `grep -Fxq` (whole line) for content checks
+  - Never append to files without checking if content already exists
+  - See setup.sh header for full implementation rules
 - **CRITICAL - Special characters:** This repository uses Unicode box-drawing and other special characters (e.g., `│` U+2502, not `|`). LLMs frequently replace these with ASCII equivalents, breaking visual appearance. **Always preserve exact characters when editing.** If you see characters like `│`, `─`, `┌`, `└`, `├`, `┤`, `┬`, `┴`, `┼` - do NOT replace them with `|`, `-`, `+`, etc.
 - **Git branch structure:** Main branch is `main`. PRs should target `main`.
 - **Leader keys:** Vim/Neovim use `,` (leader) and `;` (local leader) for custom mappings

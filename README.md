@@ -87,11 +87,15 @@ nvim
    - Adds source line to `~/.bash_profile` (bash)
    - Adds source line to `~/.zshrc` (zsh)
 
-**Optimization behavior:**
+**Idempotency guarantee:**
 
-- Skips Brewfile if packages already installed
+> **setup.sh is fully idempotent.** Running it 1 time or 1000 times produces the same result.
+
+- Skips Brewfile packages if already installed
 - Skips npm packages if already installed
 - Skips downloads if files already exist
+- Skips symlinks if already pointing to correct target
+- Skips shell config updates if source line already present
 - Re-running setup.sh is fast and safe (~5 seconds)
 
 ### Symlink Map
