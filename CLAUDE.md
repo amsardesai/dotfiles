@@ -203,6 +203,84 @@
 
 ## Recent Discoveries
 
+### 2025-12-07 (Latest)
+
+#### Neo-tree Migration (Replaced nvim-tree)
+
+Migrated from **nvim-tree** to **neo-tree** for unified sidebar with git_status support.
+
+**New keybindings:**
+| Key | Action |
+|-----|--------|
+| `,m` | Toggle filesystem tree (no focus change) |
+| `,n` | Focus tree & reveal current file |
+| `,b` | Show tree (no focus change) |
+| `,g` | Toggle git_status view |
+
+**Features:**
+- Multiple sources: filesystem, git_status, buffers
+- Sources share same sidebar position (`,g` replaces filesystem view)
+- Auto-opens on `nvim .` with fzf picker
+- Integrates with snacks.nvim rename
+
+**Files changed:**
+- `nvim/plugins/editor.lua` - Neo-tree config (~160 lines)
+- `nvim/plugins/ui.lua` - Bufferline offset updated to `neo-tree`
+
+#### Bottom Drawers System (NEW)
+
+Created unified drawer system for terminals and diagnostics at bottom of screen.
+
+**New file:** `nvim/util/bottom_drawers.lua`
+
+**Drawer keybindings:**
+| Key | Action | Color |
+|-----|--------|-------|
+| `,z` | Toggle Terminal Z (left) | Blue (#2563eb) |
+| `,x` | Toggle Terminal X (middle) | Purple (#9333ea) |
+| `,t` | Toggle Diagnostics (right) | Red (#dc2626) |
+| `,q` | Close all drawer windows | - |
+| `,Q` | Kill all terminals | - |
+
+**Layout behavior:**
+```
+Single drawer:     [========= full width =========]
+Two drawers:       [==== left ====][==== right ====]
+Three drawers:     [== left ==][== mid ==][== right ==]
+```
+
+**Features:**
+- Color-coded winbars with toggle hints (e.g., "Terminal Z (type ,z to toggle)")
+- Side-by-side layout, auto-expands when others close
+- Trouble.nvim integration for diagnostics
+- Terminals persist across toggles (only windows hide)
+
+#### trouble.nvim Integration
+
+Added trouble.nvim for LSP diagnostics drawer.
+
+**Config:** `nvim/plugins/editor.lua`
+- Mode: diagnostics only
+- Window management handled by bottom_drawers.lua
+- Custom winbar disabled (uses drawer system's styled winbar)
+
+#### Claude Code Terminal Styling
+
+Updated claudecode.nvim terminal with orange theme winbar.
+
+**File:** `nvim/plugins/tools.lua`
+- Orange background (#ea580c)
+- Dynamic title from `b:term_title`
+- Hint: "(type ,a to toggle)"
+
+#### WezTerm Option Key Fixes
+
+Fixed Option-Shift keybindings for buffer navigation and zoom.
+
+**File:** `wezterm/wezterm.lua`
+- `Option-Shift-[` / `Option-Shift-]` → Buffer navigation (sends F13/F14)
+- `Option-Shift-Enter` → Zoom toggle
+
 ### 2025-12-07
 
 #### Vim/Neovim Complete Separation
@@ -244,7 +322,8 @@ nvim/
 │   └── keymaps.lua   # Global keymaps
 └── util/             # Utility modules
     ├── file_cache.lua
-    └── context_menu.lua
+    ├── context_menu.lua
+    └── bottom_drawers.lua
 ```
 
 **Changes:**
@@ -284,7 +363,7 @@ After:  init-nvim.lua → lazy.setup(dofile(plugins/init.lua)) → vimconfig/mai
 | `event = "BufAdd"` | bufferline |
 | `event = "InsertEnter"` | nvim-cmp, nvim-autopairs |
 | `event = "LspAttach"` | lsp-lens |
-| `cmd = {...}` | nvim-tree, fzf-lua, claudecode |
+| `cmd = {...}` | neo-tree, fzf-lua, claudecode, trouble |
 | `keys = {...}` | most plugins with leader keybindings |
 | `ft = {...}` | typescript-tools, emmet, language-specific |
 
@@ -296,7 +375,7 @@ After:  init-nvim.lua → lazy.setup(dofile(plugins/init.lua)) → vimconfig/mai
 - `<esc>` now closes lazy.nvim UI
 - Replaced `jiangmiao/auto-pairs` with `windwp/nvim-autopairs` (Lua-native)
 - Removed `debug = true` from none-ls (was spamming logs)
-- nvim-tree auto-opens when launching `nvim .` (directory argument)
+- neo-tree auto-opens when launching `nvim .` (directory argument)
 - Dashboard disabled for faster startup (snacks.dashboard.enabled = false)
 
 #### VimScript → Lua Plugin Migrations
@@ -326,12 +405,12 @@ Replaced legacy VimScript plugins with modern Lua alternatives:
 - **Keybindings:** `_`/`+` for full page up/down, `{`/`}` for half-page scroll
 - **Cleanup:** Removed duplicate `LESS` exports from `.profile` and `.zshrc`
 
-#### NvimTree Pane Navigation Fix
+#### Neo-tree Pane Navigation Fix
 
-- **Problem:** Shift+Arrow keys for pane navigation didn't work in NvimTree buffer
-- **Cause:** NvimTree's buffer-local keymaps override global mappings from `mappings.vim`
-- **Fix:** Added `on_attach` function to nvim-tree setup that applies buffer-local Shift+Arrow keybindings
-- **File:** `nvim/main.lua` (nvim-tree on_attach function)
+- **Problem:** Shift+Arrow keys for pane navigation didn't work in tree buffer
+- **Cause:** Tree buffer-local keymaps override global mappings
+- **Fix:** Added window mappings in neo-tree setup for Shift+Arrow keybindings
+- **File:** `nvim/plugins/editor.lua` (neo-tree window.mappings)
 
 #### Brewfile Additions
 

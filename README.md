@@ -192,9 +192,10 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | | `,lk` | Live grep |
 | | `,lj` | Grep word under cursor |
 | | `,lr` | Refresh file cache |
-| **File Explorer** | `,m` | Toggle file tree |
-| | `,n` | Find current file |
-| | `,b` | Open tree |
+| **File Explorer** | `,m` | Toggle file tree (no focus) |
+| | `,n` | Focus tree & reveal file |
+| | `,b` | Show tree (no focus) |
+| | `,g` | Toggle git status view |
 | **LSP** | `K` | Hover documentation |
 | | `gd` | Go to definition |
 | | `gr` | Find references |
@@ -205,9 +206,11 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | | `gh` | Toggle inlay hints |
 | | `gL` | Toggle LSP lens |
 | | `<C-LeftMouse>` | Go to definition (like VS Code) |
-| **Terminal (snacks)** | `,z` | Toggle terminal |
-| | `,x` | Hide all terminals |
-| | `,X` | Kill all terminals |
+| **Bottom Drawers** | `,z` | Toggle Terminal Z (blue) |
+| | `,x` | Toggle Terminal X (purple) |
+| | `,t` | Toggle Diagnostics (red) |
+| | `,q` | Close all drawers |
+| | `,Q` | Kill all terminals |
 | **Claude Code** | `,a` | Toggle Claude Code terminal |
 | | `,sa` | Add file to Claude context |
 | **Git** | `(` | Previous hunk |
@@ -235,7 +238,8 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 - `mini.trailspace` - Highlight trailing whitespace
 - `fzf-lua` - Fast fuzzy finder
 - `snacks.nvim` - QoL collection (bufdelete, terminal, scroll, indent, rename, gitbrowse)
-- `nvim-tree` - File explorer
+- `neo-tree` - File explorer with git_status view
+- `trouble.nvim` - Diagnostics drawer
 - `treesitter` - Advanced syntax highlighting (20+ parsers)
 - `lualine` - Status line with LSP status
 - `bufferline` - Tab bar with diagnostics
