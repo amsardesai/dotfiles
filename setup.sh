@@ -243,7 +243,8 @@ if ! [ -f ~/.bash_profile ] || ! grep -Fq "source $SCRIPTPATH/.profile" ~/.bash_
 fi
 
 # Check for existing source line (use -F for literal match, not -x for whole line)
-if ! [ -f ~/.zshrc ] || ! grep -Fq "source ~/.dotfiles/.zshrc" ~/.zshrc 2>/dev/null; then
+# IMPORTANT: Must use $SCRIPTPATH (not hardcoded path) to match what we write
+if ! [ -f ~/.zshrc ] || ! grep -Fq "source $SCRIPTPATH/.zshrc" ~/.zshrc 2>/dev/null; then
 	echo "" >>~/.zshrc
 	echo "# Source Ankit's zshrc" >>~/.zshrc
 	echo "source $SCRIPTPATH/.zshrc" >>~/.zshrc
