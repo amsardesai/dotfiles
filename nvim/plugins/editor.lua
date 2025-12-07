@@ -388,4 +388,29 @@ return {
 	-- =============================================================================
 
 	{ "tpope/vim-sleuth", event = "BufReadPre" },
+
+	-- =============================================================================
+	-- TROUBLE.NVIM (diagnostics drawer, managed by bottom_drawers.lua)
+	-- =============================================================================
+
+	{
+		"folke/trouble.nvim",
+		cmd = "Trouble",
+		opts = {
+			auto_close = false,
+			auto_preview = false,
+			focus = true,
+			win = {
+				wo = {
+					winbar = "", -- Disable default winbar, we set our own
+				},
+			},
+			modes = {
+				diagnostics = {
+					mode = "diagnostics",
+					preview = { type = "main", position = "right" },
+				},
+			},
+		},
+	},
 }

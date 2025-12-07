@@ -13,6 +13,11 @@ return {
 			{ "<leader>a", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
 			{ "<leader>sa", "<cmd>ClaudeCodeAdd<cr>", desc = "Add file to Claude" },
 		},
+		init = function()
+			-- Define highlight groups for Claude Code winbar (orange theme)
+			vim.api.nvim_set_hl(0, "ClaudeCodeTitle", { fg = "#ffffff", bg = "#ea580c", bold = true })
+			vim.api.nvim_set_hl(0, "ClaudeCodeHint", { fg = "#fed7aa", bg = "#ea580c", italic = true })
+		end,
 		opts = {
 			log_level = "warn",
 			terminal = {
@@ -26,7 +31,7 @@ return {
 						return math.min(percentage_width, 75)
 					end,
 					wo = {
-						winbar = " %{b:term_title} %#Comment#(type ,a to toggle)%*",
+						winbar = "%#ClaudeCodeTitle# %{b:term_title} %#ClaudeCodeHint#(type ,a to toggle) %*",
 					},
 				},
 			},

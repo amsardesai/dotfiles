@@ -67,43 +67,54 @@ return {
 			{
 				"<leader>z",
 				function()
-					if not _G.terminal_drawers then
-						_G.terminal_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/terminal_drawers.lua")
+					if not _G.bottom_drawers then
+						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua")
 					end
-					_G.terminal_drawers.toggle_primary()
+					_G.bottom_drawers.toggle_primary()
 				end,
 				mode = { "n", "v", "t" },
-				desc = "Toggle primary terminal",
+				desc = "Toggle Terminal Z",
 			},
 			{
 				"<leader>x",
 				function()
-					if not _G.terminal_drawers then
-						_G.terminal_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/terminal_drawers.lua")
+					if not _G.bottom_drawers then
+						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua")
 					end
-					_G.terminal_drawers.toggle_secondary()
+					_G.bottom_drawers.toggle_secondary()
 				end,
 				mode = { "n", "v", "t" },
-				desc = "Toggle secondary terminal",
+				desc = "Toggle Terminal X",
+			},
+			{
+				"<leader>t",
+				function()
+					if not _G.bottom_drawers then
+						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua")
+					end
+					_G.bottom_drawers.toggle_trouble()
+				end,
+				mode = { "n", "v" },
+				desc = "Toggle Diagnostics",
 			},
 			{
 				"<leader>q",
 				function()
-					if not _G.terminal_drawers then
-						_G.terminal_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/terminal_drawers.lua")
+					if not _G.bottom_drawers then
+						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua")
 					end
-					_G.terminal_drawers.close_all_terminal_windows()
+					_G.bottom_drawers.close_all_drawer_windows()
 				end,
 				mode = { "n", "v", "t" },
-				desc = "Close all terminal windows",
+				desc = "Close all drawer windows",
 			},
 			{
 				"<leader>Q",
 				function()
-					if not _G.terminal_drawers then
-						_G.terminal_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/terminal_drawers.lua")
+					if not _G.bottom_drawers then
+						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua")
 					end
-					_G.terminal_drawers.close_all()
+					_G.bottom_drawers.close_all()
 				end,
 				mode = { "n", "v", "t" },
 				desc = "Kill all terminals",
