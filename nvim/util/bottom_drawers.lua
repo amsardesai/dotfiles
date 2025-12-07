@@ -97,7 +97,7 @@ local function set_winbar(win, slot)
 		hl_title = "TerminalXTitle"
 		hl_hint = "TerminalXHint"
 	elseif slot == "trouble" then
-		title = "Diagnostics"
+		title = "Trouble.nvim Diagnostics"
 		key = ",t"
 		hl_title = "TroubleTitle"
 		hl_hint = "TroubleHint"
@@ -227,12 +227,30 @@ function M.toggle_trouble()
 			})
 		end
 
-		-- Set winbar after trouble opens (defer to ensure window exists)
-		vim.defer_fn(function()
-			local updated_wins = get_drawer_windows()
-			if updated_wins.trouble then
-				set_winbar(updated_wins.trouble, "trouble")
+		-- Find trouble window by searching for trouble filetype (with retry)
+		local function apply_trouble_winbar(attempts)
+			attempts = attempts or 0
+			for _, w in ipairs(vim.api.nvim_list_wins()) do
+				if vim.api.nvim_win_is_valid(w) then
+					local buf = vim.api.nvim_win_get_buf(w)
+					local ft = vim.bo[buf].filetype
+					if ft == "trouble" then
+						set_winbar(w, "trouble")
+						M.state.trouble.win = w
+						return
+					end
+				end
 			end
+			-- Retry up to 10 times (100ms total) if not found yet
+			if attempts < 10 then
+				vim.defer_fn(function()
+					apply_trouble_winbar(attempts + 1)
+				end, 10)
+			end
+		end
+
+		vim.defer_fn(function()
+			apply_trouble_winbar(0)
 		end, 10)
 	end
 end
