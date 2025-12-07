@@ -65,8 +65,9 @@ return {
       },
       indent = {
         enabled = true,
-        char = "|",
-        scope = { char = "|" },
+        -- NOTE: Use box-drawing vertical line (U+2502), NOT regular pipe (|)
+        char = "│",
+        scope = { char = "│" },
         animate = { duration = { step = 10, total = 250 } },
       },
       dashboard = { enabled = false },

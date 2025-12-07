@@ -386,6 +386,7 @@ Folke's snacks.nvim replaces several individual plugins:
 
 **This section for ad-hoc observations that don't fit above categories:**
 
+- **CRITICAL - Special characters:** This repository uses Unicode box-drawing and other special characters (e.g., `│` U+2502, not `|`). LLMs frequently replace these with ASCII equivalents, breaking visual appearance. **Always preserve exact characters when editing.** If you see characters like `│`, `─`, `┌`, `└`, `├`, `┤`, `┬`, `┴`, `┼` - do NOT replace them with `|`, `-`, `+`, etc.
 - **Git branch structure:** Main branch is `main`. PRs should target `main`.
 - **Leader keys:** Vim/Neovim use `,` (leader) and `;` (local leader) for custom mappings
 - **Naming convention:** Config files use lowercase with dashes (`.tmux.conf`, `.bash_profile`)
