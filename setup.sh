@@ -209,7 +209,8 @@ echo_section "🐚 Configuring shell..."
 
 SHELL_UPDATED=0
 
-if ! [ -f ~/.bash_profile ] || ! grep -Fxq "Source Ankit's profile" ~/.bash_profile 2>/dev/null; then
+# Check for existing source line (use -F for literal match, not -x for whole line)
+if ! [ -f ~/.bash_profile ] || ! grep -Fq "source $SCRIPTPATH/.profile" ~/.bash_profile 2>/dev/null; then
 	echo "" >>~/.bash_profile
 	echo "# Source Ankit's profile" >>~/.bash_profile
 	echo "source $SCRIPTPATH/.profile" >>~/.bash_profile
@@ -217,7 +218,8 @@ if ! [ -f ~/.bash_profile ] || ! grep -Fxq "Source Ankit's profile" ~/.bash_prof
 	SHELL_UPDATED=$((SHELL_UPDATED + 1))
 fi
 
-if ! [ -f ~/.zshrc ] || ! grep -Fxq "Source Ankit's zshrc" ~/.zshrc 2>/dev/null; then
+# Check for existing source line (use -F for literal match, not -x for whole line)
+if ! [ -f ~/.zshrc ] || ! grep -Fq "source ~/.dotfiles/.zshrc" ~/.zshrc 2>/dev/null; then
 	echo "" >>~/.zshrc
 	echo "# Source Ankit's zshrc" >>~/.zshrc
 	echo "source $SCRIPTPATH/.zshrc" >>~/.zshrc
