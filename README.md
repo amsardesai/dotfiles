@@ -80,7 +80,7 @@ nvim
 6. **Creates symlinks** to dotfiles:
    - Shell: `.inputrc`, `.markdownlintrc`
    - Terminal: `.tmux.conf`, `kitty.conf`, `wezterm/`
-   - Editors: vim and nvim configurations
+   - Editors: vim (`vimconfig/`) and nvim (`nvim/`) configurations
    - Claude: `.claude/CLAUDE.md`
 
 7. **Updates shell configs** to source dotfiles:
@@ -167,7 +167,12 @@ After running setup, verify:
 
 ### Vim/Neovim Setup
 
-**Philosophy:** Shared config with dual plugin ecosystems. Neovim uses modern Lua plugins with **lazy.nvim** (lazy-loading, 37ms startup), while Vim uses **vim-plug**. All Neovim config lives in `nvim/` directory.
+**Philosophy:** Vim and Neovim have **distinct, separate configurations**:
+
+- **Neovim:** Full Lua-first stack with **lazy.nvim** (lazy-loading, 37ms startup). All keymaps in `nvim/config/keymaps.lua`, plugins in `nvim/plugins/*.lua`.
+- **Vim:** VimScript with **vim-plug**. All keymaps in `vimconfig/mappings.vim`, plugins in `vimconfig/plugins.vim`.
+
+They are NOT trying to share code - only `vimconfig/options.vim` (basic options) and `ftplugin/*.vim` (filetype settings) are used by both.
 
 **Leader Keys:**
 
@@ -216,7 +221,7 @@ After running setup, verify:
 | **Pane Navigation** | `Shift+Arrows` | Move between splits (all modes) |
 | **Utilities** | `<CR>` | Clear search highlight |
 | | `,fw` | Fix whitespace |
-| | `,rs` | Reload vim config |
+| | `,r` | Reload config |
 | | `,rn` | Rename file (with LSP) |
 
 **Plugin Highlights:**
@@ -253,7 +258,7 @@ After running setup, verify:
 - `vim-lsp` - LSP support
 
 **Full plugin list:**
-- Neovim: See `nvim/plugins.lua`
+- Neovim: See `nvim/plugins/*.lua` (split by category: ui, editor, lsp, lang, tools)
 - Vim: See `vimconfig/plugins.vim`
 
 ### Tmux Configuration
@@ -451,7 +456,9 @@ git pull
 
 - Shell: `.zshrc`, `.profile`, `.bash_prompt`, `.inputrc`
 - Git: `.gitconfig`, `themes.gitconfig`
-- Vim/Neovim: `vimconfig/*.vim`, `ftplugin/*.vim`
+- Neovim: `nvim/` (Lua), `vimconfig/options.vim` (shared options)
+- Vim: `vimconfig/` (VimScript)
+- Filetypes: `ftplugin/*.vim` (shared)
 - Tmux: `.tmux.conf`
 - Terminal: `kitty.conf`, `wezterm/`
 - Scripts: `setup.sh`, `clean.sh`

@@ -47,17 +47,19 @@
 
 ### Editor Philosophy
 
-- **Shared config:** Vim and Neovim use the same base configuration (`vimconfig/*.vim`, `ftplugin/*.vim`)
-- **Lua-first for Neovim:** All Neovim-specific config now lives in `nvim/` directory
-- **Dual plugin managers:**
-  - Neovim → **lazy.nvim** (Lua-based, lazy-loading, instant startup)
-  - Vim → **vim-plug** (VimScript-based)
-- **Dual plugin ecosystems:**
-  - Neovim → Modern Lua plugins (fzf-lua, treesitter, native LSP, snacks.nvim)
-  - Vim → Async alternatives (CtrlP, vim-lsp, NERDTree)
-- **Entry points:**
-  - Neovim: `init-nvim.lua` → bootstraps lazy.nvim → loads `nvim/plugins/init.lua` → sources shared configs → loads `nvim/config/*.lua`
-  - Vim: `init-vim.vim` → sources shared configs
+**Vim and Neovim are distinct configurations** - they are NOT trying to share code:
+
+- **Neovim:** Full Lua-first stack with **lazy.nvim**, modern plugins, native LSP
+  - Entry: `init-nvim.lua` → bootstraps lazy.nvim → `nvim/plugins/*.lua` → `vimconfig/main.vim` (options only) → `nvim/config/*.lua`
+  - Plugins: fzf-lua, treesitter, native LSP, snacks.nvim, typescript-tools
+  - All keymaps in Lua: `nvim/config/keymaps.lua`
+
+- **Vim:** VimScript-based with **vim-plug**, async alternatives
+  - Entry: `init-vim.vim` → `vimconfig/main.vim` (full)
+  - Plugins: CtrlP, vim-lsp, NERDTree, nerdcommenter, vim-airline
+  - All keymaps in VimScript: `vimconfig/mappings.vim`
+
+- **Minimal sharing:** Only `vimconfig/options.vim` (basic vim options) and `ftplugin/*.vim` (filetype settings) are used by both
 
 ### Shell Environment Design
 
@@ -82,11 +84,11 @@
 - `init-vim.vim` - Vim entry point (~/.vimrc symlink target)
 - `init-nvim.lua` - Neovim entry point (~/.config/nvim/init.lua symlink target)
 - `init-gvim.vim` - GUI vim settings (~/.gvimrc symlink target)
-- `vimconfig/` - Shared vim/nvim configuration modules
-  - `vimconfig/main.vim` - Shared entry point (sources install, plugins, options, mappings)
-  - `vimconfig/plugins.vim` - Plugin declarations (vim-plug)
-  - `vimconfig/options.vim` - Shared vim/nvim options + cursor shape workaround
-  - `vimconfig/mappings.vim` - Keybindings shared between vim/nvim (includes terminal mappings)
+- `vimconfig/` - VimScript configuration (primarily for Vim, options shared with Neovim)
+  - `vimconfig/main.vim` - Entry point (sources install, plugins, options, mappings)
+  - `vimconfig/plugins.vim` - Vim-only plugin declarations (vim-plug)
+  - `vimconfig/options.vim` - Vim options (shared with Neovim)
+  - `vimconfig/mappings.vim` - **Vim-only** keymaps (Neovim uses `nvim/config/keymaps.lua`)
   - `vimconfig/helpers/behave_zz.vim` - Helper for zz behavior
 - `nvim/` - Neovim-specific Lua configuration (symlinked to ~/.config/nvim/nvim/)
   - `nvim/plugins/` - Plugin specs for lazy.nvim (LazyVim-style organization)
@@ -185,7 +187,7 @@
 ### Making Configuration Changes
 
 1. Edit files directly in `~/.dotfiles/` (changes immediately reflected via symlinks)
-2. Test changes (reload shell with `rebash`, reload vim with `,rs`)
+2. Test changes (reload shell with `rebash`, reload vim/neovim with `,r`)
 3. Commit and push changes
 4. On other devices: `cd ~/.dotfiles && git pull`
 
@@ -194,7 +196,7 @@
 - **Update plugins:**
   - Neovim: `:Lazy update` (or `:Lazy` to open UI)
   - Vim: `:PlugUpdate`
-- **Reload configs:** `rebash` (shell), `,rs` (vim/neovim), `Ctrl+A :source-file ~/.tmux.conf` (tmux)
+- **Reload configs:** `rebash` (shell), `,r` (vim/neovim), `Ctrl+A :source-file ~/.tmux.conf` (tmux)
 - **Clean install:** Run `./clean.sh` then `./setup.sh`
 
 ---
@@ -202,6 +204,26 @@
 ## Recent Discoveries
 
 ### 2025-12-07
+
+#### Vim/Neovim Complete Separation
+
+Vim and Neovim configurations are now fully distinct:
+
+**Neovim (Lua-first):**
+- All keymaps in `nvim/config/keymaps.lua` (~200 lines)
+- All plugins via lazy.nvim in `nvim/plugins/*.lua`
+- Config reload via `,r` re-sources Lua files + `vimconfig/main.vim`
+
+**Vim (VimScript):**
+- All keymaps in `vimconfig/mappings.vim` (now Vim-only, skips for nvim)
+- All plugins via vim-plug in `vimconfig/plugins.vim`
+- Config reload via `,r` sources `$MYVIMRC`
+
+**Changes:**
+- `vimconfig/mappings.vim` - Added `if has('nvim') finish endif` guard at top
+- `vimconfig/terminal.vim` - Deleted, consolidated into `mappings.vim`
+- `nvim/config/keymaps.lua` - Full rewrite with all keymaps from VimScript
+- `,rs` → `,r` (shorter reload keybinding)
 
 #### LazyVim-style Directory Restructure
 
@@ -445,4 +467,4 @@ Folke's snacks.nvim replaces several individual plugins:
 - **Leader keys:** Vim/Neovim use `,` (leader) and `;` (local leader) for custom mappings
 - **Naming convention:** Config files use lowercase with dashes (`.tmux.conf`, `.bash_profile`)
 - **Symlink pattern:** Setup script creates symlinks FROM `.dotfiles/` TO standard locations (not the reverse)
-- Always remember that as I improve my neovim setup, i want to maintain as much backward compatibility with vim. Be mindful of the fact that most of the code runs on both nvim and vim.
+- **Vim/Neovim separation:** These are distinct configs, NOT sharing code. Neovim is Lua-first with lazy.nvim. Vim is VimScript with vim-plug. Don't try to make them compatible.
