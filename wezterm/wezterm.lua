@@ -91,6 +91,10 @@ config.freetype_load_flags = "NO_HINTING"
 -- Neovim Support
 -- =============================================================================
 
+-- macOS: Option key sends Alt/Meta instead of composing special characters
+config.send_composed_key_when_left_alt_is_pressed = false
+config.send_composed_key_when_right_alt_is_pressed = false
+
 -- Kitty keyboard protocol - better modifier key handling
 config.enable_kitty_keyboard = true
 
@@ -163,6 +167,70 @@ config.hyperlink_rules = wezterm.default_hyperlink_rules()
 
 -- Bypass mouse reporting for CMD key (allows CMD+Click links even in tmux/vim)
 config.bypass_mouse_reporting_modifiers = "SUPER"
+
+-- This function returns the suggested title for a tab.
+-- It prefers the title that was set via `tab:set_title()`
+-- or `wezterm cli set-tab-title`, but falls back to the
+-- title of the active pane in that tab.
+local function tab_title(tab_info)
+	local title = tab_info.tab_title
+	-- if the tab title is explicitly set, take that
+	if title and #title > 0 then
+		return title
+	end
+	-- Otherwise, use the title from the active pane
+	-- in that tab
+	return tab_info.active_pane.title
+end
+
+local EXPAND_ICON = wezterm.nerdfonts.md_arrow_expand
+
+wezterm.on("format-tab-title", function(tab, tabs, panes, _config, hover, max_width)
+	local title = tab_title(tab)
+
+	-- Check for zoomed pane
+	local is_zoomed = false
+	for _, pane in ipairs(tab.panes) do
+		if pane.is_zoomed then
+			is_zoomed = true
+			break
+		end
+	end
+
+	-- Check for unseen output
+	local has_unseen_output = false
+	for _, pane in ipairs(tab.panes) do
+		if pane.has_unseen_output then
+			has_unseen_output = true
+			break
+		end
+	end
+
+	-- Build the tab title
+	local bg = tab.is_active and "#000" or "none"
+	local fg = tab.is_active and "#eee" or (has_unseen_output and "#aaa" or "none")
+
+	-- Slightly red background if zoomed
+	if is_zoomed and tab.is_active then
+		bg = "#300"
+	end
+
+	local result = {}
+	if bg ~= "none" then
+		table.insert(result, { Background = { Color = bg } })
+	end
+	if fg ~= "none" then
+		table.insert(result, { Foreground = { Color = fg } })
+	end
+	table.insert(result, { Text = " " .. title })
+	if is_zoomed then
+		table.insert(result, { Foreground = { Color = "#f66" } })
+		table.insert(result, { Text = "  " .. EXPAND_ICON })
+	end
+	table.insert(result, { Text = " " })
+
+	return result
+end)
 
 -- =============================================================================
 -- Keybindings
@@ -307,6 +375,19 @@ config.keys = {
 		key = "r",
 		mods = "CMD|SHIFT",
 		action = wezterm.action.ReloadConfiguration,
+	},
+
+	-- Buffer navigation: Option-Shift-[ and Option-Shift-] send F13/F14
+	-- On US keyboard, Shift+[ = { and Shift+] = }, so match the shifted char
+	{
+		key = "{",
+		mods = "ALT",
+		action = wezterm.action.SendKey({ key = "F13" }),
+	},
+	{
+		key = "}",
+		mods = "ALT",
+		action = wezterm.action.SendKey({ key = "F14" }),
 	},
 }
 
