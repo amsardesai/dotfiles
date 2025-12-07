@@ -22,9 +22,12 @@ endfunction
 call s:source_file('helpers/behave_zz.vim')
 
 
-" " Core
-call s:source_file('install.vim')
-call s:source_file('plugins.vim')
+" Core
+" Skip vim-plug for Neovim (it uses lazy.nvim from nvimconfig/plugins.lua)
+if !has('nvim')
+  call s:source_file('install.vim')
+  call s:source_file('plugins.vim')
+endif
 call s:source_file('options.vim')
 call s:source_file('mappings.vim')
 

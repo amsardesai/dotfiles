@@ -717,17 +717,21 @@ map("n", "(", ":Gitsigns prev_hunk<CR>", { desc = "Prev git hunk" })
 map({ "n", "v" }, "<RightMouse>", context_menu.show, { desc = "Context menu" })
 
 -- Image viewing in terminal (requires ImageMagick: brew install imagemagick)
-require("image").setup({
-	backend = "kitty", -- WezTerm supports kitty protocol (try "sixel" if issues)
-	processor = "magick_cli", -- Use ImageMagick CLI
-	integrations = {
-		markdown = { enabled = false },
-		neorg = { enabled = false },
-		typst = { enabled = false },
-		html = { enabled = false },
-		css = { enabled = false },
-	},
-	max_height_window_percentage = 80,
-	max_width_window_percentage = 80,
-	hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.bmp", "*.ico", "*.svg" },
-})
+-- Wrapped in pcall because magick lua dependency can fail to build
+local ok, image = pcall(require, "image")
+if ok then
+	image.setup({
+		backend = "kitty", -- WezTerm supports kitty protocol (try "sixel" if issues)
+		processor = "magick_cli", -- Use ImageMagick CLI
+		integrations = {
+			markdown = { enabled = false },
+			neorg = { enabled = false },
+			typst = { enabled = false },
+			html = { enabled = false },
+			css = { enabled = false },
+		},
+		max_height_window_percentage = 80,
+		max_width_window_percentage = 80,
+		hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.bmp", "*.ico", "*.svg" },
+	})
+end

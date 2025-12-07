@@ -15,52 +15,11 @@ call plug#begin($VIMPATH . 'bundle')
   Plug 'tpope/vim-repeat'
   Plug 'jmcantrell/vim-virtualenv'
   Plug 'justinmk/vim-sneak'
-  Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
 
-  if has('nvim')
-    Plug 'folke/snacks.nvim'
-    Plug 'coder/claudecode.nvim'
-    Plug 'nvim-lualine/lualine.nvim'
-    Plug 'akinsho/bufferline.nvim'
-    Plug 'nvim-tree/nvim-tree.lua'
-    Plug 'nvim-tree/nvim-web-devicons'
-    Plug 'lewis6991/gitsigns.nvim'
-    Plug 'nvim-treesitter/nvim-treesitter'
-    Plug 'petertriho/nvim-scrollbar'
-    Plug 'lukas-reineke/headlines.nvim'
-
-    " LSP plugins
-    Plug 'neovim/nvim-lspconfig'
-    Plug 'hrsh7th/cmp-nvim-lsp'
-    Plug 'hrsh7th/cmp-buffer'
-    Plug 'hrsh7th/cmp-path'
-    Plug 'hrsh7th/cmp-cmdline'
-    Plug 'hrsh7th/nvim-cmp'
-    Plug 'mason-org/mason.nvim'
-    Plug 'mason-org/mason-lspconfig.nvim'
-    Plug 'nvimtools/none-ls.nvim'
-    Plug 'nvimtools/none-ls-extras.nvim'
-    Plug 'jay-babu/mason-null-ls.nvim'
-    Plug 'L3MON4D3/LuaSnip'
-    Plug 'pmizio/typescript-tools.nvim'
-    Plug 'VidocqH/lsp-lens.nvim'
-
-    " Fuzzy finder (fzf-lua - faster than telescope for large repos)
-    Plug 'nvim-lua/plenary.nvim'
-    Plug 'ibhagwan/fzf-lua'
-
-    " Theme
-    Plug 'folke/tokyonight.nvim'
-
-    " Image viewing in terminal
-    Plug '3rd/image.nvim'
-
-    " Window zoom (MiniMisc.zoom)
-    Plug 'nvim-mini/mini.nvim'
-  endif
-
+  " Vim-only plugins (Neovim uses lazy.nvim from nvimconfig/plugins.lua)
   if !has('nvim')
     Plug 'airblade/vim-gitgutter'
+    Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
     Plug 'tpope/vim-fugitive'
     Plug 'preservim/nerdtree'
     Plug 'vim-airline/vim-airline'
