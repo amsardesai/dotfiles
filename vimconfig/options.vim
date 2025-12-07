@@ -125,97 +125,42 @@ set diffopt=filler " Add filler lines to keep text aligned in diff mode
 set whichwrap+=<,>,h,l,[,] " Allow cursor keys and h/l to wrap to next/previous line
 
 " ============================================================
-" Neovim-specific Settings
-" ============================================================
-
-if has('nvim')
-  set updatetime=200 " Faster update time for git signs and other plugins
-  set mousemoveevent " Enable mouse move events (required for some plugins)
-  set termguicolors " Enable 24-bit RGB colors in terminal
-  set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr-o:hor20 " Cursor shape per mode (blink timing controlled by terminal)
-
-  " Cursor shape escape sequences for terminals with incomplete terminfo (e.g., WezTerm)
-  " Matches guicursor: n-v-c=block, i-ci-ve=bar, r-cr-o=underline
-  lua << EOF
-  local function set_cursor_shape(shape)
-    io.write(string.format("\27[%d q", shape))
-    io.flush()
-  end
-
-  local cursor_group = vim.api.nvim_create_augroup("TerminalCursorShape", { clear = true })
-
-  vim.api.nvim_create_autocmd("ModeChanged", {
-    group = cursor_group,
-    pattern = "*",
-    callback = function()
-      local mode = vim.fn.mode()
-      if mode:match("^i") then
-        -- Insert modes: i, ic, ix (guicursor: i-ci-ve)
-        set_cursor_shape(5) -- blinking bar
-      elseif mode:match("^R") or mode:match("^no") then
-        -- Replace: R, Rc, Rv, etc. + Operator-pending: no, nov, noV (guicursor: r-cr-o)
-        set_cursor_shape(3) -- blinking underline
-      else
-        -- Normal, visual, select, command, etc. (guicursor: n-v-c)
-        set_cursor_shape(1) -- blinking block
-      end
-    end,
-  })
-
-  vim.api.nvim_create_autocmd("VimLeave", {
-    group = cursor_group,
-    callback = function() set_cursor_shape(0) end,
-  })
-
-  vim.api.nvim_create_autocmd("VimEnter", {
-    group = cursor_group,
-    callback = function() set_cursor_shape(1) end,
-  })
-EOF
-else
-  set encoding=utf-8 nobomb " Use UTF-8 encoding without byte order mark (Vim only, Neovim defaults to UTF-8)
-endif
-
-" ============================================================
-" Optional Features
-" ============================================================
-
-if exists('&breakindent')
-  set breakindent " Indent wrapped lines to match start of line
-  set showbreak=.. " String to show at start of wrapped lines
-endif
-
-if has('mouse_sgr') && !has('nvim')
-  set ttymouse=sgr " Use SGR mouse protocol for better mouse support in terminals (Vim only)
-endif
-
-" NERD Commenter
-let NERDSpaceDelims=1
-
-" Latex
-let g:tex_flavor = 'latex'
-
-" vim-json
-set conceallevel=2
-
-" Vim markdown
-let g:vim_markdown_folding_disabled = 1
-
-" vim-sneak
-let g:sneak#s_next = 1
-let g:sneak#use_ic_scs = 1
-
-" vim-jsx
-let g:jsx_ext_required = 0
-
-" vim-flow
-let g:flow#autoclose = 1
-
-" ============================================================
 " Vim-only configuration
 " ============================================================
 
 if !has('nvim')
+  " Encoding (Neovim defaults to UTF-8)
+  set encoding=utf-8 nobomb
+
+  " Display settings (Neovim uses nvim/config/options.lua)
+  if exists('&breakindent')
+    set breakindent " Indent wrapped lines to match start of line
+    set showbreak=.. " String to show at start of wrapped lines
+  endif
+  let g:tex_flavor = 'latex'
+  set conceallevel=2
+
+  " Mouse SGR protocol for better terminal support
+  if has('mouse_sgr')
+    set ttymouse=sgr
+  endif
+
+  " NERD Commenter (Neovim uses Comment.nvim)
+  let NERDSpaceDelims=1
+
+  " Vim markdown (Neovim uses treesitter)
+  let g:vim_markdown_folding_disabled = 1
+
+  " vim-sneak (Neovim uses flash.nvim)
+  let g:sneak#s_next = 1
+  let g:sneak#use_ic_scs = 1
+
+  " vim-jsx (Neovim uses treesitter)
+  let g:jsx_ext_required = 0
+
+  " vim-flow
+  let g:flow#autoclose = 1
+
   " CtrlP.vim
   let g:ctrlp_match_window = 'max:50'
   let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
