@@ -48,12 +48,15 @@
 ### Editor Philosophy
 
 - **Shared config:** Vim and Neovim use the same base configuration (`vimconfig/*.vim`, `ftplugin/*.vim`)
-- **Lua-first for Neovim:** All Neovim-specific config now lives in `nvimconfig/` directory (~660 lines in `main.lua`)
+- **Lua-first for Neovim:** All Neovim-specific config now lives in `nvimconfig/` directory
+- **Dual plugin managers:**
+  - Neovim → **lazy.nvim** (Lua-based, lazy-loading, instant startup)
+  - Vim → **vim-plug** (VimScript-based)
 - **Dual plugin ecosystems:**
   - Neovim → Modern Lua plugins (fzf-lua, treesitter, native LSP, snacks.nvim)
   - Vim → Async alternatives (CtrlP, vim-lsp, NERDTree)
 - **Entry points:**
-  - Neovim: `init-nvim.lua` → sources shared configs → requires `nvimconfig/main.lua`
+  - Neovim: `init-nvim.lua` → bootstraps lazy.nvim → loads plugins → sources shared configs → requires `nvimconfig/main.lua`
   - Vim: `init-vim.vim` → sources shared configs
 
 ### Shell Environment Design
@@ -87,7 +90,8 @@
   - `vimconfig/terminal.vim` - Vim-only terminal config (Neovim uses snacks.terminal)
   - `vimconfig/helpers/behave_zz.vim` - Helper for zz behavior
 - `nvimconfig/` - Neovim-specific Lua configuration (symlinked to ~/.config/nvim/nvimconfig/)
-  - `nvimconfig/main.lua` - **All Neovim Lua config** (~660 lines): nvim-tree, lualine, gitsigns, bufferline, fzf-lua, treesitter, LSP, mason, cmp, snacks, typescript-tools, none-ls, image.nvim, claudecode
+  - `nvimconfig/plugins.lua` - **Plugin specs for lazy.nvim** (~780 lines): all plugin declarations with inline configs for proper lazy-loading
+  - `nvimconfig/main.lua` - **Global settings only** (~24 lines): netrw disable, buffer nav, diagnostics keymaps, context menu
   - `nvimconfig/context_menu.lua` - Right-click context menu (Lua, uses fzf-lua)
   - `nvimconfig/file_cache.lua` - Persisted file cache for instant file picker
   - `nvimconfig/keymap.lua` - Keymap helper functions
@@ -154,7 +158,8 @@
 
 ### Plugin Managers
 
-- **vim-plug** - Vim/Neovim plugin management (auto-installs on first launch)
+- **lazy.nvim** - Neovim plugin management (Lua-based, lazy-loading, 37ms startup)
+- **vim-plug** - Vim plugin management (auto-installs on first launch)
 - **TPM (Tmux Plugin Manager)** - Tmux plugin management
 - **oh-my-zsh** - Zsh plugin framework (if installed)
 - **Mason** - LSP/linter/formatter installer for Neovim
@@ -179,13 +184,61 @@
 
 ### Common Operations
 
-- **Update plugins:** `:PlugUpdate` in vim/neovim
+- **Update plugins:**
+  - Neovim: `:Lazy update` (or `:Lazy` to open UI)
+  - Vim: `:PlugUpdate`
 - **Reload configs:** `rebash` (shell), `,rs` (vim/neovim), `Ctrl+A :source-file ~/.tmux.conf` (tmux)
 - **Clean install:** Run `./clean.sh` then `./setup.sh`
 
 ---
 
 ## Recent Discoveries
+
+### 2025-12-07
+
+#### lazy.nvim Migration (Major Refactor)
+
+Migrated Neovim from **vim-plug** to **lazy.nvim** for proper lazy-loading and instant startup.
+
+**Architecture Change:**
+```
+Before: init-nvim.lua → lazy.setup(plugins) → require('nvimconfig.main')
+        (main.lua did require() at top, loading ALL plugins immediately)
+
+After:  init-nvim.lua → lazy.setup(plugins) → vimconfig/main.vim → require('nvimconfig.main')
+        (plugins.lua has inline configs, main.lua is global settings only)
+```
+
+**Key Files Changed:**
+- `init-nvim.lua` - Now bootstraps lazy.nvim, sets leader keys, configures lazy options
+- `nvimconfig/plugins.lua` (NEW, ~780 lines) - All plugin specs with inline `config`/`opts`/`keys` for lazy-loading
+- `nvimconfig/main.lua` (SLIMMED, ~24 lines) - Only global settings, no plugin configs
+- `vimconfig/plugins.vim` - Removed Neovim-specific plugins (now Vim-only)
+
+**Lazy-Loading Triggers Used:**
+| Trigger | Plugins |
+|---------|---------|
+| `lazy = false` | tokyonight (colorscheme, no flicker) |
+| `event = "VeryLazy"` | snacks, lualine, scrollbar, tpope plugins |
+| `event = "BufReadPre"` | lspconfig, none-ls, gitsigns, vim-sleuth |
+| `event = "BufReadPost"` | treesitter |
+| `event = "BufAdd"` | bufferline |
+| `event = "InsertEnter"` | nvim-cmp, nvim-autopairs |
+| `event = "LspAttach"` | lsp-lens |
+| `cmd = {...}` | nvim-tree, fzf-lua, claudecode |
+| `keys = {...}` | most plugins with leader keybindings |
+| `ft = {...}` | typescript-tools, emmet, language-specific |
+
+**Startup Time Achievement:**
+- Before: ~200-400ms
+- After: **37ms** (target was <50ms)
+
+**Other Changes:**
+- `<esc>` now closes lazy.nvim UI
+- Replaced `jiangmiao/auto-pairs` with `windwp/nvim-autopairs` (Lua-native)
+- Removed `debug = true` from none-ls (was spamming logs)
+- nvim-tree auto-opens when launching `nvim .` (directory argument)
+- Dashboard disabled for faster startup (snacks.dashboard.enabled = false)
 
 ### 2025-12-06
 

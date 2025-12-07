@@ -167,7 +167,7 @@ After running setup, verify:
 
 ### Vim/Neovim Setup
 
-**Philosophy:** Shared config with dual plugin ecosystems. Neovim uses modern Lua plugins (fzf-lua, treesitter, native LSP), while Vim uses async alternatives. All Neovim config lives in `vimconfig/nvim_options.lua`.
+**Philosophy:** Shared config with dual plugin ecosystems. Neovim uses modern Lua plugins with **lazy.nvim** (lazy-loading, 37ms startup), while Vim uses **vim-plug**. All Neovim config lives in `nvimconfig/` directory.
 
 **Leader Keys:**
 
@@ -223,7 +223,7 @@ After running setup, verify:
 
 *Shared (Vim & Neovim):*
 
-- `auto-pairs` - Auto-close brackets
+- `nvim-autopairs` (Neovim) / `auto-pairs` (Vim) - Auto-close brackets
 - `nerdcommenter` - Toggle comments
 - `vim-surround` - Manipulate surrounding delimiters
 - `vim-sneak` - Fast motion search
@@ -251,7 +251,9 @@ After running setup, verify:
 - `vim-airline` - Status line
 - `vim-lsp` - LSP support
 
-**Full plugin list:** See `vimconfig/plugins.vim`
+**Full plugin list:**
+- Neovim: See `nvimconfig/plugins.lua`
+- Vim: See `vimconfig/plugins.vim`
 
 ### Tmux Configuration
 
@@ -327,11 +329,17 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 
 **Symptoms:** Empty editor, missing commands
 
-**Solutions:**
+**Solutions for Neovim (lazy.nvim):**
 
-- Manually run `:PlugInstall` inside vim/neovim
+- Run `:Lazy` to open the plugin manager UI
+- Check `:Lazy health` for issues
+- Clear cache: `rm -rf ~/.local/share/nvim/lazy` and restart
+
+**Solutions for Vim (vim-plug):**
+
+- Manually run `:PlugInstall` inside vim
 - Check network connection (downloads from GitHub)
-- Verify vim-plug installed: `ls ~/.vim/autoload/plug.vim` or `~/.config/nvim/autoload/plug.vim`
+- Verify vim-plug installed: `ls ~/.vim/autoload/plug.vim`
 
 ### Shell aliases not working
 
@@ -389,7 +397,13 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 
 ### Updating Plugins
 
-**Vim/Neovim:**
+**Neovim (lazy.nvim):**
+
+```vim
+:Lazy update
+```
+
+**Vim (vim-plug):**
 
 ```vim
 :PlugUpdate
