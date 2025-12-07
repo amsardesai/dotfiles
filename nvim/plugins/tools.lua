@@ -25,6 +25,9 @@ return {
 						local percentage_width = math.floor(editor_width * 0.40)
 						return math.min(percentage_width, 75)
 					end,
+					wo = {
+						winbar = " %{b:term_title} %#Comment#(type ,a to toggle)%*",
+					},
 				},
 			},
 			diff_opts = { vertical_split = false },

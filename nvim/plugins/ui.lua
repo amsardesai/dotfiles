@@ -67,27 +67,43 @@ return {
 			{
 				"<leader>z",
 				function()
-					require("snacks").terminal.toggle()
+					if not _G.terminal_drawers then
+						_G.terminal_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/terminal_drawers.lua")
+					end
+					_G.terminal_drawers.toggle_primary()
 				end,
 				mode = { "n", "v", "t" },
-				desc = "Toggle terminal",
+				desc = "Toggle primary terminal",
 			},
 			{
 				"<leader>x",
 				function()
-					for _, term in ipairs(require("snacks").terminal.list()) do
-						term:hide()
+					if not _G.terminal_drawers then
+						_G.terminal_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/terminal_drawers.lua")
 					end
+					_G.terminal_drawers.toggle_secondary()
 				end,
 				mode = { "n", "v", "t" },
-				desc = "Hide all terminals",
+				desc = "Toggle secondary terminal",
 			},
 			{
-				"<leader>X",
+				"<leader>q",
 				function()
-					for _, term in ipairs(require("snacks").terminal.list()) do
-						term:close()
+					if not _G.terminal_drawers then
+						_G.terminal_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/terminal_drawers.lua")
 					end
+					_G.terminal_drawers.close_all_terminal_windows()
+				end,
+				mode = { "n", "v", "t" },
+				desc = "Close all terminal windows",
+			},
+			{
+				"<leader>Q",
+				function()
+					if not _G.terminal_drawers then
+						_G.terminal_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/terminal_drawers.lua")
+					end
+					_G.terminal_drawers.close_all()
 				end,
 				mode = { "n", "v", "t" },
 				desc = "Kill all terminals",
