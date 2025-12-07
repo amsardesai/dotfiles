@@ -70,7 +70,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git npm)
+plugins=(git gitfast npm ssh)
 
 # Disable oh-my-zsh auto-update (saves ~13 seconds on startup)
 # Run `omz update` manually when needed

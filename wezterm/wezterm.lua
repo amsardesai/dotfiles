@@ -24,9 +24,33 @@ end)
 config.color_scheme = "tokyonight_night"
 
 -- Font configuration
-config.font = wezterm.font("CaskaydiaCove Nerd Font Propo", { weight = "Light" })
+-- Load fonts from dotfiles repo (relative to this config file)
+config.font_dirs = { "../fonts" }
+config.font = wezterm.font("CaskaydiaCove Nerd Font", { weight = "Light" })
 config.font_size = 14
 config.line_height = 1
+
+-- Font rules for specific styles
+config.font_rules = {
+	-- Italic: Light Italic
+	{
+		italic = true,
+		intensity = "Normal",
+		font = wezterm.font("CaskaydiaCove Nerd Font", { weight = "Light", italic = true }),
+	},
+	-- Bold: Bold weight
+	{
+		italic = false,
+		intensity = "Bold",
+		font = wezterm.font("CaskaydiaCove Nerd Font", { weight = "Bold" }),
+	},
+	-- Bold Italic: Bold Italic
+	{
+		italic = true,
+		intensity = "Bold",
+		font = wezterm.font("CaskaydiaCove Nerd Font", { weight = "Bold", italic = true }),
+	},
+}
 
 -- Window appearance
 config.window_decorations = "RESIZE"

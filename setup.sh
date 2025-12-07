@@ -245,6 +245,7 @@ link_file_quiet "$SCRIPTPATH/.markdownlintrc" "$HOME/.markdownlintrc"
 link_file_quiet "$SCRIPTPATH/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link_file_quiet "$SCRIPTPATH/kitty.conf" "$HOME/.config/kitty/kitty.conf"
 link_file_quiet "$SCRIPTPATH/wezterm" "$HOME/.config/wezterm"
+link_file_quiet "$SCRIPTPATH/fontconfig/conf.d/99-dotfiles-fonts.conf" "$HOME/.config/fontconfig/conf.d/99-dotfiles-fonts.conf"
 
 # Vim
 link_file_quiet "$SCRIPTPATH/init-vim.vim" "$HOME/.vimrc"

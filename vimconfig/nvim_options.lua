@@ -11,6 +11,11 @@ local Snacks = require("snacks")
 
 local context_menu = dofile(current_dir .. "/helpers/context_menu.lua")
 local file_cache = dofile(current_dir .. "/helpers/file_cache.lua")
+local keymap = dofile(current_dir .. "/helpers/keymap.lua")
+local map, tmap, tmap_no_claude = keymap.map, keymap.tmap, keymap.tmap_no_claude
+
+-- Prevent automatic window resizing when opening/closing splits
+vim.o.equalalways = false
 
 -- Disable netrw
 vim.g.loaded_netrw = 1
@@ -168,7 +173,9 @@ end
 require("nvim-treesitter.configs").setup({
 	ensure_installed = {
 		"bash",
+		"c",
 		"comment",
+		"cpp",
 		"css",
 		"dockerfile",
 		"git_config",
@@ -295,6 +302,7 @@ end
 require("mason").setup()
 require("mason-lspconfig").setup({
 	ensure_installed = {
+		"clangd", -- C/C++
 		"cssls",
 		"docker_compose_language_service",
 		"docker_language_server",
@@ -552,45 +560,48 @@ if not vim.g.snacks_setup_done then
 	})
 end
 
--- Snacks keybindings
-vim.keymap.set("n", "<leader>bd", function()
+-- -----------------------------------------------------------------------------
+-- Snacks
+-- -----------------------------------------------------------------------------
+map("n", "<leader>bd", function()
 	Snacks.bufdelete()
 end, { desc = "Delete buffer" })
-vim.keymap.set("n", "<leader>go", function()
+map("n", "<leader>go", function()
 	Snacks.gitbrowse()
 end, { desc = "Open in GitHub" })
-vim.keymap.set("n", "<leader>rn", function()
+map("n", "<leader>rn", function()
 	Snacks.rename.rename_file()
 end, { desc = "Rename file" })
-vim.keymap.set("n", "]]", function()
+map("n", "]]", function()
 	Snacks.words.jump(1)
 end, { desc = "Next reference" })
-vim.keymap.set("n", "[[", function()
+map("n", "[[", function()
 	Snacks.words.jump(-1)
 end, { desc = "Prev reference" })
 
--- Snacks terminal keybindings
-
--- Bottom terminal (default shell)
-local function toggleBottomTerminal()
+-- Terminal
+local function toggleTerminal()
 	Snacks.terminal.toggle()
 end
-
-vim.keymap.set({ "n", "v" }, "<leader>z", toggleBottomTerminal, { desc = "Toggle terminal" })
-vim.keymap.set("t", "<leader>z", toggleBottomTerminal, { desc = "Toggle terminal" })
-
--- Hide all terminals (preserves session)
-vim.keymap.set({ "n", "v", "t" }, "<leader>x", function()
+local function hideAllTerminals()
 	for _, term in ipairs(Snacks.terminal.list()) do
 		term:hide()
 	end
-end, { desc = "Hide all terminals" })
--- Kill all terminals (terminates session)
-vim.keymap.set({ "n", "v", "t" }, "<leader>X", function()
+end
+local function killAllTerminals()
 	for _, term in ipairs(Snacks.terminal.list()) do
 		term:close()
 	end
-end, { desc = "Kill all terminals" })
+end
+
+map({ "n", "v" }, "<leader>z", toggleTerminal, { desc = "Toggle terminal" })
+tmap("<leader>z", toggleTerminal, { desc = "Toggle terminal" })
+
+map({ "n", "v" }, "<leader>x", hideAllTerminals, { desc = "Hide all terminals" })
+tmap("<leader>x", hideAllTerminals, { desc = "Hide all terminals" })
+
+map({ "n", "v" }, "<leader>X", killAllTerminals, { desc = "Kill all terminals" })
+tmap("<leader>X", killAllTerminals, { desc = "Kill all terminals" })
 
 -- claudecode.nvim setup (editor context integration with Claude Code)
 require("claudecode").setup({
@@ -603,39 +614,20 @@ require("claudecode").setup({
 			width = function()
 				local editor_width = vim.o.columns
 				local percentage_width = math.floor(editor_width * 0.40)
-				return math.min(percentage_width, 50) -- Cap at 50 columns
+				return math.min(percentage_width, 75) -- Cap at 50 columns
 			end,
 		},
-		diff_opts = {
-			vertical_split = false,
-		},
+	},
+	diff_opts = {
+		vertical_split = false,
 	},
 })
 
--- Toggle Claude Code terminal (drawer behavior with editor context)
-vim.keymap.set({ "n", "v" }, "<leader>a", ":ClaudeCode<CR>", { desc = "Toggle Claude Code" })
-vim.keymap.set("t", "<leader>a", "<C-\\><C-n>:ClaudeCode<CR>", { desc = "Toggle Claude Code" })
--- Send visual selection to Claude
-vim.keymap.set("v", "<leader>a", ":ClaudeCodeSend<CR>", { desc = "Send selection to Claude" })
--- Add current file to Claude context
-vim.keymap.set("n", "<leader>sa", ":ClaudeCodeAdd<CR>", { desc = "Add file to Claude context" })
+-- =============================================================================
+-- KEYBINDINGS (helpers from helpers/keymap.lua)
+-- =============================================================================
 
--- Fuzzy finder (fzf-lua)
--- Primary file picker (uses cached file list for speed)
-vim.keymap.set({ "n", "i", "v", "t" }, "<C-p>", cached_files, { silent = true, desc = "Find files" })
-vim.keymap.set({ "n", "i" }, "<C-o>", fzf.live_grep, { silent = true, desc = "Live grep" })
-vim.keymap.set("v", "<C-o>", fzf.grep_visual, { silent = true, desc = "Grep visual selection" })
-vim.keymap.set("n", "<leader>ll", cached_files, { silent = true, desc = "Find files" })
-vim.keymap.set("n", "<leader>lr", file_cache.force_refresh, { silent = true, desc = "Refresh file cache" })
-vim.keymap.set("n", "<leader>lk", fzf.live_grep, { silent = true, desc = "Live grep" })
-vim.keymap.set("n", "<leader>lj", fzf.grep_cword, { silent = true, desc = "Grep word under cursor" })
-
--- Right-click context menu
-local function showContextMenu()
-	context_menu.show()
-end
-vim.keymap.set({ "n", "v" }, "<RightMouse>", showContextMenu, { desc = "Context menu" })
-
+-- NvimTree helpers
 local function toggleNvimTree()
 	NvimTreeApi.tree.toggle()
 	vim.cmd.wincmd("w")
@@ -646,15 +638,51 @@ local function launchNvimTree()
 	vim.cmd.wincmd("w")
 end
 
--- NvimTree keybindings
-vim.keymap.set("n", "<leader>m", toggleNvimTree, { silent = true, desc = "Toggle NvimTree" })
-vim.keymap.set("n", "<leader>n", ":NvimTreeFindFile<CR>", { silent = true, desc = "Find file in NvimTree" })
-vim.keymap.set("n", "<leader>b", launchNvimTree, { silent = true, desc = "Open NvimTree" })
+-- -----------------------------------------------------------------------------
+-- Claude Code
+-- -----------------------------------------------------------------------------
+map({ "n", "v" }, "<leader>a", ":ClaudeCode<CR>", { desc = "Toggle Claude Code" })
+tmap("<leader>a", ":ClaudeCode<CR>", { desc = "Toggle Claude Code" })
+map("v", "<leader>a", ":ClaudeCodeSend<CR>", { desc = "Send selection to Claude" })
+map("n", "<leader>sa", ":ClaudeCodeAdd<CR>", { desc = "Add file to Claude context" })
 
--- Gitsigns keybindings
-vim.keymap.set("n", "<leader>gb", ":Gitsigns blame_line<CR>", { silent = true, desc = "Git blame line" })
-vim.keymap.set("n", ")", ":Gitsigns next_hunk<CR>", { desc = "Next git hunk" })
-vim.keymap.set("n", "(", ":Gitsigns prev_hunk<CR>", { desc = "Prev git hunk" })
+-- -----------------------------------------------------------------------------
+-- Fuzzy Finder (fzf-lua)
+-- -----------------------------------------------------------------------------
+map({ "n", "i", "v" }, "<C-p>", cached_files, { desc = "Find files" })
+tmap("<C-p>", cached_files, { desc = "Find files" })
+
+map({ "n", "i" }, "<C-o>", fzf.live_grep, { desc = "Live grep" })
+map("v", "<C-o>", fzf.grep_visual, { desc = "Grep visual selection" })
+tmap_no_claude("<C-o>", fzf.live_grep, { desc = "Live grep" })
+
+map("n", "<leader>ll", cached_files, { desc = "Find files" })
+map("n", "<leader>lr", file_cache.force_refresh, { desc = "Refresh file cache" })
+map("n", "<leader>lk", fzf.live_grep, { desc = "Live grep" })
+map("n", "<leader>lj", fzf.grep_cword, { desc = "Grep word under cursor" })
+
+-- -----------------------------------------------------------------------------
+-- NvimTree
+-- -----------------------------------------------------------------------------
+map({ "n", "v" }, "<leader>m", toggleNvimTree, { desc = "Toggle NvimTree" })
+tmap("<leader>m", toggleNvimTree, { desc = "Toggle NvimTree" })
+
+map({ "n", "v" }, "<leader>n", ":NvimTreeFindFile<CR>", { desc = "Find file in NvimTree" })
+tmap("<leader>n", ":NvimTreeFindFile<CR>", { desc = "Find file in NvimTree" })
+
+map("n", "<leader>b", launchNvimTree, { desc = "Open NvimTree" })
+
+-- -----------------------------------------------------------------------------
+-- Git (gitsigns)
+-- -----------------------------------------------------------------------------
+map("n", "<leader>gb", ":Gitsigns blame_line<CR>", { desc = "Git blame line" })
+map("n", ")", ":Gitsigns next_hunk<CR>", { desc = "Next git hunk" })
+map("n", "(", ":Gitsigns prev_hunk<CR>", { desc = "Prev git hunk" })
+
+-- -----------------------------------------------------------------------------
+-- Context Menu
+-- -----------------------------------------------------------------------------
+map({ "n", "v" }, "<RightMouse>", context_menu.show, { desc = "Context menu" })
 
 -- Image viewing in terminal (requires ImageMagick: brew install imagemagick)
 require("image").setup({

@@ -1,5 +1,5 @@
 #env
-LESS = -x2RMS --mouse
+LESS = -x2RMS --mouse --shift=15
 
 #command
 _ back-screen

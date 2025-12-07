@@ -56,11 +56,14 @@ alias ls='ls -alFh'
 alias ll='ls'
 alias l='ls'
 alias d='du -hs'
+
+# Intentionally use vim from bash
 alias v='vim'
 alias vi='vim'
 alias v.='vim .'
 alias n='nvim'
 alias n.='nvim .'
+
 alias c='clear'
 alias ..='cd ..'
 alias ....='cd ../..'
