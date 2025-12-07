@@ -240,6 +240,23 @@ After:  init-nvim.lua → lazy.setup(plugins) → vimconfig/main.vim → require
 - nvim-tree auto-opens when launching `nvim .` (directory argument)
 - Dashboard disabled for faster startup (snacks.dashboard.enabled = false)
 
+#### VimScript → Lua Plugin Migrations
+
+Replaced legacy VimScript plugins with modern Lua alternatives:
+
+| Old (VimScript) | New (Lua) | Notes |
+|-----------------|-----------|-------|
+| `preservim/nerdcommenter` | `numToStr/Comment.nvim` | Treesitter-aware, `<leader>c` toggles |
+| `tpope/vim-surround` | `kylechui/nvim-surround` | Same keybindings (`cs`, `ds`, `ys`), built-in dot-repeat |
+| `justinmk/vim-sneak` | `folke/flash.nvim` | Labeled jumps, treesitter search, `s`/`S` |
+| `bronson/vim-trailing-whitespace` | `echasnovski/mini.trailspace` | Highlights trailing whitespace |
+| `tpope/vim-repeat` | (removed) | nvim-surround has built-in dot-repeat |
+
+**Keybinding Changes:**
+- `<leader>c` - Toggle comment (was `<leader>c<space>` with nerdcommenter)
+- `s`/`S` - Flash jump with labels (was vim-sneak 2-char search)
+- `cs`, `ds`, `ys` - Unchanged (nvim-surround is drop-in compatible)
+
 ### 2025-12-06
 
 #### Less Pager Configuration (NEW)

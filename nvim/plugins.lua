@@ -758,13 +758,67 @@ return {
   },
 
   -- =============================================================================
-  -- SHARED PLUGINS (VimScript, already have good lazy triggers)
+  -- COMMENT.NVIM (replaces nerdcommenter)
   -- =============================================================================
 
   {
-    "preservim/nerdcommenter",
-    keys = { { "<leader>c", mode = { "n", "v" } } },
+    "numToStr/Comment.nvim",
+    keys = {
+      { "<leader>c", function() require("Comment.api").toggle.linewise.current() end, desc = "Toggle comment" },
+      { "<leader>c", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<cr>", mode = "v", desc = "Toggle comment" },
+    },
+    opts = {
+      -- Disable default mappings, we use <leader>c
+      mappings = { basic = false, extra = false },
+    },
   },
+
+  -- =============================================================================
+  -- NVIM-SURROUND (replaces vim-surround, has built-in dot-repeat)
+  -- =============================================================================
+
+  {
+    "kylechui/nvim-surround",
+    event = "VeryLazy",
+    opts = {}, -- Uses default keymaps: cs, ds, ys
+  },
+
+  -- =============================================================================
+  -- FLASH.NVIM (replaces vim-sneak)
+  -- =============================================================================
+
+  {
+    "folke/flash.nvim",
+    keys = {
+      { "s", function() require("flash").jump() end, mode = { "n", "x", "o" }, desc = "Flash jump" },
+      { "S", function() require("flash").treesitter() end, mode = { "n", "x", "o" }, desc = "Flash treesitter" },
+      { "r", function() require("flash").remote() end, mode = "o", desc = "Remote flash" },
+      { "R", function() require("flash").treesitter_search() end, mode = { "o", "x" }, desc = "Treesitter search" },
+    },
+    opts = {
+      modes = {
+        char = { enabled = false }, -- Don't override f/F/t/T
+      },
+    },
+  },
+
+  -- =============================================================================
+  -- MINI.TRAILSPACE (replaces vim-trailing-whitespace)
+  -- =============================================================================
+
+  {
+    "echasnovski/mini.trailspace",
+    event = "BufReadPost",
+    config = function()
+      require("mini.trailspace").setup()
+      -- Highlight trailing whitespace in red
+      vim.api.nvim_set_hl(0, "MiniTrailspace", { bg = "#f38ba8" })
+    end,
+  },
+
+  -- =============================================================================
+  -- SHARED PLUGINS (VimScript)
+  -- =============================================================================
 
   {
     "mg979/vim-visual-multi",
@@ -778,12 +832,8 @@ return {
     end,
   },
 
-  { "bronson/vim-trailing-whitespace", event = "BufWritePre" },
-  { "tpope/vim-surround", event = "VeryLazy" },
   { "tpope/vim-sleuth", event = "BufReadPre" },
-  { "tpope/vim-repeat", event = "VeryLazy" },
   { "jmcantrell/vim-virtualenv", ft = "python" },
-  { "justinmk/vim-sneak", keys = { "s", "S" } },
 
   -- =============================================================================
   -- FILETYPE PLUGINS

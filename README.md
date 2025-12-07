@@ -221,22 +221,20 @@ After running setup, verify:
 
 **Plugin Highlights:**
 
-*Shared (Vim & Neovim):*
+*Neovim-specific (Lua):*
 
-- `nvim-autopairs` (Neovim) / `auto-pairs` (Vim) - Auto-close brackets
-- `nerdcommenter` - Toggle comments
-- `vim-surround` - Manipulate surrounding delimiters
-- `vim-sneak` - Fast motion search
-
-*Neovim-specific:*
-
-- `fzf-lua` - Fast fuzzy finder (replaces telescope)
-- `snacks.nvim` - QoL collection (bufdelete, terminal, scroll, indent, dashboard, rename, gitbrowse, notifications)
+- `Comment.nvim` - Treesitter-aware commenting (`<leader>c`)
+- `nvim-surround` - Surround manipulation (`cs`, `ds`, `ys`)
+- `flash.nvim` - Jump anywhere with labels (`s`/`S`)
+- `nvim-autopairs` - Auto-close brackets
+- `mini.trailspace` - Highlight trailing whitespace
+- `fzf-lua` - Fast fuzzy finder
+- `snacks.nvim` - QoL collection (bufdelete, terminal, scroll, indent, rename, gitbrowse)
 - `nvim-tree` - File explorer
 - `treesitter` - Advanced syntax highlighting (20+ parsers)
 - `lualine` - Status line with LSP status
 - `bufferline` - Tab bar with diagnostics
-- `mason` + `mason-lspconfig` - Auto-installs 11 LSP servers
+- `mason` + `mason-lspconfig` - Auto-installs 14 LSP servers
 - `typescript-tools` - Direct tsserver (faster than ts-language-server)
 - `none-ls` - Linters/formatters via LSP (prettier, eslint_d, biome, stylua, etc.)
 - `nvim-cmp` - Autocompletion
@@ -244,8 +242,11 @@ After running setup, verify:
 - `image.nvim` - View images in terminal
 - `claudecode.nvim` - Claude Code integration
 
-*Vim-specific:*
+*Vim-specific (VimScript):*
 
+- `nerdcommenter` - Toggle comments
+- `vim-surround` - Surround manipulation
+- `auto-pairs` - Auto-close brackets
 - `NERDTree` - File explorer
 - `CtrlP` - Fuzzy finder
 - `vim-airline` - Status line
