@@ -48,12 +48,12 @@
 ### Editor Philosophy
 
 - **Shared config:** Vim and Neovim use the same base configuration (`vimconfig/*.vim`, `ftplugin/*.vim`)
-- **Lua-first for Neovim:** All Neovim-specific config now lives in `vimconfig/nvim_options.lua` (~660 lines)
+- **Lua-first for Neovim:** All Neovim-specific config now lives in `nvimconfig/` directory (~660 lines in `main.lua`)
 - **Dual plugin ecosystems:**
   - Neovim → Modern Lua plugins (fzf-lua, treesitter, native LSP, snacks.nvim)
   - Vim → Async alternatives (CtrlP, vim-lsp, NERDTree)
 - **Entry points:**
-  - Neovim: `init-nvim.vim` → sources shared configs → loads `nvim_options.lua`
+  - Neovim: `init-nvim.lua` → sources shared configs → requires `nvimconfig/main.lua`
   - Vim: `init-vim.vim` → sources shared configs
 
 ### Shell Environment Design
@@ -77,17 +77,20 @@
 ### Editor Configurations
 
 - `init-vim.vim` - Vim entry point (~/.vimrc symlink target)
-- `init-nvim.vim` - Neovim entry point (~/.config/nvim/init.vim symlink target)
+- `init-nvim.lua` - Neovim entry point (~/.config/nvim/init.lua symlink target)
 - `init-gvim.vim` - GUI vim settings (~/.gvimrc symlink target)
 - `vimconfig/` - Shared vim/nvim configuration modules
+  - `vimconfig/main.vim` - Shared entry point (sources install, plugins, options, mappings)
   - `vimconfig/plugins.vim` - Plugin declarations (vim-plug)
-  - `vimconfig/nvim_options.lua` - **All Neovim Lua config** (~660 lines): nvim-tree, lualine, gitsigns, bufferline, fzf-lua, treesitter, LSP, mason, cmp, snacks, typescript-tools, none-ls, image.nvim, claudecode
   - `vimconfig/options.vim` - Shared vim/nvim options + cursor shape workaround
   - `vimconfig/mappings.vim` - Keybindings shared between vim/nvim
   - `vimconfig/terminal.vim` - Vim-only terminal config (Neovim uses snacks.terminal)
-  - `vimconfig/helpers/context_menu.lua` - Right-click context menu (Lua, uses fzf-lua)
-  - `vimconfig/helpers/file_cache.lua` - Persisted file cache for instant file picker
   - `vimconfig/helpers/behave_zz.vim` - Helper for zz behavior
+- `nvimconfig/` - Neovim-specific Lua configuration (symlinked to ~/.config/nvim/nvimconfig/)
+  - `nvimconfig/main.lua` - **All Neovim Lua config** (~660 lines): nvim-tree, lualine, gitsigns, bufferline, fzf-lua, treesitter, LSP, mason, cmp, snacks, typescript-tools, none-ls, image.nvim, claudecode
+  - `nvimconfig/context_menu.lua` - Right-click context menu (Lua, uses fzf-lua)
+  - `nvimconfig/file_cache.lua` - Persisted file cache for instant file picker
+  - `nvimconfig/keymap.lua` - Keymap helper functions
 - `ftplugin/` - Filetype-specific settings (symlinked to both ~/.vim/ and ~/.config/nvim/)
   - `ftplugin/markdown.vim` - Soft wrapping, display-line navigation
 
@@ -199,7 +202,7 @@
 - **Problem:** Shift+Arrow keys for pane navigation didn't work in NvimTree buffer
 - **Cause:** NvimTree's buffer-local keymaps override global mappings from `mappings.vim`
 - **Fix:** Added `on_attach` function to nvim-tree setup that applies buffer-local Shift+Arrow keybindings
-- **File:** `vimconfig/nvim_options.lua` (lines 34-46)
+- **File:** `nvimconfig/main.lua` (nvim-tree on_attach function)
 
 #### Brewfile Additions
 
@@ -217,9 +220,12 @@
 
 #### Major Lua Migration
 
-- **`nvim_options.lua` (~660 lines):** Consolidated ALL Neovim-specific configuration into single Lua file. Replaces the old VimScript `plugin_options.vim`. Contains setup for: nvim-tree, lualine, gitsigns, bufferline, fzf-lua, treesitter, LSP, mason, cmp, snacks.nvim, typescript-tools, none-ls, image.nvim, claudecode.nvim, lsp-lens.nvim.
-- **`context_menu.lua`:** Rewrote right-click context menu in Lua. Now uses fzf-lua's `vim.ui.select()` integration instead of Telescope.
-- **`file_cache.lua` (NEW):** Persisted file cache system for instant file picker. Caches `git ls-files` results to disk, watches `.git/index` for automatic invalidation using `vim.uv.new_fs_event()`. Provides sub-50ms file picker in large repos.
+- **`nvimconfig/` directory:** All Neovim-specific Lua config moved to dedicated directory (previously scattered in `vimconfig/`)
+- **`nvimconfig/main.lua` (~660 lines):** Consolidated ALL Neovim-specific configuration. Contains setup for: nvim-tree, lualine, gitsigns, bufferline, fzf-lua, treesitter, LSP, mason, cmp, snacks.nvim, typescript-tools, none-ls, image.nvim, claudecode.nvim, lsp-lens.nvim.
+- **`nvimconfig/context_menu.lua`:** Right-click context menu using fzf-lua's `vim.ui.select()` integration.
+- **`nvimconfig/file_cache.lua`:** Persisted file cache system for instant file picker. Caches `git ls-files` results to disk, watches `.git/index` for automatic invalidation using `vim.uv.new_fs_event()`. Provides sub-50ms file picker in large repos.
+- **`nvimconfig/keymap.lua`:** Helper functions for defining keymaps.
+- **`init-nvim.lua`:** New Lua entry point replaces `init-nvim.vim`. Sources shared VimScript config then requires `nvimconfig/main`.
 
 #### fzf-lua Migration (Replaced Telescope)
 

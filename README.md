@@ -109,8 +109,8 @@ nvim
 | `wezterm/` | `~/.config/wezterm` |
 | `init-vim.vim` | `~/.vimrc` |
 | `init-gvim.vim` | `~/.gvimrc` |
-| `init-nvim.vim` | `~/.config/nvim/init.vim` |
-| `vimconfig/`, `ftplugin/` | `~/.vim/` and `~/.config/nvim/` |
+| `init-nvim.lua` | `~/.config/nvim/init.lua` |
+| `vimconfig/`, `ftplugin/`, `nvimconfig/` | `~/.vim/` and `~/.config/nvim/` |
 
 ## Post-Install Checklist
 

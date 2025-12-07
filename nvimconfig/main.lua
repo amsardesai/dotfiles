@@ -1,21 +1,27 @@
 -- Neovim plugin configurations
 -- Loaded from main.vim via luafile
 
-local vim = vim ---@diagnostic disable-line: undefined-global
+-- Add Mason bin to PATH so none-ls can find installed tools
+vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin:" .. vim.env.PATH
 
 -- Get the directory of this file for relative imports
 local current_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
 
 local NvimTreeApi = require("nvim-tree.api")
 local Snacks = require("snacks")
+local MiniMisc = require("mini.misc")
 
-local context_menu = dofile(current_dir .. "/helpers/context_menu.lua")
-local file_cache = dofile(current_dir .. "/helpers/file_cache.lua")
-local keymap = dofile(current_dir .. "/helpers/keymap.lua")
+local context_menu = dofile(current_dir .. "/context_menu.lua")
+local file_cache = dofile(current_dir .. "/file_cache.lua")
+local keymap = dofile(current_dir .. "/keymap.lua")
 local map, tmap, tmap_no_claude = keymap.map, keymap.tmap, keymap.tmap_no_claude
 
 -- Prevent automatic window resizing when opening/closing splits
 vim.o.equalalways = false
+
+-- Buffer navigation: Option-Shift-[ and Option-Shift-] (sent as F13/F14 by terminal)
+vim.keymap.set("n", "<F13>", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
+vim.keymap.set("n", "<F14>", "<cmd>bnext<cr>", { desc = "Next buffer" })
 
 -- Disable netrw
 vim.g.loaded_netrw = 1
@@ -302,6 +308,7 @@ end
 require("mason").setup()
 require("mason-lspconfig").setup({
 	ensure_installed = {
+		"bashls", -- uses shellcheck for diagnostics
 		"clangd", -- C/C++
 		"cssls",
 		"docker_compose_language_service",
@@ -346,7 +353,7 @@ null_ls.setup({
 	sources = {
 		-- Linters (diagnostics)
 		null_ls.builtins.diagnostics.hadolint,
-		null_ls.builtins.diagnostics.shellcheck,
+		-- shellcheck removed from none-ls; use bashls instead (integrates shellcheck natively)
 		null_ls.builtins.diagnostics.markdownlint.with({
 			-- Disable line-length rule (MD013) - too noisy for most markdown
 			extra_args = { "--disable", "MD013" },
@@ -354,8 +361,7 @@ null_ls.setup({
 		null_ls.builtins.diagnostics.yamllint,
 		null_ls.builtins.diagnostics.actionlint,
 
-		-- Terraform
-		null_ls.builtins.diagnostics.tflint,
+		-- Terraform (tflint removed from none-ls; terraformls provides diagnostics)
 		null_ls.builtins.formatting.terraform_fmt,
 
 		-- Formatters
@@ -408,10 +414,10 @@ require("mason-null-ls").setup({
 		"hadolint",
 		"markdownlint",
 		"prettier",
-		"shellcheck",
+		"shellcheck", -- not used by none-ls, but bashls needs it for diagnostics
 		"shfmt",
 		"stylua",
-		"tflint",
+		-- tflint: removed from none-ls, terraformls provides diagnostics
 		"yamllint",
 	},
 	automatic_installation = true,
@@ -560,6 +566,9 @@ if not vim.g.snacks_setup_done then
 	})
 end
 
+-- mini.misc setup (for MiniMisc.zoom)
+MiniMisc.setup()
+
 -- -----------------------------------------------------------------------------
 -- Snacks
 -- -----------------------------------------------------------------------------
@@ -603,6 +612,29 @@ tmap("<leader>x", hideAllTerminals, { desc = "Hide all terminals" })
 map({ "n", "v" }, "<leader>X", killAllTerminals, { desc = "Kill all terminals" })
 tmap("<leader>X", killAllTerminals, { desc = "Kill all terminals" })
 
+-- -----------------------------------------------------------------------------
+-- Window Zoom (mini.misc)
+-- -----------------------------------------------------------------------------
+local function zoomWindow()
+	MiniMisc.zoom(0, {
+		width = vim.o.columns,
+		height = vim.o.lines,
+		row = 0,
+		col = 0,
+		border = "double",
+		title_pos = "center",
+	})
+	-- Darken the zoomed window background
+	local win = vim.api.nvim_get_current_win()
+	vim.wo[win].winblend = 5
+	vim.wo[win].winhighlight = "Normal:NormalFloat"
+end
+
+map({ "n", "v" }, "<C-S-CR>", zoomWindow, { desc = "Toggle window zoom" })
+tmap("<C-S-CR>", function()
+	vim.schedule(zoomWindow)
+end, { desc = "Toggle window zoom" })
+
 -- claudecode.nvim setup (editor context integration with Claude Code)
 require("claudecode").setup({
 	log_level = "warn",
@@ -614,7 +646,7 @@ require("claudecode").setup({
 			width = function()
 				local editor_width = vim.o.columns
 				local percentage_width = math.floor(editor_width * 0.40)
-				return math.min(percentage_width, 75) -- Cap at 50 columns
+				return math.min(percentage_width, 75) -- Cap at 75 columns
 			end,
 		},
 	},

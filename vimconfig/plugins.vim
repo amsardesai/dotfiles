@@ -54,6 +54,9 @@ call plug#begin($VIMPATH . 'bundle')
 
     " Image viewing in terminal
     Plug '3rd/image.nvim'
+
+    " Window zoom (MiniMisc.zoom)
+    Plug 'nvim-mini/mini.nvim'
   endif
 
   if !has('nvim')

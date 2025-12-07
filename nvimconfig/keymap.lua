@@ -1,5 +1,3 @@
-local vim = vim ---@diagnostic disable-line: undefined-global
-
 -- Keymap helper functions
 local M = {}
 

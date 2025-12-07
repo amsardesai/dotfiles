@@ -27,9 +27,6 @@ call s:source_file('install.vim')
 call s:source_file('plugins.vim')
 call s:source_file('options.vim')
 call s:source_file('mappings.vim')
-if has('nvim')
-  execute 'luafile' $VIMCONFIG . '/nvim_options.lua'
-endif
 
 " Neovim-specific
 if exists(':terminal')
