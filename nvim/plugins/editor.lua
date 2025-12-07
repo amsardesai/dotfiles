@@ -29,23 +29,33 @@ end
 
 return {
 	-- =============================================================================
-	-- NVIM-TREE (on keymap/command)
+	-- NEO-TREE (file explorer + git status)
 	-- =============================================================================
 
 	{
-		"nvim-tree/nvim-tree.lua",
-		cmd = { "NvimTreeToggle", "NvimTreeFindFile", "NvimTreeOpen", "NvimTreeClose" },
+		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			"nvim-tree/nvim-web-devicons",
+		},
+		cmd = "Neotree",
 		-- Load when opening a directory (e.g., `nvim .`)
 		init = function()
 			vim.api.nvim_create_autocmd("VimEnter", {
 				callback = function(data)
 					-- Check if argument is a directory
 					if vim.fn.isdirectory(data.file) == 1 then
-						-- Load nvim-tree and open it
-						require("lazy").load({ plugins = { "nvim-tree.lua" } })
-						require("nvim-tree.api").tree.open()
-						-- Open fzf file picker on top
-						vim.schedule(function()
+						-- Load neo-tree and open it
+						require("lazy").load({ plugins = { "neo-tree.nvim" } })
+						vim.cmd("Neotree action=show")
+
+						-- Open fzf file picker after UI settles
+						vim.defer_fn(function()
+							-- Move focus away from neo-tree to main area
+							vim.cmd("wincmd l")
+
 							require("lazy").load({ plugins = { "fzf-lua" } })
 							local file_cache = dofile(get_config_dir() .. "/util/file_cache.lua")
 							file_cache.setup()
@@ -58,11 +68,12 @@ return {
 									actions = fzf.defaults.actions.files,
 									file_icons = true,
 									color_icons = true,
+									winopts = { focusable = true },
 								})
 							else
-								fzf.files()
+								fzf.files({ winopts = { focusable = true } })
 							end
-						end)
+						end, 100)
 					end
 				end,
 			})
@@ -71,62 +82,113 @@ return {
 			{
 				"<leader>m",
 				function()
-					require("nvim-tree.api").tree.toggle()
-					vim.cmd.wincmd("w")
+					vim.cmd("Neotree toggle action=show")
 				end,
 				mode = { "n", "v", "t" },
-				desc = "Toggle NvimTree",
+				desc = "Toggle file tree",
 			},
-			{ "<leader>n", "<cmd>NvimTreeFindFile<cr>", mode = { "n", "v", "t" }, desc = "Find file in NvimTree" },
+			{
+				"<leader>n",
+				function()
+					vim.cmd("Neotree reveal")
+				end,
+				mode = { "n", "v", "t" },
+				desc = "Focus tree & reveal file",
+			},
 			{
 				"<leader>b",
 				function()
-					require("nvim-tree.api").tree.open()
-					vim.cmd.wincmd("w")
+					vim.cmd("Neotree action=show")
 				end,
-				desc = "Open NvimTree",
+				desc = "Show file tree",
+			},
+			{
+				"<leader>g",
+				function()
+					vim.cmd("Neotree toggle source=git_status action=show")
+				end,
+				mode = { "n", "v" },
+				desc = "Toggle git status",
 			},
 		},
-		config = function()
-			require("nvim-tree").setup({
-				view = { width = 30 },
-				renderer = {
-					add_trailing = true,
-					group_empty = true,
-					highlight_modified = "name",
-					icons = { show = { hidden = true } },
+		opts = {
+			sources = { "filesystem", "git_status", "buffers" },
+			close_if_last_window = true,
+			filesystem = {
+				follow_current_file = { enabled = true },
+				use_libuv_file_watcher = true,
+				filtered_items = {
+					visible = true,
+					hide_dotfiles = false,
+					hide_gitignored = false,
 				},
-				on_attach = function(bufnr)
-					local api = require("nvim-tree.api")
-					api.config.mappings.default_on_attach(bufnr)
+				group_empty_dirs = true,
+			},
+			git_status = {
+				window = { position = "left", width = 40 },
+			},
+			default_component_configs = {
+				indent = {
+					with_markers = true,
+					indent_size = 2,
+				},
+				modified = {
+					symbol = "●",
+				},
+				git_status = {
+					symbols = {
+						added = "✚",
+						modified = "",
+						deleted = "✖",
+						renamed = "󰁕",
+						untracked = "",
+						ignored = "",
+						unstaged = "󰄱",
+						staged = "",
+						conflict = "",
+					},
+				},
+			},
+			window = {
+				width = 30,
+				mappings = {
 					-- Shift+Arrow navigation (matches global mappings)
-					local opts = { buffer = bufnr, noremap = true, silent = true }
-					vim.keymap.set("n", "<S-Up>", "<C-w><Up>", opts)
-					vim.keymap.set("n", "<S-Down>", "<C-w><Down>", opts)
-					vim.keymap.set("n", "<S-Left>", "<C-w><Left>", opts)
-					vim.keymap.set("n", "<S-Right>", "<C-w><Right>", opts)
-				end,
-			})
-
-			-- Integrate with snacks.nvim rename (notify LSP of file renames)
-			local prev_rename = { new_name = "", old_name = "" }
-			vim.api.nvim_create_autocmd("User", {
-				pattern = "NvimTreeSetup",
-				callback = function()
-					local api = require("nvim-tree.api")
-					api.events.subscribe(api.events.Event.NodeRenamed, function(data)
-						if prev_rename.new_name ~= data.new_name or prev_rename.old_name ~= data.old_name then
-							prev_rename = data
-							-- Only call snacks if it's loaded
-							local ok, snacks = pcall(require, "snacks")
-							if ok then
-								snacks.rename.on_rename_file(data.old_name, data.new_name)
-							end
+					["<S-Up>"] = function()
+						vim.cmd("wincmd k")
+					end,
+					["<S-Down>"] = function()
+						vim.cmd("wincmd j")
+					end,
+					["<S-Left>"] = function()
+						vim.cmd("wincmd h")
+					end,
+					["<S-Right>"] = function()
+						vim.cmd("wincmd l")
+					end,
+				},
+			},
+			event_handlers = {
+				-- Integrate with snacks.nvim rename (notify LSP of file renames)
+				{
+					event = "file_renamed",
+					handler = function(args)
+						local ok, snacks = pcall(require, "snacks")
+						if ok then
+							snacks.rename.on_rename_file(args.source, args.destination)
 						end
-					end)
-				end,
-			})
-		end,
+					end,
+				},
+				{
+					event = "file_moved",
+					handler = function(args)
+						local ok, snacks = pcall(require, "snacks")
+						if ok then
+							snacks.rename.on_rename_file(args.source, args.destination)
+						end
+					end,
+				},
+			},
+		},
 	},
 
 	-- =============================================================================

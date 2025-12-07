@@ -180,7 +180,7 @@ return {
 				separator_style = "slant",
 				color_icons = false,
 				hover = { enabled = true, delay = 50, reveal = { "close" } },
-				offsets = { filetype = "NvimTree", text = "File Explorer", separator = true },
+				offsets = { { filetype = "neo-tree", text = "File Explorer", separator = true } },
 			},
 		},
 	},
