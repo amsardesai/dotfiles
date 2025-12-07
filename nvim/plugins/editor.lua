@@ -5,13 +5,8 @@ local function get_config_dir()
 	return vim.fn.stdpath("config") .. "/nvim"
 end
 
--- Helper: toggle zoom current window to fullscreen float
-local function toggle_zoom()
-	-- Exit terminal mode first if we're in it
-	if vim.fn.mode() == "t" then
-		vim.cmd("stopinsert")
-	end
-
+-- Helper: perform the actual zoom operation
+local function do_zoom()
 	local MiniMisc = require("mini.misc")
 	MiniMisc.setup()
 	MiniMisc.zoom(0, {
@@ -25,6 +20,18 @@ local function toggle_zoom()
 	local win = vim.api.nvim_get_current_win()
 	vim.wo[win].winblend = 5
 	vim.wo[win].winhighlight = "Normal:NormalFloat"
+end
+
+-- Helper: toggle zoom current window to fullscreen float
+local function toggle_zoom()
+	-- Exit terminal mode first if we're in it
+	if vim.fn.mode() == "t" then
+		-- Send <C-\><C-n> to exit terminal mode, then schedule zoom
+		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), "n", false)
+		vim.schedule(do_zoom)
+	else
+		do_zoom()
+	end
 end
 
 return {
