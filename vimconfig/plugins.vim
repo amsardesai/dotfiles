@@ -1,3 +1,7 @@
+" vim-visual-multi: Disable Shift+Arrow mappings (we use them for pane navigation)
+let g:VM_maps = {}
+let g:VM_maps['Select h'] = ''  " Disable <S-Left>
+let g:VM_maps['Select l'] = ''  " Disable <S-Right>
 
 call plug#begin($VIMPATH . 'bundle')
 

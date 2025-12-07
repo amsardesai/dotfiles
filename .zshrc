@@ -25,7 +25,7 @@ HYPHEN_INSENSITIVE="true"
 
 # Uncomment one of the following lines to change the auto-update behavior
 # zstyle ':omz:update' mode disabled  # disable automatic updates
-zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode auto      # update automatically without asking
 # zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # Uncomment the following line to change how often to auto-update (in days).
@@ -72,6 +72,10 @@ COMPLETION_WAITING_DOTS="true"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git npm)
 
+# Disable oh-my-zsh auto-update (saves ~13 seconds on startup)
+# Run `omz update` manually when needed
+zstyle ':omz:update' mode disabled
+
 source $ZSH/oh-my-zsh.sh
 
 # Trigger git prompt update for Graphite CLI commands
@@ -117,8 +121,18 @@ alias cp="cp -i"
 alias rm="rm -i"
 
 # Word navigation with Option keys (zsh keybindings)
-bindkey "^[[1;3C" forward-word   # Option-Right
-bindkey "^[[1;3D" backward-word  # Option-Left
+bindkey "^[[1;3C" forward-word      # Option-Right
+bindkey "^[[1;3D" backward-word     # Option-Left
+bindkey "^[[1;4C" end-of-line       # Option-Shift-Right
+bindkey "^[[1;4D" beginning-of-line # Option-Shift-Left
+
+# Move 20 characters with Option-Ctrl-Arrow
+forward-20-chars() { repeat 20 { zle forward-char } }
+backward-20-chars() { repeat 20 { zle backward-char } }
+zle -N forward-20-chars
+zle -N backward-20-chars
+bindkey "^[[1;7C" forward-20-chars  # Option-Ctrl-Right
+bindkey "^[[1;7D" backward-20-chars # Option-Ctrl-Left
 
 # Force colors
 export CLICOLOR_FORCE=1
@@ -219,8 +233,13 @@ fi
 
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
 
+# Lazy-load Graphite CLI completion (saves ~100ms on startup)
 if command -v gt > /dev/null; then
-  eval "$(gt completion)"
+  gt() {
+    unfunction gt
+    eval "$(command gt completion)"
+    command gt "$@"
+  }
 fi
 
 # macOS-specific: LM Studio CLI

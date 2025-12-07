@@ -32,11 +32,11 @@ Personal configuration files for shell, vim/neovim, tmux, and development tools.
 - **ripgrep** - Fast grep
 - **git-delta** - Syntax-highlighted diffs
 
-**Optional:**
+**Optional (installed via Brewfile):**
 
-- Graphite CLI - Enhanced git workflow
-- LM Studio CLI - Local LLM integration
-- 1Password CLI - Password management
+- **Graphite CLI** - Enhanced git workflow for stacked PRs
+- **Claude Code** - AI coding assistant
+- **1Password CLI** - Password management
 
 ## Installation
 
@@ -99,6 +99,7 @@ nvim
 | Source (in .dotfiles) | Destination |
 | --------------------- | ----------- |
 | `.inputrc` | `~/.inputrc` |
+| `.lesskey` | `~/.lesskey` |
 | `.tern-config` | `~/.tern-config` |
 | `.tmux.conf` | `~/.tmux.conf` |
 | `.gitconfig` | `~/.gitconfig` |
@@ -154,6 +155,15 @@ After running setup, verify:
 - `rmswaps` - Remove vim swap files
 - `rebash` - Reload shell config
 - `psg` - Grep processes
+
+**Less Pager Keybindings** (via `.lesskey`):
+
+| Key | Action |
+| --- | ------ |
+| `_` | Page up |
+| `+` | Page down |
+| `{` | Half page up |
+| `}` | Half page down |
 
 ### Vim/Neovim Setup
 

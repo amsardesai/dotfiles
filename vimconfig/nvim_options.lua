@@ -606,6 +606,9 @@ require("claudecode").setup({
 				return math.min(percentage_width, 50) -- Cap at 50 columns
 			end,
 		},
+		diff_opts = {
+			vertical_split = false,
+		},
 	},
 })
 

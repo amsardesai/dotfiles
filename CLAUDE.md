@@ -72,6 +72,7 @@
 - `clean.sh` - Uninstallation script (removes symlinks, cleans git completion files)
 - `.profile` - Main shell configuration sourced by both bash and zsh
 - `.zshrc` - Zsh-specific configuration (git aliases, oh-my-zsh integration)
+- `.lesskey` - Less pager configuration (env vars + keybindings)
 
 ### Editor Configurations
 
@@ -184,6 +185,35 @@
 ## Recent Discoveries
 
 ### 2025-12-06
+
+#### Less Pager Configuration (NEW)
+
+- **`.lesskey` (NEW):** Consolidated LESS configuration into a single file using lesskey format
+  - `#env` section: `LESS = -x2RMS --mouse` (tab stops, raw chars, verbose prompt, chop lines, mouse)
+  - `#command` section: Custom keybindings for vim-like navigation
+- **Keybindings:** `_`/`+` for full page up/down, `{`/`}` for half-page scroll
+- **Cleanup:** Removed duplicate `LESS` exports from `.profile` and `.zshrc`
+
+#### NvimTree Pane Navigation Fix
+
+- **Problem:** Shift+Arrow keys for pane navigation didn't work in NvimTree buffer
+- **Cause:** NvimTree's buffer-local keymaps override global mappings from `mappings.vim`
+- **Fix:** Added `on_attach` function to nvim-tree setup that applies buffer-local Shift+Arrow keybindings
+- **File:** `vimconfig/nvim_options.lua` (lines 34-46)
+
+#### Brewfile Additions
+
+- **CLI tools added:**
+  - `withgraphite/tap/graphite` - Graphite CLI for stacked PRs
+  - `claude-code` - Claude Code AI assistant (cask)
+  - `1password-cli` - 1Password CLI (cask)
+
+#### setup.sh Improvements
+
+- **Homebrew updates:** Now runs `brew update` before `brew bundle`, shows update progress
+- **Verbose output:** Shows each package being installed (gray, indented) for both Homebrew and npm
+- **New symlink:** `.lesskey` → `~/.lesskey`
+- **Fixed:** Piping to `while read` was breaking `brew bundle` - now captures output first
 
 #### Major Lua Migration
 

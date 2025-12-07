@@ -1,18 +1,18 @@
 -- WezTerm Configuration
 -- Documentation: https://wezfurlong.org/wezterm/config/files.html
 
-local wezterm = require 'wezterm'
+local wezterm = require("wezterm")
 local config = {}
 
 -- Use config builder for better error messages
 if wezterm.config_builder then
-  config = wezterm.config_builder()
+	config = wezterm.config_builder()
 end
 
 -- Open links in Chrome instead of system default browser
-wezterm.on('open-uri', function(window, pane, uri)
-  wezterm.open_with(uri, 'Google Chrome')
-  return false
+wezterm.on("open-uri", function(window, pane, uri)
+	wezterm.open_with(uri, "Google Chrome")
+	return false
 end)
 
 -- =============================================================================
@@ -21,19 +21,20 @@ end)
 
 -- Color scheme
 -- Browse schemes at: https://wezfurlong.org/wezterm/colorschemes/index.html
-config.color_scheme = 'tokyonight_night'
+config.color_scheme = "tokyonight_night"
 
 -- Font configuration
-config.font = wezterm.font('FantasqueSansM Nerd Font Mono')
+config.font = wezterm.font("CaskaydiaCove Nerd Font Propo", { weight = "Light" })
 config.font_size = 14
+config.line_height = 1
 
 -- Window appearance
-config.window_decorations = 'RESIZE'
+config.window_decorations = "RESIZE"
 config.window_padding = {
-  left = 10,
-  right = 10,
-  top = 5,
-  bottom = 5,
+	left = 5,
+	right = 5,
+	top = 5,
+	bottom = 5,
 }
 config.use_resize_increments = true
 config.enable_scroll_bar = true
@@ -44,7 +45,7 @@ config.use_fancy_tab_bar = true
 
 -- Security
 config.detect_password_input = true
-config.window_close_confirmation = 'AlwaysPrompt'
+config.window_close_confirmation = "AlwaysPrompt"
 
 -- =============================================================================
 -- Performance
@@ -52,7 +53,7 @@ config.window_close_confirmation = 'AlwaysPrompt'
 
 -- GPU acceleration
 config.front_end = "WebGpu"
-config.webgpu_power_preference = 'HighPerformance'
+config.webgpu_power_preference = "HighPerformance"
 
 -- ProMotion display support (120Hz)
 config.max_fps = 120
@@ -76,7 +77,7 @@ config.enable_csi_u_key_encoding = true
 config.allow_square_glyphs_to_overflow_width = "WhenFollowedBySpace"
 
 -- Use wezterm terminfo for enhanced capabilities (undercurl, etc.)
-config.term = 'wezterm'
+config.term = "wezterm"
 
 -- =============================================================================
 -- Behavior
@@ -86,7 +87,7 @@ config.term = 'wezterm'
 config.scrollback_lines = 10000
 
 -- Cursor
-config.default_cursor_style = 'BlinkingBlock'
+config.default_cursor_style = "BlinkingBlock"
 config.cursor_blink_rate = 500
 
 -- =============================================================================
@@ -99,8 +100,8 @@ config.macos_window_background_blur = 40
 
 -- Dim inactive panes for focus clarity
 config.inactive_pane_hsb = {
-  saturation = 0.9,
-  brightness = 0.7,
+	saturation = 0.9,
+	brightness = 0.7,
 }
 
 -- =============================================================================
@@ -110,9 +111,9 @@ config.inactive_pane_hsb = {
 -- Disable audible bell, use visual flash instead
 config.audible_bell = "Disabled"
 config.visual_bell = {
-  fade_in_duration_ms = 75,
-  fade_out_duration_ms = 75,
-  target = "CursorColor",
+	fade_in_duration_ms = 75,
+	fade_out_duration_ms = 75,
+	target = "CursorColor",
 }
 
 -- Hot reload config on save
@@ -129,160 +130,160 @@ config.selection_word_boundary = " \t\n{}[]()\"'`,;:@│"
 
 -- Quick select patterns (CMD+SHIFT+Space to activate)
 config.quick_select_patterns = {
-  '[0-9a-f]{7,40}',  -- Git commit hashes
-  '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',  -- UUIDs
+	"[0-9a-f]{7,40}", -- Git commit hashes
+	"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", -- UUIDs
 }
 
 -- Hyperlink detection (URLs, file paths, etc.)
 config.hyperlink_rules = wezterm.default_hyperlink_rules()
 
 -- Bypass mouse reporting for CMD key (allows CMD+Click links even in tmux/vim)
-config.bypass_mouse_reporting_modifiers = 'SUPER'
+config.bypass_mouse_reporting_modifiers = "SUPER"
 
 -- =============================================================================
 -- Keybindings
 -- =============================================================================
 
 config.keys = {
-  -- Split panes
-  {
-    key = 'd',
-    mods = 'CMD',
-    action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
-  },
-  {
-    key = 'd',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
-  },
+	-- Split panes
+	{
+		key = "d",
+		mods = "CMD",
+		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+	},
+	{
+		key = "d",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
+	},
 
-  -- Navigate panes
-  {
-    key = 'LeftArrow',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.ActivatePaneDirection 'Left',
-  },
-  {
-    key = 'RightArrow',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.ActivatePaneDirection 'Right',
-  },
-  {
-    key = 'UpArrow',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.ActivatePaneDirection 'Up',
-  },
-  {
-    key = 'DownArrow',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.ActivatePaneDirection 'Down',
-  },
+	-- Navigate panes
+	{
+		key = "LeftArrow",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.ActivatePaneDirection("Left"),
+	},
+	{
+		key = "RightArrow",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.ActivatePaneDirection("Right"),
+	},
+	{
+		key = "UpArrow",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.ActivatePaneDirection("Up"),
+	},
+	{
+		key = "DownArrow",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.ActivatePaneDirection("Down"),
+	},
 
-  -- Close pane
-  {
-    key = 'w',
-    mods = 'CMD',
-    action = wezterm.action.CloseCurrentPane { confirm = true },
-  },
+	-- Close pane
+	{
+		key = "w",
+		mods = "CMD",
+		action = wezterm.action.CloseCurrentPane({ confirm = true }),
+	},
 
-  -- Create/close tabs
-  {
-    key = 't',
-    mods = 'CMD',
-    action = wezterm.action.SpawnTab 'CurrentPaneDomain',
-  },
+	-- Create/close tabs
+	{
+		key = "t",
+		mods = "CMD",
+		action = wezterm.action.SpawnTab("CurrentPaneDomain"),
+	},
 
-  -- Navigate tabs
-  {
-    key = '[',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.ActivateTabRelative(-1),
-  },
-  {
-    key = ']',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.ActivateTabRelative(1),
-  },
+	-- Navigate tabs
+	{
+		key = "[",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.ActivateTabRelative(-1),
+	},
+	{
+		key = "]",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.ActivateTabRelative(1),
+	},
 
-  -- Toggle pane zoom/maximize
-  {
-    key = 'Return',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.TogglePaneZoomState,
-  },
+	-- Toggle pane zoom/maximize
+	{
+		key = "Return",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.TogglePaneZoomState,
+	},
 
-  -- Navigate tabs with arrow keys
-  {
-    key = 'LeftArrow',
-    mods = 'CMD|ALT',
-    action = wezterm.action.ActivateTabRelative(-1),
-  },
-  {
-    key = 'RightArrow',
-    mods = 'CMD|ALT',
-    action = wezterm.action.ActivateTabRelative(1),
-  },
+	-- Navigate tabs with arrow keys
+	{
+		key = "LeftArrow",
+		mods = "CMD|ALT",
+		action = wezterm.action.ActivateTabRelative(-1),
+	},
+	{
+		key = "RightArrow",
+		mods = "CMD|ALT",
+		action = wezterm.action.ActivateTabRelative(1),
+	},
 
-  -- Pane selection mode - lets you pick a pane to swap with
-  {
-    key = 's',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.PaneSelect {
-      mode = 'SwapWithActive',
-    },
-  },
+	-- Pane selection mode - lets you pick a pane to swap with
+	{
+		key = "s",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.PaneSelect({
+			mode = "SwapWithActive",
+		}),
+	},
 
-  -- Font size
-  {
-    key = '=',
-    mods = 'CMD',
-    action = wezterm.action.IncreaseFontSize,
-  },
-  {
-    key = '-',
-    mods = 'CMD',
-    action = wezterm.action.DecreaseFontSize,
-  },
-  {
-    key = '0',
-    mods = 'CMD',
-    action = wezterm.action.ResetFontSize,
-  },
+	-- Font size
+	{
+		key = "=",
+		mods = "CMD",
+		action = wezterm.action.IncreaseFontSize,
+	},
+	{
+		key = "-",
+		mods = "CMD",
+		action = wezterm.action.DecreaseFontSize,
+	},
+	{
+		key = "0",
+		mods = "CMD",
+		action = wezterm.action.ResetFontSize,
+	},
 
-  -- Quick select (select text patterns with keyboard)
-  {
-    key = 'Space',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.QuickSelect,
-  },
+	-- Quick select (select text patterns with keyboard)
+	{
+		key = "Space",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.QuickSelect,
+	},
 
-  -- Search scrollback
-  {
-    key = 'f',
-    mods = 'CMD',
-    action = wezterm.action.Search { CaseInSensitiveString = '' },
-  },
+	-- Search scrollback
+	{
+		key = "f",
+		mods = "CMD",
+		action = wezterm.action.Search({ CaseInSensitiveString = "" }),
+	},
 
-  -- Copy mode (vim-like scrollback navigation)
-  {
-    key = 'x',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.ActivateCopyMode,
-  },
+	-- Copy mode (vim-like scrollback navigation)
+	{
+		key = "x",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.ActivateCopyMode,
+	},
 
-  -- Clear scrollback
-  {
-    key = 'k',
-    mods = 'CMD',
-    action = wezterm.action.ClearScrollback 'ScrollbackAndViewport',
-  },
+	-- Clear scrollback
+	{
+		key = "k",
+		mods = "CMD",
+		action = wezterm.action.ClearScrollback("ScrollbackAndViewport"),
+	},
 
-  -- Reload config
-  {
-    key = 'r',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.ReloadConfiguration,
-  },
+	-- Reload config
+	{
+		key = "r",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.ReloadConfiguration,
+	},
 }
 
 -- =============================================================================
@@ -290,18 +291,18 @@ config.keys = {
 -- =============================================================================
 
 config.mouse_bindings = {
-  -- CMD+Click opens hyperlinks
-  {
-    event = { Up = { streak = 1, button = 'Left' } },
-    mods = 'SUPER',
-    action = wezterm.action.OpenLinkAtMouseCursor,
-  },
-  -- Prevent Down event from interfering with link clicks
-  {
-    event = { Down = { streak = 1, button = 'Left' } },
-    mods = 'SUPER',
-    action = wezterm.action.Nop,
-  },
+	-- CMD+Click opens hyperlinks
+	{
+		event = { Up = { streak = 1, button = "Left" } },
+		mods = "SUPER",
+		action = wezterm.action.OpenLinkAtMouseCursor,
+	},
+	-- Prevent Down event from interfering with link clicks
+	{
+		event = { Down = { streak = 1, button = "Left" } },
+		mods = "SUPER",
+		action = wezterm.action.Nop,
+	},
 }
 
 return config
