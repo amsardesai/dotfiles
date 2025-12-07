@@ -123,6 +123,25 @@ return {
             -- Load nvim-tree and open it
             require("lazy").load({ plugins = { "nvim-tree.lua" } })
             require("nvim-tree.api").tree.open()
+            -- Open fzf file picker on top
+            vim.schedule(function()
+              require("lazy").load({ plugins = { "fzf-lua" } })
+              local file_cache = dofile(get_config_dir() .. "/file_cache.lua")
+              file_cache.setup()
+              local files = file_cache.get()
+              local fzf = require("fzf-lua")
+              if files and #files > 0 then
+                fzf.fzf_exec(files, {
+                  prompt = "Files> ",
+                  previewer = "builtin",
+                  actions = fzf.defaults.actions.files,
+                  file_icons = true,
+                  color_icons = true,
+                })
+              else
+                fzf.files()
+              end
+            end)
           end
         end,
       })
