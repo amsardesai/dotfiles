@@ -536,11 +536,12 @@ return {
         wrapper_symbol_kinds = { SymbolKind.Class, SymbolKind.Struct, SymbolKind.Module },
         sections = {
           definition = false,
-          references = function(count) return " " .. count end,
-          implements = function(count) return " " .. count end,
+          -- NOTE: These are nerd font icons - do NOT replace with ASCII!
+          references = function(count) return " " .. count end,
+          implements = function(count) return " " .. count end,
           git_authors = function(latest_author, count)
-            if count > 1 then return " " .. latest_author .. " +" .. (count - 1) end
-            return " " .. latest_author
+            if count > 1 then return " " .. latest_author .. " +" .. (count - 1) end
+            return " " .. latest_author
           end,
         },
       })
