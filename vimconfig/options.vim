@@ -23,7 +23,7 @@ let maplocalleader = ';'
 " File & Directory Settings
 " ============================================================
 
-set backup " Create backup files before overwriting
+set backup " Create backup files (stored in backupdir from install.vim)
 set undofile " Persist undo history across sessions
 set autoread " Automatically reload file if changed externally
 

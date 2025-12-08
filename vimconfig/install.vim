@@ -52,35 +52,32 @@ execute 'set undodir=' . s:undo_dir . '//'
 execute 'set viewdir=' . s:view_dir . '//'
 
 " ============================================================
-" Vim-Plug Plugin Manager Installation
+" Vim-Plug Plugin Manager Installation (Vim only)
 " ============================================================
+" Neovim uses lazy.nvim instead
 
-" Determine vim-plug autoload path based on editor
-if has('nvim')
-  let autoload_plug_path = stdpath('data') . '/site/autoload/plug.vim'
-  let s:plugin_dir = stdpath('data') . '/plugged'
-else
+if !has('nvim')
   let autoload_plug_path = '~/.vim/autoload/plug.vim'
   let s:plugin_dir = '~/.vim/bundle'
-endif
 
-" Install vim-plug if not present
-if empty(glob(autoload_plug_path))
-  " Create autoload directory
-  let l:autoload_dir = fnamemodify(autoload_plug_path, ':h')
-  if !isdirectory(expand(l:autoload_dir))
-    call mkdir(expand(l:autoload_dir), 'p')
+  " Install vim-plug if not present
+  if empty(glob(autoload_plug_path))
+    " Create autoload directory
+    let l:autoload_dir = fnamemodify(autoload_plug_path, ':h')
+    if !isdirectory(expand(l:autoload_dir))
+      call mkdir(expand(l:autoload_dir), 'p')
+    endif
+
+    " Create plugin directory
+    if !isdirectory(expand(s:plugin_dir))
+      call mkdir(expand(s:plugin_dir), 'p')
+    endif
+
+    " Download vim-plug
+    execute '!curl -fLo ' . autoload_plug_path . ' --create-dirs ' .
+          \ 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+    " Auto-install plugins on first launch
+    autocmd VimEnter * PlugInstall | source $MYVIMRC
   endif
-
-  " Create plugin directory
-  if !isdirectory(expand(s:plugin_dir))
-    call mkdir(expand(s:plugin_dir), 'p')
-  endif
-
-  " Download vim-plug
-  execute '!curl -fLo ' . autoload_plug_path . ' --create-dirs ' .
-        \ 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-
-  " Auto-install plugins on first launch
-  autocmd VimEnter * PlugInstall | source $MYVIMRC
 endif
