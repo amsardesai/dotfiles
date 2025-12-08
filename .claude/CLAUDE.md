@@ -3,6 +3,8 @@
 <!-- Symlinked to ~/.claude/CLAUDE.md, applies to ALL projects -->
 <!-- For dotfiles-specific context, see /CLAUDE.md in the repo root -->
 
+My name is Ankit Sardesai.
+
 I am a software engineer working on web performance, accessibility, and developer experience in Notion,
 a software startup developing a productivity app.
 
