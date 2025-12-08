@@ -55,19 +55,18 @@ vim.keymap.set("n", "<Leader>v", "<cmd>vsplit<cr>", { desc = "Vertical split" })
 -- PANE SWITCHING
 -- =============================================================================
 
--- Shift+Arrow to switch panes (normal, insert, visual modes)
-vim.keymap.set("n", "<S-Up>", "<C-w><Up>", { desc = "Move to pane above" })
-vim.keymap.set("n", "<S-Down>", "<C-w><Down>", { desc = "Move to pane below" })
-vim.keymap.set("n", "<S-Left>", "<C-w><Left>", { desc = "Move to left pane" })
-vim.keymap.set("n", "<S-Right>", "<C-w><Right>", { desc = "Move to right pane" })
-vim.keymap.set("i", "<S-Up>", "<C-w><Up>", { desc = "Move to pane above" })
-vim.keymap.set("i", "<S-Down>", "<C-w><Down>", { desc = "Move to pane below" })
-vim.keymap.set("i", "<S-Left>", "<C-w><Left>", { desc = "Move to left pane" })
-vim.keymap.set("i", "<S-Right>", "<C-w><Right>", { desc = "Move to right pane" })
-vim.keymap.set("v", "<S-Up>", "<C-w><Up>", { desc = "Move to pane above" })
-vim.keymap.set("v", "<S-Down>", "<C-w><Down>", { desc = "Move to pane below" })
-vim.keymap.set("v", "<S-Left>", "<C-w><Left>", { desc = "Move to left pane" })
-vim.keymap.set("v", "<S-Right>", "<C-w><Right>", { desc = "Move to right pane" })
+-- Shift+Arrow and Option-Shift+Arrow to switch panes
+for _, dir in ipairs({ "Up", "Down", "Left", "Right" }) do
+	local desc = "Move to " .. (dir == "Up" and "pane above" or dir == "Down" and "pane below" or dir:lower() .. " pane")
+	for _, mode in ipairs({ "n", "i", "v" }) do
+		vim.keymap.set(mode, "<S-" .. dir .. ">", "<C-w><" .. dir .. ">", { desc = desc })
+		vim.keymap.set(mode, "<M-S-" .. dir .. ">", "<C-w><" .. dir .. ">", { desc = desc })
+	end
+	-- Terminal mode needs to exit first
+	local term_rhs = "<C-\\><C-n><C-w><" .. dir .. ">"
+	vim.keymap.set("t", "<S-" .. dir .. ">", term_rhs, { desc = desc })
+	vim.keymap.set("t", "<M-S-" .. dir .. ">", term_rhs, { desc = desc })
+end
 
 -- =============================================================================
 -- UTILITY
@@ -144,17 +143,6 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 -- Better escaping from terminal mode
 vim.keymap.set("t", ";;q", "<C-\\><C-n><cmd>bd!<cr>", { desc = "Close terminal" })
 vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-
--- Pane navigation from terminal
-vim.keymap.set("t", "<S-Left>", "<C-\\><C-n><C-w><Left>", { desc = "Move to left pane" })
-vim.keymap.set("t", "<S-Up>", "<C-\\><C-n><C-w><Up>", { desc = "Move to pane above" })
-vim.keymap.set("t", "<S-Down>", "<C-\\><C-n><C-w><Down>", { desc = "Move to pane below" })
-vim.keymap.set("t", "<S-Right>", "<C-\\><C-n><C-w><Right>", { desc = "Move to right pane" })
-vim.keymap.set("t", "<C-w><Left>", "<C-\\><C-n><C-w><Left>", { desc = "Move to left pane" })
-vim.keymap.set("t", "<C-w><Up>", "<C-\\><C-n><C-w><Up>", { desc = "Move to pane above" })
-vim.keymap.set("t", "<C-w><Down>", "<C-\\><C-n><C-w><Down>", { desc = "Move to pane below" })
-vim.keymap.set("t", "<C-w><Right>", "<C-\\><C-n><C-w><Right>", { desc = "Move to right pane" })
-vim.keymap.set("t", "<C-w><C-w>", "<C-\\><C-n><C-w><C-w>", { desc = "Next pane" })
 
 -- Terminal buffer navigation
 vim.keymap.set("t", "<Leader>,", "<C-\\><C-n><C-^>", { desc = "Alternate buffer" })

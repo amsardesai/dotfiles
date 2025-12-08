@@ -17,14 +17,28 @@ return {
 			-- Add Mason bin to PATH
 			vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin:" .. vim.env.PATH
 
-			-- Diagnostic config
+			-- Border style for all floating windows
+			local border = "rounded"
+
+			-- Diagnostic config with bordered floats
 			vim.diagnostic.config({
 				virtual_text = true,
 				signs = true,
 				update_in_insert = false,
 				underline = true,
 				severity_sort = false,
-				float = true,
+				float = {
+					border = border,
+					source = true,
+				},
+			})
+
+			-- Add border to LSP hover and signature help
+			vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+				border = border,
+			})
+			vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+				border = border,
 			})
 
 			-- Strike through deprecated
@@ -34,7 +48,7 @@ return {
 			vim.o.updatetime = 250
 			vim.api.nvim_create_autocmd("CursorHold", {
 				callback = function()
-					vim.diagnostic.open_float(nil, { focusable = false })
+					vim.diagnostic.open_float(nil, { focusable = false, border = border })
 				end,
 			})
 
@@ -86,7 +100,6 @@ return {
 					"docker_compose_language_service",
 					"docker_language_server",
 					"dockerls",
-					"eslint",
 					"html",
 					"jsonls",
 					"lua_ls",
@@ -96,7 +109,13 @@ return {
 					"yamlls",
 				},
 				automatic_enable = true,
-				handlers = { default_setup },
+				handlers = {
+					default_setup,
+					-- Disable ts_ls since typescript-tools.nvim handles TypeScript
+					ts_ls = function() end,
+					-- Disable eslint LSP since eslint_d via none-ls is faster
+					eslint = function() end,
+				},
 			})
 		end,
 	},
