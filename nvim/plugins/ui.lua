@@ -209,12 +209,59 @@ return {
 	},
 
 	-- =============================================================================
-	-- SCROLLBAR (VeryLazy)
+	-- NEOMINIMAP (minimap on right side)
 	-- =============================================================================
 
 	{
-		"petertriho/nvim-scrollbar",
-		event = "VeryLazy",
-		opts = {},
+		"Isrothy/neominimap.nvim",
+		version = "v3.*.*",
+		lazy = false,
+		init = function()
+			vim.opt.wrap = false
+			vim.opt.sidescrolloff = 12 -- Prevents text from being hidden behind minimap
+
+			vim.g.neominimap = {
+				auto_enable = true,
+				layout = "float",
+
+				float = {
+					minimap_width = 10,
+					max_minimap_height = nil,
+					margin = { right = 0, top = 0, bottom = 0 },
+					z_index = 1,
+					window_border = "none",
+				},
+
+				x_multiplier = 4,
+				y_multiplier = 1,
+
+				exclude_filetypes = {
+					"help",
+					"neo-tree",
+					"Trouble",
+					"lazy",
+					"mason",
+					"notify",
+					"toggleterm",
+					"lazyterm",
+					"terminal",
+					"snacks_terminal",
+					"fzf",
+				},
+				exclude_buftypes = {
+					"nofile",
+					"nowrite",
+					"quickfix",
+					"terminal",
+					"prompt",
+				},
+
+				treesitter = { enabled = true },
+				git = { enabled = true },
+				diagnostic = { enabled = true },
+				search = { enabled = true },
+				mark = { enabled = true },
+			}
+		end,
 	},
 }
