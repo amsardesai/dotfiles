@@ -75,6 +75,10 @@ return {
 					},
 				},
 			})
+			-- Attach to current buffer (fixes race condition when lazy-loaded via ft)
+			vim.schedule(function()
+				vim.cmd("LspStart typescript-tools")
+			end)
 		end,
 	},
 

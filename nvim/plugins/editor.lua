@@ -110,16 +110,32 @@ return {
 				desc = "Show file tree",
 			},
 			{
-				"<leader>g",
+				"<leader>s",
 				function()
-					vim.cmd("Neotree toggle source=git_status action=show")
+					dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua").toggle_gitstatus()
 				end,
 				mode = { "n", "v" },
-				desc = "Toggle git status",
+				desc = "Toggle git status drawer",
+			},
+			{
+				"<leader>b",
+				function()
+					dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua").toggle_buffers()
+				end,
+				mode = { "n", "v" },
+				desc = "Toggle buffers drawer",
+			},
+			{
+				"<leader>d",
+				function()
+					dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua").toggle_symbols()
+				end,
+				mode = { "n", "v" },
+				desc = "Toggle document symbols drawer",
 			},
 		},
 		opts = {
-			sources = { "filesystem", "git_status", "buffers" },
+			sources = { "filesystem", "git_status", "buffers", "document_symbols" },
 			close_if_last_window = true,
 			filesystem = {
 				follow_current_file = { enabled = true },

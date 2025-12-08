@@ -28,6 +28,9 @@ vim.o.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr-o:hor20"
 -- DISPLAY
 -- =============================================================================
 
+-- Global border for all floating windows (LSP hover, diagnostics, etc.)
+vim.o.winborder = "rounded"
+
 -- Indent wrapped lines to match start of line
 vim.o.breakindent = true
 vim.o.showbreak = ".."

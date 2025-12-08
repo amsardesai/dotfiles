@@ -59,6 +59,10 @@ return {
 					local opts = function(desc)
 						return { buffer = event.buf, desc = desc }
 					end
+					-- Set hover handler with border (here to ensure it's not overwritten)
+					vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+						border = border,
+					})
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts("Hover documentation"))
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("Go to definition"))
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("Go to declaration"))

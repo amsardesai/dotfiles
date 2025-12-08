@@ -12,11 +12,18 @@ vim.keymap.set("n", "gQ", "<nop>", { desc = "Disable Ex mode" })
 -- Escape to clear search highlight
 vim.keymap.set("n", "<CR>", "<cmd>noh<cr><cr>", { silent = true, desc = "Clear search highlight" })
 
--- Page movement with _ and +
-vim.keymap.set("n", "_", "<C-b>", { desc = "Page up" })
-vim.keymap.set("n", "+", "<C-f>", { desc = "Page down" })
-vim.keymap.set("v", "_", "<C-b>", { desc = "Page up" })
-vim.keymap.set("v", "+", "<C-f>", { desc = "Page down" })
+-- Page movement with _ and + (scroll window_height - 10 lines for easier scanning)
+vim.keymap.set({ "n", "v" }, "_", function()
+	local lines = math.max(1, vim.api.nvim_win_get_height(0) - 10)
+	local ctrl_y = vim.api.nvim_replace_termcodes("<C-y>", true, true, true)
+	vim.api.nvim_feedkeys(lines .. ctrl_y, "n", false)
+end, { desc = "Scroll up (page - 10 lines)" })
+
+vim.keymap.set({ "n", "v" }, "+", function()
+	local lines = math.max(1, vim.api.nvim_win_get_height(0) - 10)
+	local ctrl_e = vim.api.nvim_replace_termcodes("<C-e>", true, true, true)
+	vim.api.nvim_feedkeys(lines .. ctrl_e, "n", false)
+end, { desc = "Scroll down (page - 10 lines)" })
 
 -- Ctrl-Backspace to delete word
 vim.keymap.set("i", "<C-BS>", "<C-W>", { desc = "Delete word" })
@@ -26,6 +33,16 @@ vim.keymap.set({ "n", "v" }, "<PageUp>", "<C-U>", { desc = "Half page up" })
 vim.keymap.set({ "n", "v" }, "<PageDown>", "<C-D>", { desc = "Half page down" })
 vim.keymap.set("i", "<PageUp>", "<C-O><C-U>", { desc = "Half page up" })
 vim.keymap.set("i", "<PageDown>", "<C-O><C-D>", { desc = "Half page down" })
+
+-- Restart all LSP servers (except null-ls to avoid warning)
+vim.keymap.set("n", "<leader>rl", function()
+	for _, client in ipairs(vim.lsp.get_clients()) do
+		if client.name ~= "null-ls" then
+			vim.cmd("LspRestart " .. client.name)
+		end
+	end
+	vim.notify("LSP servers restarted", vim.log.levels.INFO)
+end, { desc = "Restart LSP servers" })
 
 -- =============================================================================
 -- COMMANDS
