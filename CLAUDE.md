@@ -209,6 +209,55 @@
 
 ### 2025-12-07 (Latest)
 
+#### LSP Float Borders & Duplicate Diagnostics Fix
+
+Added rounded borders to all LSP floating windows for better visibility.
+
+**File:** `nvim/plugins/lsp.lua`
+- Diagnostic floats now have `border = "rounded"`
+- Hover (`K`) windows have rounded borders
+- Signature help windows have rounded borders
+
+**Duplicate diagnostics fix:**
+- Disabled `ts_ls` in mason-lspconfig handlers (typescript-tools.nvim handles TypeScript)
+- Disabled `eslint` LSP (eslint_d via none-ls is faster)
+- Removed `eslint` from `ensure_installed` list
+
+```lua
+handlers = {
+    default_setup,
+    ts_ls = function() end,    -- typescript-tools handles TS
+    eslint = function() end,   -- eslint_d via none-ls
+},
+```
+
+#### Option-Shift Pane Navigation
+
+Added `Option-Shift+Arrow` (`<M-S-Arrow>`) as alternative to `Shift+Arrow` for pane navigation.
+
+**File:** `nvim/config/keymaps.lua`
+- Consolidated pane navigation into single loop (was 21 lines, now 12)
+- Works in all modes: normal, insert, visual, terminal
+- Terminal mode exits to normal mode before switching
+
+#### Zoom Fix for Terminal Mode
+
+Fixed "Can't re-enter normal mode from terminal mode" error when zooming from terminal.
+
+**File:** `nvim/plugins/editor.lua`
+- Detects if in terminal mode (`vim.fn.mode() == "t"`)
+- Sends `<C-\><C-n>` to exit terminal mode first
+- Uses `vim.schedule()` to defer zoom after mode change
+
+#### trouble.nvim Winbar Timing Fix
+
+Fixed trouble.nvim diagnostics panel not showing red title on first open.
+
+**File:** `nvim/util/bottom_drawers.lua`
+- Added retry mechanism with `vim.defer_fn` (10ms intervals, up to 10 attempts)
+- Searches for window with `filetype == "trouble"` to apply winbar
+- Changed title from "Diagnostics" to "Trouble.nvim Diagnostics"
+
 #### Zsh Startup Time Fix (14s → 0.2s)
 
 Fixed critical bug where `setup.sh` was appending duplicate source lines to `~/.zshrc` on every run.

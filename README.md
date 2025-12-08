@@ -226,6 +226,7 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | **Diagnostics** | `gl` | Show diagnostic float |
 | | `[d` / `]d` | Prev/next diagnostic |
 | **Pane Navigation** | `Shift+Arrows` | Move between splits (all modes) |
+| | `Option+Shift+Arrows` | Move between splits (alternative) |
 | **Utilities** | `<CR>` | Clear search highlight |
 | | `,fw` | Fix whitespace |
 | | `,r` | Reload config |
