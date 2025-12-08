@@ -213,8 +213,12 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | **Bottom Drawers** | `,z` | Toggle Terminal Z (blue) |
 | | `,x` | Toggle Terminal X (purple) |
 | | `,t` | Toggle Diagnostics (red) |
+| | `,s` | Toggle Git Status (yellow) |
+| | `,b` | Toggle Buffers (green) |
+| | `,d` | Toggle Document Symbols (brown) |
 | | `,q` | Close all drawers |
 | | `,Q` | Kill all terminals |
+| **LSP** | `,rl` | Restart all LSP servers |
 | **Claude Code** | `,a` | Toggle Claude Code terminal |
 | | `,sa` | Add file to Claude context |
 | **Git** | `(` | Previous hunk |
@@ -225,6 +229,8 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | **Context Menu** | `<RightMouse>` | Open context menu (LSP, Git, File ops) |
 | **Diagnostics** | `gl` | Show diagnostic float |
 | | `[d` / `]d` | Prev/next diagnostic |
+| **Scrolling** | `_` | Scroll up (page - 10 lines) |
+| | `+` | Scroll down (page - 10 lines) |
 | **Pane Navigation** | `Shift+Arrows` | Move between splits (all modes) |
 | | `Option+Shift+Arrows` | Move between splits (alternative) |
 | **Utilities** | `<CR>` | Clear search highlight |
@@ -255,6 +261,7 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 - `lsp-lens` - Reference counts above functions
 - `image.nvim` - View images in terminal
 - `claudecode.nvim` - Claude Code integration
+- `neominimap` - Clickable minimap with git/diagnostic integration
 
 *Vim-specific (VimScript):*
 

@@ -232,6 +232,12 @@ return {
 					window_border = "none",
 				},
 
+				-- Enable clicking on minimap to jump to that location
+				click = {
+					enabled = true,
+					auto_switch_focus = false, -- Stay focused on main buffer after click
+				},
+
 				x_multiplier = 4,
 				y_multiplier = 1,
 

@@ -97,7 +97,7 @@
 - `nvim/` - Neovim-specific Lua configuration (symlinked to ~/.config/nvim/nvim/)
   - `nvim/plugins/` - Plugin specs for lazy.nvim (LazyVim-style organization)
     - `init.lua` - Entry point, combines all category files
-    - `ui.lua` - Theme, lualine, bufferline, snacks, gitsigns, scrollbar
+    - `ui.lua` - Theme, lualine, bufferline, snacks, gitsigns, neominimap
     - `editor.lua` - nvim-tree, fzf-lua, flash, surround, comment, visual-multi
     - `lsp.lua` - lspconfig, mason, cmp, none-ls, lsp-lens, autopairs
     - `lang.lua` - treesitter, typescript-tools, filetype plugins
@@ -108,6 +108,7 @@
   - `nvim/util/` - Utility modules
     - `file_cache.lua` - Persisted file cache for instant file picker
     - `context_menu.lua` - Right-click context menu (uses fzf-lua)
+    - `bottom_drawers.lua` - Dynamic bottom drawer system for terminals and panels
 - `ftplugin/` - Filetype-specific settings (symlinked to both ~/.vim/ and ~/.config/nvim/)
   - `ftplugin/markdown.vim` - Soft wrapping, display-line navigation
 
@@ -208,6 +209,68 @@
 ## Recent Discoveries
 
 ### 2025-12-07 (Latest)
+
+#### neominimap.nvim (Replaced nvim-scrollbar)
+
+Added floating minimap on the right side of the editor for code navigation.
+
+**File:** `nvim/plugins/ui.lua`
+- Float layout (overlay, doesn't affect window splits)
+- Width: 10 columns (narrow)
+- `sidescrolloff = 12` prevents text from being hidden behind minimap
+- Click-to-jump enabled (`click.enabled = true`)
+- Integrations: treesitter, git signs, LSP diagnostics, search, marks
+- Excluded from special buffers (neo-tree, terminals, trouble, etc.)
+
+**Removed:** `nvim-scrollbar` (minimap serves same purpose)
+
+#### Improved Page Scrolling (`_` and `+`)
+
+Changed page scroll to scroll `window_height - 10` lines instead of full page.
+
+**File:** `nvim/config/keymaps.lua`
+- Creates ~10 line overlap between scrolls for easier document scanning
+- Uses `<C-y>` / `<C-e>` with calculated count
+- Works in normal and visual modes
+
+#### LSP Restart Keybinding
+
+Added `,rl` to restart all LSP servers (skips null-ls to avoid warning).
+
+**File:** `nvim/config/keymaps.lua`
+```lua
+vim.keymap.set("n", "<leader>rl", function()
+    for _, client in ipairs(vim.lsp.get_clients()) do
+        if client.name ~= "null-ls" then
+            vim.cmd("LspRestart " .. client.name)
+        end
+    end
+end, { desc = "Restart LSP servers" })
+```
+
+#### Global Floating Window Border
+
+Added `vim.o.winborder = "rounded"` for consistent borders on all floating windows.
+
+**File:** `nvim/config/options.lua`
+
+#### typescript-tools Lazy-Load Fix
+
+Fixed race condition where typescript-tools wouldn't attach on first file open.
+
+**File:** `nvim/plugins/lang.lua`
+- Added `vim.schedule(function() vim.cmd("LspStart typescript-tools") end)` after setup
+- Forces LSP to attach to the buffer that triggered the lazy-load
+
+#### Dynamic Bottom Drawer Layout
+
+Refactored bottom drawer system to use dynamic ordering based on open sequence.
+
+**File:** `nvim/util/bottom_drawers.lua`
+- Drawers appear left-to-right in the order they were opened
+- All open drawers share equal width (1=100%, 2=50% each, 3=33% each)
+- State cached in `_G._bottom_drawers` to persist across `dofile()` calls
+- New state structure: `open_order = {}` tracks which drawers are open
 
 #### LSP Float Borders & Duplicate Diagnostics Fix
 
