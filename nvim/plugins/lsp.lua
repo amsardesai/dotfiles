@@ -199,12 +199,15 @@ return {
 					"yaml",
 				},
 				sources = {
+					-- Diagnostics
 					null_ls.builtins.diagnostics.hadolint,
 					null_ls.builtins.diagnostics.markdownlint.with({
 						extra_args = { "--disable", "MD013" },
 					}),
 					null_ls.builtins.diagnostics.yamllint,
 					null_ls.builtins.diagnostics.actionlint,
+					require("none-ls.diagnostics.eslint_d"),
+					-- Formatting
 					null_ls.builtins.formatting.terraform_fmt,
 					null_ls.builtins.formatting.prettier.with({
 						filetypes = {
@@ -230,12 +233,9 @@ return {
 					}),
 					null_ls.builtins.formatting.stylua,
 					null_ls.builtins.formatting.shfmt,
+					require("none-ls.formatting.eslint_d"),
 				},
 			})
-
-			-- Register eslint_d
-			null_ls.register(require("none-ls.diagnostics.eslint_d"))
-			null_ls.register(require("none-ls.formatting.eslint_d"))
 
 			-- Format on save
 			vim.api.nvim_create_autocmd("BufWritePre", {
