@@ -215,7 +215,17 @@ return {
 	{
 		"kevinhwang91/nvim-hlslens",
 		event = "BufReadPost",
-		opts = {},
+		opts = {
+			nearest_only = true, -- Only show lens for nearest match
+		},
+		keys = {
+			{ "n", [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]], desc = "Next match" },
+			{ "N", [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]], desc = "Prev match" },
+			{ "*", [[*<Cmd>lua require('hlslens').start()<CR>]], desc = "Search word forward" },
+			{ "#", [[#<Cmd>lua require('hlslens').start()<CR>]], desc = "Search word backward" },
+			{ "g*", [[g*<Cmd>lua require('hlslens').start()<CR>]], desc = "Search word forward (partial)" },
+			{ "g#", [[g#<Cmd>lua require('hlslens').start()<CR>]], desc = "Search word backward (partial)" },
+		},
 	},
 
 	{
