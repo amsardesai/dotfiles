@@ -103,7 +103,7 @@ return {
 			bufdelete = { enabled = true },
 			bigfile = { enabled = true },
 			quickfile = { enabled = true },
-			notifier = { enabled = true, timeout = 3000 },
+			notifier = { enabled = true, timeout = 5000 },
 			rename = { enabled = true },
 			words = { enabled = true },
 			gitbrowse = { enabled = true },
