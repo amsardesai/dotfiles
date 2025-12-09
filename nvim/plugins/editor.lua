@@ -117,15 +117,9 @@ return {
 				mode = { "n", "v" },
 				desc = "Buffers (float)",
 			},
-			{
-				"<leader>d",
-				"<cmd>Neotree float toggle document_symbols<cr>",
-				mode = { "n", "v" },
-				desc = "Document symbols (float)",
-			},
 		},
 		opts = {
-			sources = { "filesystem", "git_status", "buffers", "document_symbols" },
+			sources = { "filesystem", "git_status", "buffers" },
 			close_if_last_window = true,
 			-- Popup settings for float windows
 			popup_border_style = "rounded",
@@ -149,15 +143,6 @@ return {
 				},
 			},
 			buffers = {
-				window = {
-					position = "float",
-					popup = {
-						size = { height = "40%", width = "30%" },
-						position = { row = 1, col = 1 },
-					},
-				},
-			},
-			document_symbols = {
 				window = {
 					position = "float",
 					popup = {
@@ -512,6 +497,47 @@ return {
 					preview = { type = "main", position = "right" },
 				},
 			},
+		},
+	},
+
+	-- =============================================================================
+	-- AERIAL.NVIM (code outline)
+	-- =============================================================================
+
+	{
+		"stevearc/aerial.nvim",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-tree/nvim-web-devicons",
+		},
+		keys = {
+			{
+				"<leader>d",
+				"<cmd>AerialToggle!<cr>",
+				desc = "Code outline (aerial)",
+			},
+		},
+		opts = {
+			backends = { "treesitter", "lsp" },
+			default_direction = "float",
+			float = {
+				border = "rounded",
+				relative = "editor",
+				override = function(conf, source_winid)
+					-- Position at top-left corner
+					conf.anchor = "NW"
+					conf.row = 1
+					conf.col = 1
+					conf.height = math.floor(vim.o.lines * 0.4)
+					conf.width = math.floor(vim.o.columns * 0.3)
+					return conf
+				end,
+			},
+			-- Navigation keymaps when inside aerial
+			on_attach = function(bufnr)
+				vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+				vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+			end,
 		},
 	},
 }

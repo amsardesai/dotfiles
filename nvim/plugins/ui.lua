@@ -30,27 +30,6 @@ return {
 		event = "VeryLazy",
 		keys = {
 			{
-				"<leader>bd",
-				function()
-					require("snacks").bufdelete()
-				end,
-				desc = "Delete buffer",
-			},
-			{
-				"<leader>go",
-				function()
-					require("snacks").gitbrowse()
-				end,
-				desc = "Open in GitHub",
-			},
-			{
-				"<leader>rn",
-				function()
-					require("snacks").rename.rename_file()
-				end,
-				desc = "Rename file",
-			},
-			{
 				"]]",
 				function()
 					require("snacks").words.jump(1)
@@ -219,8 +198,16 @@ return {
 			nearest_only = true, -- Only show lens for nearest match
 		},
 		keys = {
-			{ "n", [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]], desc = "Next match" },
-			{ "N", [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]], desc = "Prev match" },
+			{
+				"n",
+				[[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]],
+				desc = "Next match",
+			},
+			{
+				"N",
+				[[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
+				desc = "Prev match",
+			},
 			{ "*", [[*<Cmd>lua require('hlslens').start()<CR>]], desc = "Search word forward" },
 			{ "#", [[#<Cmd>lua require('hlslens').start()<CR>]], desc = "Search word backward" },
 			{ "g*", [[g*<Cmd>lua require('hlslens').start()<CR>]], desc = "Search word forward (partial)" },
