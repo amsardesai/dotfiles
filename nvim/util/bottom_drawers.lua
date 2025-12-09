@@ -1,6 +1,6 @@
 -- Bottom Drawers: Dynamic side-by-side drawers at bottom of screen
 -- Order is based on when drawers are opened (left-to-right = first-to-last opened)
--- ,z = Terminal Z, ,x = Terminal X, ,b = Buffers, ,s = Git Status, ,d = Symbols, ,t = Trouble
+-- ,z = Terminal Z, ,x = Terminal X, ,t = Trouble
 
 -- Cache module to preserve state across dofile() calls
 if _G._bottom_drawers then
@@ -16,12 +16,6 @@ vim.api.nvim_set_hl(0, "TerminalXTitle", { fg = "#ffffff", bg = "#9333ea", bold 
 vim.api.nvim_set_hl(0, "TerminalXHint", { fg = "#d8b4fe", bg = "#9333ea", italic = true })
 vim.api.nvim_set_hl(0, "TroubleTitle", { fg = "#ffffff", bg = "#dc2626", bold = true }) -- Red
 vim.api.nvim_set_hl(0, "TroubleHint", { fg = "#fca5a5", bg = "#dc2626", italic = true })
-vim.api.nvim_set_hl(0, "GitStatusTitle", { fg = "#ffffff", bg = "#ca8a04", bold = true }) -- Yellow
-vim.api.nvim_set_hl(0, "GitStatusHint", { fg = "#fef08a", bg = "#ca8a04", italic = true })
-vim.api.nvim_set_hl(0, "BuffersTitle", { fg = "#ffffff", bg = "#16a34a", bold = true }) -- Green
-vim.api.nvim_set_hl(0, "BuffersHint", { fg = "#bbf7d0", bg = "#16a34a", italic = true })
-vim.api.nvim_set_hl(0, "SymbolsTitle", { fg = "#ffffff", bg = "#92400e", bold = true }) -- Brown
-vim.api.nvim_set_hl(0, "SymbolsHint", { fg = "#fcd34d", bg = "#92400e", italic = true })
 
 M.config = {
 	height = 0.3, -- 30% of screen height
@@ -30,16 +24,13 @@ M.config = {
 -- State tracks open order and drawer-specific data
 M.state = {
 	-- Ordered list of open drawer IDs (in open order, left-to-right)
-	open_order = {}, -- e.g., {"primary", "trouble", "buffers"}
+	open_order = {}, -- e.g., {"primary", "trouble"}
 
 	-- Drawer-specific data
 	drawers = {
 		primary = { buf = nil, job_id = nil },
 		secondary = { buf = nil, job_id = nil },
 		trouble = {},
-		gitstatus = {},
-		buffers = {},
-		symbols = {},
 	},
 }
 
@@ -48,9 +39,6 @@ local drawer_meta = {
 	primary = { title = "Terminal Z", key = ",z", hl_title = "TerminalZTitle", hl_hint = "TerminalZHint" },
 	secondary = { title = "Terminal X", key = ",x", hl_title = "TerminalXTitle", hl_hint = "TerminalXHint" },
 	trouble = { title = "Trouble.nvim Diagnostics", key = ",t", hl_title = "TroubleTitle", hl_hint = "TroubleHint" },
-	gitstatus = { title = "Git Status", key = ",s", hl_title = "GitStatusTitle", hl_hint = "GitStatusHint" },
-	buffers = { title = "Buffers", key = ",b", hl_title = "BuffersTitle", hl_hint = "BuffersHint" },
-	symbols = { title = "Document Symbols", key = ",d", hl_title = "SymbolsTitle", hl_hint = "SymbolsHint" },
 }
 
 -- =============================================================================
@@ -125,16 +113,6 @@ local function find_drawer_window(slot)
 		-- Trouble drawer
 		elseif slot == "trouble" and vim.bo[buf].filetype == "trouble" then
 			return win
-		-- Neo-tree drawers (check buffer name for source)
-		elseif vim.bo[buf].filetype == "neo-tree" then
-			local bufname = vim.api.nvim_buf_get_name(buf)
-			if slot == "gitstatus" and bufname:match("git_status") then
-				return win
-			elseif slot == "buffers" and bufname:match("buffers") then
-				return win
-			elseif slot == "symbols" and bufname:match("document_symbols") then
-				return win
-			end
 		end
 
 		::continue::
@@ -343,124 +321,6 @@ function M.toggle_trouble()
 	end
 end
 
--- Toggle git status drawer (,s)
-function M.toggle_gitstatus()
-	if is_drawer_open("gitstatus") then
-		vim.cmd("Neotree close source=git_status")
-		remove_from_open_order("gitstatus")
-		rebalance_drawers()
-	else
-		local open_wins = get_open_drawer_windows()
-
-		if #open_wins == 0 then
-			vim.cmd("Neotree source=git_status position=bottom action=show")
-		else
-			local rightmost = open_wins[#open_wins]
-			vim.api.nvim_set_current_win(rightmost.win)
-			vim.cmd("Neotree source=git_status position=right action=show")
-		end
-
-		add_to_open_order("gitstatus")
-
-		-- Apply winbar after neo-tree creates its window (with retry)
-		local function apply_winbar(attempts)
-			attempts = attempts or 0
-			local win = find_drawer_window("gitstatus")
-			if win then
-				rebalance_drawers()
-				return
-			end
-			if attempts < 10 then
-				vim.defer_fn(function()
-					apply_winbar(attempts + 1)
-				end, 10)
-			end
-		end
-
-		vim.defer_fn(function()
-			apply_winbar(0)
-		end, 10)
-	end
-end
-
--- Toggle buffers drawer (,b)
-function M.toggle_buffers()
-	if is_drawer_open("buffers") then
-		vim.cmd("Neotree close source=buffers")
-		remove_from_open_order("buffers")
-		rebalance_drawers()
-	else
-		local open_wins = get_open_drawer_windows()
-
-		if #open_wins == 0 then
-			vim.cmd("Neotree source=buffers position=bottom action=show")
-		else
-			local rightmost = open_wins[#open_wins]
-			vim.api.nvim_set_current_win(rightmost.win)
-			vim.cmd("Neotree source=buffers position=right action=show")
-		end
-
-		add_to_open_order("buffers")
-
-		local function apply_winbar(attempts)
-			attempts = attempts or 0
-			local win = find_drawer_window("buffers")
-			if win then
-				rebalance_drawers()
-				return
-			end
-			if attempts < 10 then
-				vim.defer_fn(function()
-					apply_winbar(attempts + 1)
-				end, 10)
-			end
-		end
-
-		vim.defer_fn(function()
-			apply_winbar(0)
-		end, 10)
-	end
-end
-
--- Toggle document symbols drawer (,d)
-function M.toggle_symbols()
-	if is_drawer_open("symbols") then
-		vim.cmd("Neotree close source=document_symbols")
-		remove_from_open_order("symbols")
-		rebalance_drawers()
-	else
-		local open_wins = get_open_drawer_windows()
-
-		if #open_wins == 0 then
-			vim.cmd("Neotree source=document_symbols position=bottom action=show")
-		else
-			local rightmost = open_wins[#open_wins]
-			vim.api.nvim_set_current_win(rightmost.win)
-			vim.cmd("Neotree source=document_symbols position=right action=show")
-		end
-
-		add_to_open_order("symbols")
-
-		local function apply_winbar(attempts)
-			attempts = attempts or 0
-			local win = find_drawer_window("symbols")
-			if win then
-				rebalance_drawers()
-				return
-			end
-			if attempts < 10 then
-				vim.defer_fn(function()
-					apply_winbar(attempts + 1)
-				end, 10)
-			end
-		end
-
-		vim.defer_fn(function()
-			apply_winbar(0)
-		end, 10)
-	end
-end
-
 -- =============================================================================
 -- Cleanup Functions
 -- =============================================================================
@@ -485,12 +345,6 @@ function M.hide_all()
 			if ok then
 				trouble.close()
 			end
-		elseif slot == "gitstatus" then
-			vim.cmd("Neotree close source=git_status")
-		elseif slot == "buffers" then
-			vim.cmd("Neotree close source=buffers")
-		elseif slot == "symbols" then
-			vim.cmd("Neotree close source=document_symbols")
 		end
 	end
 

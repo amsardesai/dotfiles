@@ -50,6 +50,9 @@ return {
 		cmd = "Neotree",
 		-- Load when opening a directory (e.g., `nvim .`)
 		init = function()
+			-- Set float title highlight (yellow background like git status)
+			vim.api.nvim_set_hl(0, "NeoTreeFloatTitle", { fg = "#ffffff", bg = "#ca8a04", bold = true })
+
 			vim.api.nvim_create_autocmd("VimEnter", {
 				callback = function(data)
 					-- Check if argument is a directory
@@ -103,40 +106,29 @@ return {
 				desc = "Focus tree & reveal file",
 			},
 			{
-				"<leader>b",
-				function()
-					vim.cmd("Neotree action=show")
-				end,
-				desc = "Show file tree",
-			},
-			{
 				"<leader>s",
-				function()
-					dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua").toggle_gitstatus()
-				end,
+				"<cmd>Neotree float toggle git_status<cr>",
 				mode = { "n", "v" },
-				desc = "Toggle git status drawer",
+				desc = "Git status (float)",
 			},
 			{
 				"<leader>b",
-				function()
-					dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua").toggle_buffers()
-				end,
+				"<cmd>Neotree float toggle buffers<cr>",
 				mode = { "n", "v" },
-				desc = "Toggle buffers drawer",
+				desc = "Buffers (float)",
 			},
 			{
 				"<leader>d",
-				function()
-					dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua").toggle_symbols()
-				end,
+				"<cmd>Neotree float toggle document_symbols<cr>",
 				mode = { "n", "v" },
-				desc = "Toggle document symbols drawer",
+				desc = "Document symbols (float)",
 			},
 		},
 		opts = {
 			sources = { "filesystem", "git_status", "buffers", "document_symbols" },
 			close_if_last_window = true,
+			-- Popup settings for float windows
+			popup_border_style = "rounded",
 			filesystem = {
 				follow_current_file = { enabled = true },
 				use_libuv_file_watcher = true,
@@ -148,7 +140,31 @@ return {
 				group_empty_dirs = true,
 			},
 			git_status = {
-				window = { position = "left", width = 40 },
+				window = {
+					position = "float",
+					popup = {
+						size = { height = "40%", width = "30%" },
+						position = { row = 1, col = 1 },
+					},
+				},
+			},
+			buffers = {
+				window = {
+					position = "float",
+					popup = {
+						size = { height = "40%", width = "30%" },
+						position = { row = 1, col = 1 },
+					},
+				},
+			},
+			document_symbols = {
+				window = {
+					position = "float",
+					popup = {
+						size = { height = "40%", width = "30%" },
+						position = { row = 1, col = 1 },
+					},
+				},
 			},
 			default_component_configs = {
 				indent = {
