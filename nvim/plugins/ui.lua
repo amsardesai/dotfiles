@@ -209,65 +209,38 @@ return {
 	},
 
 	-- =============================================================================
-	-- NEOMINIMAP (minimap on right side)
+	-- SCROLLBAR
 	-- =============================================================================
 
 	{
-		"Isrothy/neominimap.nvim",
-		version = "v3.*.*",
-		lazy = false,
-		init = function()
-			vim.opt.wrap = false
-			vim.opt.sidescrolloff = 12 -- Prevents text from being hidden behind minimap
+		"kevinhwang91/nvim-hlslens",
+		event = "BufReadPost",
+		opts = {},
+	},
 
-			vim.g.neominimap = {
-				auto_enable = true,
-				layout = "float",
-
-				float = {
-					minimap_width = 10,
-					max_minimap_height = nil,
-					margin = { right = 0, top = 0, bottom = 0 },
-					z_index = 1,
-					window_border = "none",
-				},
-
-				-- Enable clicking on minimap to jump to that location
-				click = {
-					enabled = true,
-					auto_switch_focus = false, -- Stay focused on main buffer after click
-				},
-
-				x_multiplier = 4,
-				y_multiplier = 1,
-
-				exclude_filetypes = {
-					"help",
-					"neo-tree",
-					"Trouble",
-					"lazy",
-					"mason",
-					"notify",
-					"toggleterm",
-					"lazyterm",
-					"terminal",
-					"snacks_terminal",
-					"fzf",
-				},
-				exclude_buftypes = {
-					"nofile",
-					"nowrite",
-					"quickfix",
-					"terminal",
-					"prompt",
-				},
-
-				treesitter = { enabled = true },
-				git = { enabled = true },
-				diagnostic = { enabled = true },
-				search = { enabled = true },
-				mark = { enabled = true },
-			}
-		end,
+	{
+		"petertriho/nvim-scrollbar",
+		event = "BufReadPost",
+		dependencies = { "kevinhwang91/nvim-hlslens" },
+		opts = {
+			handle = { color = "#3b4261" },
+			marks = {
+				Search = { color = "#ff9e64" },
+				Error = { color = "#db4b4b" },
+				Warn = { color = "#e0af68" },
+				Info = { color = "#0db9d7" },
+				Hint = { color = "#1abc9c" },
+				Misc = { color = "#9d7cd8" },
+				GitAdd = { color = "#449dab" },
+				GitChange = { color = "#6183bb" },
+				GitDelete = { color = "#914c54" },
+			},
+			handlers = {
+				cursor = true,
+				diagnostic = true,
+				gitsigns = true,
+				search = true,
+			},
+		},
 	},
 }

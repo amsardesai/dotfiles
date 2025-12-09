@@ -208,21 +208,42 @@
 
 ## Recent Discoveries
 
-### 2025-12-07 (Latest)
+### 2025-12-08 (Latest)
 
-#### neominimap.nvim (Replaced nvim-scrollbar)
+#### Reverted to nvim-scrollbar (Removed neominimap)
 
-Added floating minimap on the right side of the editor for code navigation.
+Reverted from neominimap.nvim back to nvim-scrollbar due to issues with text being hidden behind the floating minimap and stray characters appearing in split layout.
 
 **File:** `nvim/plugins/ui.lua`
-- Float layout (overlay, doesn't affect window splits)
-- Width: 10 columns (narrow)
-- `sidescrolloff = 12` prevents text from being hidden behind minimap
-- Click-to-jump enabled (`click.enabled = true`)
-- Integrations: treesitter, git signs, LSP diagnostics, search, marks
-- Excluded from special buffers (neo-tree, terminals, trouble, etc.)
+- Simple scrollbar on the right edge (no text overlap issues)
+- Shows: cursor position, diagnostics, git changes, search matches
+- Colors matched to Tokyo Night theme
+- Handlers: cursor, diagnostic, gitsigns, search
 
-**Removed:** `nvim-scrollbar` (minimap serves same purpose)
+#### eslint_d Formatter Fix
+
+Fixed eslint_d formatting not running on save due to module loading loop error.
+
+**File:** `nvim/plugins/lsp.lua`
+- Moved `require("none-ls.diagnostics.eslint_d")` and `require("none-ls.formatting.eslint_d")` into the `sources` table
+- Previously used `null_ls.register()` after setup, which caused circular dependency
+- Now eslint --fix runs correctly on save for JS/TS files
+
+#### Removed ssh oh-my-zsh Plugin
+
+**File:** `.zshrc`
+- Removed `ssh` from oh-my-zsh plugins list (was causing issues)
+- Plugins now: `git gitfast npm`
+
+### 2025-12-07
+
+#### neominimap.nvim (Removed - see 2025-12-08)
+
+Was briefly added as a floating minimap, then tried split layout, but had persistent issues:
+- Float layout: text hidden behind minimap
+- Split layout: stray "p" character appearing, conflicts with bufferline
+
+**Removed in favor of nvim-scrollbar**
 
 #### Improved Page Scrolling (`_` and `+`)
 

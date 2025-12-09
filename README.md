@@ -261,7 +261,7 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 - `lsp-lens` - Reference counts above functions
 - `image.nvim` - View images in terminal
 - `claudecode.nvim` - Claude Code integration
-- `neominimap` - Clickable minimap with git/diagnostic integration
+- `nvim-scrollbar` - Scrollbar with diagnostics, git, and search marks
 
 *Vim-specific (VimScript):*
 
