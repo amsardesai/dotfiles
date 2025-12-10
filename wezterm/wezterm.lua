@@ -59,8 +59,9 @@ wezterm.on("open-uri", function(window, pane, uri)
 			local f = io.open(full_path, "r")
 			if f then
 				f:close()
-				-- Open in Neovim via nvr
-				local nvim_socket = os.getenv("HOME") .. "/.cache/nvim/server.sock"
+				-- Open in Neovim via nvr - use pane-specific socket
+				local pane_id = pane:pane_id()
+				local nvim_socket = home .. "/.cache/nvim/server-" .. pane_id .. ".sock"
 				wezterm.log_info("Opening: " .. full_path .. " at line " .. line)
 
 				-- First, switch to a non-terminal window, then open the file

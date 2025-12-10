@@ -9,8 +9,16 @@ vim.g.loaded_netrwPlugin = 1
 -- RPC SERVER (for WezTerm file path clicking)
 -- =============================================================================
 
--- Start server on predictable socket so WezTerm can send files to this instance
-local socket_path = vim.fn.expand("~/.cache/nvim/server.sock")
+-- Start server on pane-specific socket so multiple Neovim instances don't conflict
+-- WezTerm click handler uses pane:pane_id() to find the correct socket
+local pane_id = vim.env.WEZTERM_PANE
+local socket_path
+if pane_id then
+	socket_path = vim.fn.expand("~/.cache/nvim/server-" .. pane_id .. ".sock")
+else
+	-- Fallback for non-WezTerm terminals
+	socket_path = vim.fn.expand("~/.cache/nvim/server.sock")
+end
 vim.fn.mkdir(vim.fn.expand("~/.cache/nvim"), "p")
 -- Remove stale socket and start fresh
 pcall(vim.fn.delete, socket_path)
