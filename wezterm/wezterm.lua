@@ -9,8 +9,89 @@ if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
 
--- Open links in Chrome instead of system default browser
+-- Helper: Extract filename from URI and check if it should open in editor
+local function extract_edit_target(uri)
+	-- Match our custom EDIT: scheme (see hyperlink_rules below)
+	local target = uri:match("^EDIT:(.+)$")
+	if target then
+		return target
+	end
+	return nil
+end
+
+-- Handle hyperlink clicks (file paths → Neovim, URLs → Chrome)
 wezterm.on("open-uri", function(window, pane, uri)
+	-- Log for debugging (view with CTRL+SHIFT+L debug overlay)
+	wezterm.log_info("open-uri: " .. uri)
+
+	-- Handle our custom EDIT: scheme for file paths (with or without line:col)
+	local target = extract_edit_target(uri)
+	if target then
+		wezterm.log_info("EDIT target: " .. target)
+
+		-- Parse file:line:col, file:line, or just file
+		local path, line, col = target:match("^(.+):(%d+):(%d+)$")
+		if not path then
+			path, line = target:match("^(.+):(%d+)$")
+			col = "1"
+		end
+		if not path then
+			-- No line number - just a path
+			path = target
+			line = "1"
+			col = "1"
+		end
+
+		if path then
+			-- Get pane's current working directory
+			local cwd_uri = pane:get_current_working_dir()
+			local cwd = cwd_uri and cwd_uri.file_path or os.getenv("HOME")
+			local home = os.getenv("HOME")
+
+			-- Expand ~ to home directory
+			if path:match("^~/") then
+				path = home .. path:sub(2)
+			end
+
+			local full_path = path:match("^/") and path or (cwd .. "/" .. path)
+
+			-- Check if file exists
+			local f = io.open(full_path, "r")
+			if f then
+				f:close()
+				-- Open in Neovim via nvr
+				local nvim_socket = os.getenv("HOME") .. "/.cache/nvim/server.sock"
+				wezterm.log_info("Opening: " .. full_path .. " at line " .. line)
+
+				-- First, switch to a non-terminal window, then open the file
+				-- wincmd p = go to previous window, wincmd w = cycle if that fails
+				local vim_cmd = string.format(
+					"if &buftype == 'terminal' | wincmd p | endif | edit +%s %s | call cursor(%s,%s)",
+					line,
+					full_path,
+					line,
+					col
+				)
+
+				local success, stdout, stderr = wezterm.run_child_process({
+					"/opt/homebrew/bin/nvr",
+					"--servername",
+					nvim_socket,
+					"--remote-send",
+					string.format("<C-\\><C-n>:lua vim.schedule(function() vim.cmd([[%s]]) end)<CR>", vim_cmd),
+				})
+				if not success then
+					wezterm.log_error("nvr failed: " .. (stderr or "unknown error"))
+					window:toast_notification("WezTerm", "Failed to open in Neovim", nil, 3000)
+				end
+			else
+				window:toast_notification("WezTerm", "File not found: " .. full_path, nil, 3000)
+			end
+		end
+		return false
+	end
+
+	-- Default: open URLs in Chrome
 	wezterm.open_with(uri, "Google Chrome")
 	return false
 end)
@@ -162,8 +243,76 @@ config.quick_select_patterns = {
 	"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", -- UUIDs
 }
 
--- Hyperlink detection (URLs, file paths, etc.)
+-- Hyperlink detection - custom rules + defaults
 config.hyperlink_rules = wezterm.default_hyperlink_rules()
+
+-- File path charset: [\w./@\-] supports @ (path aliases like @/components)
+-- Matches: src/file.ts:10, ./file.ts:10, @/components/Button.tsx:10
+-- Excludes: file.ts:10, /file.ts:10 (no directory)
+
+-- 1. Relative ./path or ../path WITH line:col
+table.insert(config.hyperlink_rules, 1, {
+	regex = [[(\.{1,2}/[\w./@\-]+\.\w+):(\d+):(\d+)\b]],
+	format = "EDIT:$1:$2:$3",
+})
+
+-- 2. Directory path (src/...) or absolute (/System/...) WITH line:col
+table.insert(config.hyperlink_rules, 2, {
+	regex = [[([\w@\-]+/[\w./@\-]+\.\w+):(\d+):(\d+)\b]],
+	format = "EDIT:$1:$2:$3",
+})
+
+-- 3. Relative ./path or ../path WITH line only
+table.insert(config.hyperlink_rules, 3, {
+	regex = [[(\.{1,2}/[\w./@\-]+\.\w+):(\d+)\b]],
+	format = "EDIT:$1:$2",
+})
+
+-- 4. Directory path (src/...) or absolute (/System/...) WITH line only
+table.insert(config.hyperlink_rules, 4, {
+	regex = [[([\w@\-]+/[\w./@\-]+\.\w+):(\d+)\b]],
+	format = "EDIT:$1:$2",
+})
+
+-- 5. Parenthesized paths (stack traces): (src/file.ts:10:5)
+table.insert(config.hyperlink_rules, 5, {
+	regex = [[\(([\w./@\-]+/[\w./@\-]+\.\w+):(\d+):(\d+)\)]],
+	format = "EDIT:$1:$2:$3",
+})
+
+-- 6. Parenthesized paths WITH line only: (src/file.ts:10)
+table.insert(config.hyperlink_rules, 6, {
+	regex = [[\(([\w./@\-]+/[\w./@\-]+\.\w+):(\d+)\)]],
+	format = "EDIT:$1:$2",
+})
+
+-- ============ Paths WITHOUT line numbers ============
+-- These match file paths that don't have :line suffix
+-- Requires directory component (slash) to avoid matching random words
+
+-- 7. Absolute paths: /Users/ankit/.cache/nvim/server.sock
+table.insert(config.hyperlink_rules, 7, {
+	regex = [[(/[\w./@\-]+/[\w./@\-]+\.\w+)\b]],
+	format = "EDIT:$1",
+})
+
+-- 8. Relative ./path or ../path: ./src/utils.ts, ../config.lua
+table.insert(config.hyperlink_rules, 8, {
+	regex = [[(\.{1,2}/[\w./@\-]+\.\w+)\b]],
+	format = "EDIT:$1",
+})
+
+-- 9. Directory paths: src/utils.ts, @/components/Button.tsx
+table.insert(config.hyperlink_rules, 9, {
+	regex = [[([\w@\-]+/[\w./@\-]+\.\w+)\b]],
+	format = "EDIT:$1",
+})
+
+-- 10. Tilde paths: ~/.cache/nvim/server.sock, ~/dotfiles/init.lua
+table.insert(config.hyperlink_rules, 10, {
+	regex = [[(~/[\w./@\-]+\.\w+)\b]],
+	format = "EDIT:$1",
+})
 
 -- Bypass mouse reporting for CMD key (allows CMD+Click links even in tmux/vim)
 config.bypass_mouse_reporting_modifiers = "SUPER"
@@ -402,13 +551,13 @@ config.keys = {
 -- =============================================================================
 
 config.mouse_bindings = {
-	-- CMD+Click opens hyperlinks
+	-- CMD+Click opens hyperlinks (triggers open-uri event)
 	{
 		event = { Up = { streak = 1, button = "Left" } },
 		mods = "SUPER",
 		action = wezterm.action.OpenLinkAtMouseCursor,
 	},
-	-- Prevent Down event from interfering with link clicks
+	-- Disable the down event so CMD+click works cleanly
 	{
 		event = { Down = { streak = 1, button = "Left" } },
 		mods = "SUPER",

@@ -16,6 +16,7 @@ brew "ripgrep"
 
 # Neovim dependencies
 brew "imagemagick"  # For image.nvim
+brew "neovim-remote"  # For WezTerm file path clicking
 
 # Linters
 brew "shellcheck"

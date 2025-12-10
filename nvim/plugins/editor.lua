@@ -189,6 +189,10 @@ return {
 					["<S-Right>"] = function()
 						vim.cmd("wincmd l")
 					end,
+					-- zz centers cursor (neo-tree's z closes nodes, so zz would trigger that)
+					["zz"] = function()
+						vim.cmd("normal! zz")
+					end,
 				},
 			},
 			event_handlers = {

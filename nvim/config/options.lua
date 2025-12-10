@@ -5,6 +5,17 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- =============================================================================
+-- RPC SERVER (for WezTerm file path clicking)
+-- =============================================================================
+
+-- Start server on predictable socket so WezTerm can send files to this instance
+local socket_path = vim.fn.expand("~/.cache/nvim/server.sock")
+vim.fn.mkdir(vim.fn.expand("~/.cache/nvim"), "p")
+-- Remove stale socket and start fresh
+pcall(vim.fn.delete, socket_path)
+pcall(vim.fn.serverstart, socket_path)
+
 -- Prevent automatic window resizing when opening/closing splits
 vim.o.equalalways = false
 
