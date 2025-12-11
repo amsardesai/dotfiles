@@ -98,6 +98,27 @@ return {
 				mode = { "n", "v", "t" },
 				desc = "Kill all terminals",
 			},
+			{
+				"<leader>gg",
+				function()
+					require("snacks").lazygit()
+				end,
+				desc = "Lazygit",
+			},
+			{
+				"<leader>S",
+				function()
+					require("snacks").scratch()
+				end,
+				desc = "Scratch buffer",
+			},
+			{
+				"<leader>Sb",
+				function()
+					require("snacks").scratch.select()
+				end,
+				desc = "Select scratch buffer",
+			},
 		},
 		opts = {
 			bufdelete = { enabled = true },
@@ -126,6 +147,10 @@ return {
 				enabled = true,
 				win = { position = "bottom", height = 0.3 },
 			},
+			lazygit = { enabled = true },
+			scratch = { enabled = true },
+			dim = { enabled = true },
+			image = { enabled = true },
 		},
 	},
 
@@ -151,7 +176,7 @@ return {
 	{
 		"akinsho/bufferline.nvim",
 		event = "VeryLazy", -- Load early so tab bar is always visible
-		dependencies = "nvim-tree/nvim-web-devicons",
+		dependencies = { "nvim-tree/nvim-web-devicons", "folke/snacks.nvim" },
 		opts = {
 			options = {
 				diagnostics = "nvim_lsp",
@@ -160,6 +185,12 @@ return {
 				color_icons = false,
 				hover = { enabled = true, delay = 50, reveal = { "close" } },
 				offsets = { { filetype = "neo-tree", text = "File Explorer", separator = true } },
+				close_command = function(bufnr)
+					require("snacks").bufdelete({ buf = bufnr })
+				end,
+				right_mouse_command = function(bufnr)
+					require("snacks").bufdelete({ buf = bufnr })
+				end,
 			},
 		},
 	},

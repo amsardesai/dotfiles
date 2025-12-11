@@ -64,32 +64,4 @@ return {
 		},
 	},
 
-	-- =============================================================================
-	-- IMAGE.NVIM (BufRead for image files)
-	-- =============================================================================
-
-	{
-		"3rd/image.nvim",
-		event = "BufReadPre *.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp,*.ico,*.svg",
-		build = false,
-		config = function()
-			local ok, image = pcall(require, "image")
-			if ok then
-				image.setup({
-					backend = "kitty",
-					processor = "magick_cli",
-					integrations = {
-						markdown = { enabled = false },
-						neorg = { enabled = false },
-						typst = { enabled = false },
-						html = { enabled = false },
-						css = { enabled = false },
-					},
-					max_height_window_percentage = 80,
-					max_width_window_percentage = 80,
-					hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.bmp", "*.ico", "*.svg" },
-				})
-			end
-		end,
-	},
 }

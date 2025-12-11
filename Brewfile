@@ -12,6 +12,7 @@ brew "bat"
 brew "fd"
 brew "fzf"
 brew "git-delta"
+brew "lazygit"
 brew "ripgrep"
 
 # Neovim dependencies
