@@ -47,7 +47,7 @@ return {
 				"<leader>z",
 				function()
 					if not _G.bottom_drawers then
-						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua")
+						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
 					end
 					_G.bottom_drawers.toggle_primary()
 				end,
@@ -58,7 +58,7 @@ return {
 				"<leader>x",
 				function()
 					if not _G.bottom_drawers then
-						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua")
+						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
 					end
 					_G.bottom_drawers.toggle_secondary()
 				end,
@@ -69,7 +69,7 @@ return {
 				"<leader>t",
 				function()
 					if not _G.bottom_drawers then
-						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua")
+						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
 					end
 					_G.bottom_drawers.toggle_trouble()
 				end,
@@ -80,7 +80,7 @@ return {
 				"<leader>q",
 				function()
 					if not _G.bottom_drawers then
-						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua")
+						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
 					end
 					_G.bottom_drawers.close_all_drawer_windows()
 				end,
@@ -91,7 +91,7 @@ return {
 				"<leader>Q",
 				function()
 					if not _G.bottom_drawers then
-						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/nvim/util/bottom_drawers.lua")
+						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
 					end
 					_G.bottom_drawers.close_all()
 				end,

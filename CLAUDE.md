@@ -54,7 +54,7 @@
 **Vim and Neovim are distinct configurations** - they are NOT trying to share code:
 
 - **Neovim:** Full Lua-first stack with **lazy.nvim**, modern plugins, native LSP
-  - Entry: `init-nvim.lua` → bootstraps lazy.nvim → `nvim/plugins/*.lua` → `vimconfig/main.vim` (options only) → `nvim/config/*.lua`
+  - Entry: `nvim/init.lua` → bootstraps lazy.nvim → `nvim/plugins/*.lua` → `vimconfig/main.vim` (options only) → `nvim/config/*.lua`
   - Plugins: fzf-lua, treesitter, native LSP, snacks.nvim, typescript-tools
   - All keymaps in Lua: `nvim/config/keymaps.lua`
 
@@ -86,7 +86,7 @@
 ### Editor Configurations
 
 - `init-vim.vim` - Vim entry point (~/.vimrc symlink target)
-- `init-nvim.lua` - Neovim entry point (~/.config/nvim/init.lua symlink target)
+- `nvim/init.lua` - Neovim entry point (~/.config/nvim/init.lua symlink target)
 - `init-gvim.vim` - GUI vim settings (~/.gvimrc symlink target)
 - `vimconfig/` - VimScript configuration (primarily for Vim, options shared with Neovim)
   - `vimconfig/main.vim` - Entry point (sources install, plugins, options, mappings)
@@ -486,7 +486,7 @@ nvim/
 - Moved global settings from `main.lua` to `config/options.lua` and `config/keymaps.lua`
 - Moved utilities to `util/` subdirectory
 - Removed unused `keymap.lua`
-- Updated `init-nvim.lua` to use `dofile()` for loading (better for nested dofile calls)
+- Updated `nvim/init.lua` to use `dofile()` for loading (better for nested dofile calls)
 
 #### lazy.nvim Migration (Major Refactor)
 
@@ -494,15 +494,15 @@ Migrated Neovim from **vim-plug** to **lazy.nvim** for proper lazy-loading and i
 
 **Architecture Change:**
 ```
-Before: init-nvim.lua → lazy.setup(plugins) → require('nvim.main')
+Before: nvim/init.lua → lazy.setup(plugins) → require('nvim.main')
         (main.lua did require() at top, loading ALL plugins immediately)
 
-After:  init-nvim.lua → lazy.setup(dofile(plugins/init.lua)) → vimconfig/main.vim → dofile(config/*.lua)
+After:  nvim/init.lua → lazy.setup(dofile(plugins/init.lua)) → vimconfig/main.vim → dofile(config/*.lua)
         (plugins split by category, config split into options + keymaps)
 ```
 
 **Key Files Changed:**
-- `init-nvim.lua` - Bootstraps lazy.nvim, uses dofile for plugin specs and config
+- `nvim/init.lua` - Bootstraps lazy.nvim, uses dofile for plugin specs and config
 - `nvim/plugins/*.lua` - Plugin specs split by category (ui, editor, lsp, lang, tools)
 - `nvim/config/options.lua` - Global vim.g/vim.o settings
 - `nvim/config/keymaps.lua` - Global keybindings
@@ -588,7 +588,7 @@ Replaced legacy VimScript plugins with modern Lua alternatives:
 - **`nvim/context_menu.lua`:** Right-click context menu using fzf-lua's `vim.ui.select()` integration.
 - **`nvim/file_cache.lua`:** Persisted file cache system for instant file picker. Caches `git ls-files` results to disk, watches `.git/index` for automatic invalidation using `vim.uv.new_fs_event()`. Provides sub-50ms file picker in large repos.
 - **`nvim/keymap.lua`:** Helper functions for defining keymaps.
-- **`init-nvim.lua`:** New Lua entry point replaces `init-nvim.vim`. Sources shared VimScript config then requires `nvim/main`.
+- **`nvim/init.lua`:** New Lua entry point replaces `init-nvim.vim`. Sources shared VimScript config then requires `nvim/main`.
 
 #### fzf-lua Migration (Replaced Telescope)
 

@@ -21,7 +21,7 @@ vim.g.mapleader = ","
 vim.g.maplocalleader = ";"
 
 -- Config directory path
-local config_dir = vim.fn.stdpath("config") .. "/nvim"
+local config_dir = vim.fn.stdpath("config")
 
 -- Load plugins via lazy.nvim
 -- Use dofile to load plugin specs (handles nested dofile calls properly)

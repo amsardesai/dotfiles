@@ -207,7 +207,7 @@ vim.api.nvim_create_autocmd("BufLeave", {
 -- CONTEXT MENU
 -- =============================================================================
 
-local config_dir = vim.fn.stdpath("config") .. "/nvim"
+local config_dir = vim.fn.stdpath("config")
 local context_menu = dofile(config_dir .. "/util/context_menu.lua")
 vim.keymap.set({ "n", "v" }, "<RightMouse>", context_menu.show, { desc = "Context menu" })
 

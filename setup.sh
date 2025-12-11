@@ -280,10 +280,12 @@ link_file_quiet "$SCRIPTPATH/ftplugin" "$HOME/.vim/ftplugin"
 link_file_quiet "$SCRIPTPATH/vimconfig" "$HOME/.vim/vimconfig"
 
 # Neovim
-link_file_quiet "$SCRIPTPATH/init-nvim.lua" "$HOME/.config/nvim/init.lua"
+link_file_quiet "$SCRIPTPATH/nvim/init.lua" "$HOME/.config/nvim/init.lua"
 link_file_quiet "$SCRIPTPATH/ftplugin" "$HOME/.config/nvim/ftplugin"
 link_file_quiet "$SCRIPTPATH/vimconfig" "$HOME/.config/nvim/vimconfig"
-link_file_quiet "$SCRIPTPATH/nvim" "$HOME/.config/nvim/nvim"
+link_file_quiet "$SCRIPTPATH/nvim/plugins" "$HOME/.config/nvim/plugins"
+link_file_quiet "$SCRIPTPATH/nvim/config" "$HOME/.config/nvim/config"
+link_file_quiet "$SCRIPTPATH/nvim/util" "$HOME/.config/nvim/util"
 
 print_link_summary
 

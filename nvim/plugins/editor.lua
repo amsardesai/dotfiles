@@ -2,7 +2,7 @@
 
 -- Helper: get nvim config directory path
 local function get_config_dir()
-	return vim.fn.stdpath("config") .. "/nvim"
+	return vim.fn.stdpath("config")
 end
 
 -- Helper: perform the actual zoom operation

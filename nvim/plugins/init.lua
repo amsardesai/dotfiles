@@ -13,7 +13,7 @@ local function merge_specs(...)
 end
 
 -- Load all plugin category files
-local config_dir = vim.fn.stdpath("config") .. "/nvim/plugins"
+local config_dir = vim.fn.stdpath("config") .. "/plugins"
 
 return merge_specs(
 	dofile(config_dir .. "/ui.lua"),
