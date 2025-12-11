@@ -57,7 +57,7 @@ return {
 				capabilities = capabilities,
 				settings = {
 					separate_diagnostic_server = true,
-					tsserver_max_memory = 16384,
+					tsserver_max_memory = 28672, -- 28GB for large monorepos (Notion uses this for 64GB+ machines)
 					jsx_close_tag = {
 						enable = true,
 						filetypes = { "javascriptreact", "typescriptreact" },
