@@ -21,3 +21,13 @@ understand.
 Before diving into solutions, do one or two rounds of assumption checks
 with me so that we can drive towards a full featured solution more
 efficiently.
+
+## When inside notion-next (Notion monorepo)
+
+> **Detection:** These instructions apply when the working directory path contains `notion-next`
+
+**Git workflow (Graphite):**
+- Use `gt` (graphite) commands instead of raw git for commits
+- Stick to 1 commit per branch - amend existing commits rather than adding new ones
+- Keep commit messages detailed and descriptive
+- Changes are stacked and sent to GitHub via graphite PRs

@@ -44,6 +44,25 @@ Analyze all changes made to this repository since the last documentation update 
    - Check that key information isn't duplicated unnecessarily
    - Verify formatting is clean
 
+7. **Commit documentation changes:**
+   - Stage only documentation files: `git add CLAUDE.md README.md`
+   - Create a detailed commit summarizing what was documented:
+     - List the major changes/features that were documented
+     - Mention which sections were updated
+     - Use format: "docs: Document [changes] from [date range]"
+   - Example commit message:
+     ```
+     docs: Document lualine, fzf-lua, and LSP changes from Dec 2024
+
+     Updated CLAUDE.md:
+     - Added lualine branch truncation (middle ellipsis)
+     - Added fzf-lua visual selection pre-fill for <C-p>
+     - Documented tsserver memory fix for large monorepos
+
+     Updated README.md:
+     - Added new keybindings to reference table
+     ```
+
 ## Output
 
 Provide a summary of:
