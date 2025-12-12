@@ -60,7 +60,11 @@ return {
 					},
 				},
 			},
-			diff_opts = { vertical_split = false },
+			diff_opts = {
+				layout = "vertical",
+				auto_close_on_accept = true,
+				keep_terminal_focus = true,
+			},
 		},
 	},
 
