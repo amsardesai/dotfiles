@@ -208,7 +208,66 @@
 
 ## Recent Discoveries
 
-### 2025-12-08 (Latest)
+### 2025-12-11 (Latest)
+
+#### Lualine Branch Name Truncation
+
+Truncate long git branch names in the middle to preserve both prefix and suffix visibility.
+
+**File:** `nvim/plugins/ui.lua`
+- Shows first 9 and last 9 chars with ellipsis: `ankit/fea…nch-name`
+- Prevents long branch names from pushing LSP info off the statusline
+- Uses lualine's built-in `fmt` option on the branch component
+
+#### fzf-lua Visual Selection Pre-fill
+
+When pressing `<C-p>` in visual mode, the selected text is used as the initial query.
+
+**File:** `nvim/plugins/editor.lua`
+- Detects visual mode (`v` or `V`) and extracts selection
+- Passes selection as `query` option to fzf-lua
+- Useful for quickly finding files by selecting a filename/path in code
+
+#### typescript-tools Memory Increase for Large Monorepos
+
+Increased `tsserver_max_memory` from 16GB to 28GB for large codebases.
+
+**File:** `nvim/plugins/lang.lua`
+- Fixes "gd not working" issue in large monorepos like Notion (500k+ lines)
+- 28GB matches what Notion's custom tsserver wrapper allocates for 64GB+ machines
+- tsserver was appearing attached but not responding due to memory constraints
+
+#### Snacks.nvim Lazygit & Scratch Buffers
+
+Added new snacks.nvim integrations.
+
+**File:** `nvim/plugins/ui.lua`
+| Key | Action |
+|-----|--------|
+| `,gg` | Open Lazygit |
+| `,S` | Open scratch buffer |
+| `,Sb` | Select scratch buffer |
+
+Also enabled: `dim`, `image` features in snacks.nvim.
+
+#### Pane-Specific Neovim RPC Sockets
+
+Fixed multiple Neovim instances conflicting over the same socket.
+
+**File:** `nvim/config/options.lua`
+- Socket path now includes WezTerm pane ID: `~/.cache/nvim/server-{pane_id}.sock`
+- WezTerm click handler uses `pane:pane_id()` to find correct socket
+- Falls back to `server.sock` for non-WezTerm terminals
+
+#### Bufferline Close with snacks.bufdelete
+
+Buffer close commands now use snacks.bufdelete to preserve window layout.
+
+**File:** `nvim/plugins/ui.lua`
+- `close_command` and `right_mouse_command` use `snacks.bufdelete()`
+- Prevents window from closing when closing a buffer
+
+### 2025-12-08
 
 #### Reverted to nvim-scrollbar (Removed neominimap)
 

@@ -190,7 +190,7 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | **Buffer Management** | `,]` | Next buffer |
 | | `,[` | Previous buffer |
 | | `,bd` | Delete buffer (preserves layout) |
-| **Fuzzy Finder (fzf-lua)** | `<C-p>` | Find files (cached, instant) |
+| **Fuzzy Finder (fzf-lua)** | `<C-p>` | Find files (visual selection pre-fills query) |
 | | `<C-o>` | Live grep |
 | | `,ll` | Find files |
 | | `,lk` | Live grep |
@@ -221,10 +221,13 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | **LSP** | `,rl` | Restart all LSP servers |
 | **Claude Code** | `,a` | Toggle Claude Code terminal |
 | | `,sa` | Add file to Claude context |
-| **Git** | `(` | Previous hunk |
+| **Git** | `,gg` | Open Lazygit |
+| | `(` | Previous hunk |
 | | `)` | Next hunk |
 | | `,gb` | Git blame |
 | | `,go` | Open in GitHub |
+| **Scratch** | `,S` | Open scratch buffer |
+| | `,Sb` | Select scratch buffer |
 | | `[[` / `]]` | Prev/next reference |
 | **Context Menu** | `<RightMouse>` | Open context menu (LSP, Git, File ops) |
 | **Diagnostics** | `gl` | Show diagnostic float |
