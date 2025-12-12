@@ -231,12 +231,22 @@ return {
 			{
 				"<C-p>",
 				function()
+					-- Get visual selection if in visual mode
+					local query = nil
+					local mode = vim.fn.mode()
+					if mode == "v" or mode == "V" then
+						vim.cmd('noau normal! "vy')
+						query = vim.fn.getreg("v")
+						query = query:gsub("\n", "")
+					end
+
 					local file_cache = dofile(get_config_dir() .. "/util/file_cache.lua")
 					local fzf = require("fzf-lua")
 					local files = file_cache.get()
 					if files and #files > 0 then
 						fzf.fzf_exec(files, {
 							prompt = "Files> ",
+							query = query,
 							previewer = "builtin",
 							actions = fzf.defaults.actions.files,
 							file_icons = true,
@@ -244,7 +254,7 @@ return {
 						})
 					else
 						vim.notify("File cache not ready, searching...", vim.log.levels.WARN)
-						fzf.files()
+						fzf.files({ query = query })
 					end
 				end,
 				mode = { "n", "i", "v", "t" },

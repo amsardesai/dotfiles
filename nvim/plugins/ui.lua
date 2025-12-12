@@ -164,6 +164,20 @@ return {
 		opts = {
 			options = { theme = "tokyonight" },
 			sections = {
+				lualine_b = {
+					{
+						"branch",
+						fmt = function(name)
+							local max_len = 20
+							if #name > max_len then
+								return name:sub(1, max_len - 1) .. "…"
+							end
+							return name
+						end,
+					},
+					"diff",
+					"diagnostics",
+				},
 				lualine_x = { "encoding", "fileformat", "filetype", "lsp_status" },
 			},
 		},
