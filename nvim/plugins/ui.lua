@@ -170,7 +170,8 @@ return {
 						fmt = function(name)
 							local max_len = 20
 							if #name > max_len then
-								return name:sub(1, max_len - 1) .. "…"
+								local side_len = math.floor((max_len - 1) / 2)
+								return name:sub(1, side_len) .. "…" .. name:sub(-side_len)
 							end
 							return name
 						end,
