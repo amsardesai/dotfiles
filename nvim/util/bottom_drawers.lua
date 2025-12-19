@@ -95,6 +95,12 @@ local function set_winbar(win, slot)
 		.. "#(type "
 		.. meta.key
 		.. " to toggle) %*"
+
+	-- Disable line numbers for terminal drawers
+	if slot == "primary" or slot == "secondary" then
+		vim.wo[win].number = false
+		vim.wo[win].relativenumber = false
+	end
 end
 
 -- Find window for a specific drawer slot
