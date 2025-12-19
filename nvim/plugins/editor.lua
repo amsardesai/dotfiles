@@ -85,6 +85,18 @@ return {
 					vim.cmd("Neotree action=show")
 
 					if session_restored then
+						-- Delete empty [No Name] buffers left over from startup
+						for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+							if vim.api.nvim_buf_is_valid(buf)
+								and vim.bo[buf].buflisted
+								and vim.api.nvim_buf_get_name(buf) == ""
+								and vim.api.nvim_buf_line_count(buf) == 1
+								and vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] == ""
+							then
+								vim.api.nvim_buf_delete(buf, { force = true })
+							end
+						end
+
 						-- Session restored with buffers - focus the main window
 						vim.defer_fn(function()
 							vim.cmd("wincmd l")

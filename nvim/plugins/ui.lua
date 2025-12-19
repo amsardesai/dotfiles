@@ -226,6 +226,14 @@ return {
 				color_icons = false,
 				hover = { enabled = true, delay = 50, reveal = { "close" } },
 				offsets = { { filetype = "neo-tree", text = "File Explorer", separator = true } },
+				custom_filter = function(buf_number)
+					-- Exclude neo-tree buffers from bufferline
+					local ft = vim.bo[buf_number].filetype
+					if ft == "neo-tree" then
+						return false
+					end
+					return true
+				end,
 				close_command = function(bufnr)
 					require("snacks").bufdelete({ buf = bufnr })
 				end,
