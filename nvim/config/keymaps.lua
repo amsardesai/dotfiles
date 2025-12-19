@@ -203,6 +203,32 @@ vim.api.nvim_create_autocmd("BufLeave", {
 	desc = "Stop insert on terminal leave",
 })
 
+-- Terminal mouse: single click enters terminal mode, drag allows visual selection
+vim.api.nvim_create_autocmd("TermOpen", {
+	callback = function()
+		-- Track click position to distinguish clicks from drags
+		vim.keymap.set({ "n", "v" }, "<LeftMouse>", function()
+			local mouse = vim.fn.getmousepos()
+			vim.b.terminal_click_pos = { line = mouse.line, col = mouse.column }
+			return "<LeftMouse>"
+		end, { buffer = true, expr = true, desc = "Track terminal click position" })
+
+		-- On release, enter terminal mode if it was a single click
+		vim.keymap.set({ "n", "v" }, "<LeftRelease>", function()
+			local mouse = vim.fn.getmousepos()
+			local click_pos = vim.b.terminal_click_pos
+
+			if click_pos and click_pos.line == mouse.line and click_pos.col == mouse.column then
+				vim.schedule(function()
+					vim.cmd("startinsert")
+				end)
+			end
+			vim.b.terminal_click_pos = nil
+		end, { buffer = true, desc = "Enter terminal mode on single click" })
+	end,
+	desc = "Terminal mouse click handling",
+})
+
 -- =============================================================================
 -- CONTEXT MENU
 -- =============================================================================
