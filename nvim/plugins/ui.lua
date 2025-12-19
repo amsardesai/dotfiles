@@ -106,7 +106,7 @@ return {
 				desc = "Lazygit",
 			},
 			{
-				"<leader>gc",
+				"<leader>go",
 				function()
 					-- Get the commit hash that last modified the current line
 					local line = vim.fn.line(".")

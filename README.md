@@ -222,7 +222,7 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | **Claude Code** | `,a` | Toggle Claude Code terminal |
 | | `,sa` | Add file to Claude context |
 | **Git** | `,gg` | Open Lazygit |
-| | `,gc` | Open current line's blame commit in GitHub |
+| | `,go` | Open current line's blame commit in GitHub |
 | | `,gf` | Open file in GitHub |
 | | `,gb` | Git blame |
 | | `(` | Previous hunk |

@@ -217,12 +217,12 @@ Added snacks.gitbrowse keybindings for opening commits and files in GitHub.
 **File:** `nvim/plugins/ui.lua`
 | Key | Action |
 |-----|--------|
-| `,gc` | Open current line's blame commit in GitHub |
+| `,go` | Open current line's blame commit in GitHub |
 | `,gf` | Open current file in GitHub |
 
-**`,gc` implementation:** Uses `git blame -L <line>,<line> --porcelain` to get the commit that last modified the current line, then opens it via gitbrowse. Handles uncommitted lines (shows warning).
+**`,go` implementation:** Uses `git blame -L <line>,<line> --porcelain` to get the commit that last modified the current line, then opens it via gitbrowse. Handles uncommitted lines (shows warning).
 
-Useful workflow: `,gb` (blame) → `,gc` (open commit) → find PR on GitHub.
+Useful workflow: `,gb` (blame) → `,go` (open commit) → find PR on GitHub.
 
 #### gx.nvim URL Opener
 
