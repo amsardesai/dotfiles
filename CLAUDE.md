@@ -217,10 +217,35 @@ Added snacks.gitbrowse keybindings for opening commits and files in GitHub.
 **File:** `nvim/plugins/ui.lua`
 | Key | Action |
 |-----|--------|
-| `,gc` | Open current line's commit in GitHub |
+| `,gc` | Open current line's blame commit in GitHub |
 | `,gf` | Open current file in GitHub |
 
+**`,gc` implementation:** Uses `git blame -L <line>,<line> --porcelain` to get the commit that last modified the current line, then opens it via gitbrowse. Handles uncommitted lines (shows warning).
+
 Useful workflow: `,gb` (blame) → `,gc` (open commit) → find PR on GitHub.
+
+#### gx.nvim URL Opener
+
+Added gx.nvim plugin for opening URLs from within Neovim.
+
+**File:** `nvim/plugins/editor.lua`
+| Key | Action |
+|-----|--------|
+| `gx` | Open URL under cursor in browser |
+
+Features:
+- Works in normal and visual modes
+- Detects URLs with/without protocol
+- Handles GitHub issues (`#123`), npm packages, Go imports
+- Falls back to web search if no URL detected
+- Useful for opening URLs in terminal buffers where WezTerm can't detect them (exit terminal mode with `<Esc>`, then `gx`)
+
+#### Terminal Drawer Line Numbers
+
+Disabled line numbers in terminal drawers (`,z` and `,x`) for cleaner appearance.
+
+**File:** `nvim/util/bottom_drawers.lua`
+- Sets `number=false` and `relativenumber=false` for terminal windows
 
 #### claudecode.nvim Diff Panel Improvements
 
@@ -230,6 +255,17 @@ Improved diff panel behavior for a less disruptive experience.
 - `layout = "vertical"` - side-by-side diff view
 - `auto_close_on_accept = true` - panel closes after accepting changes
 - `keep_terminal_focus = true` - focus stays in Claude terminal after diff opens
+
+#### Terminal Mouse Click Handling
+
+Fixed terminal panes entering visual mode on click instead of terminal mode.
+
+**File:** `nvim/config/keymaps.lua`
+- Added `TermOpen` autocommand with `<LeftMouse>` and `<LeftRelease>` handlers
+- Tracks click position to distinguish single clicks from drags
+- Single click → enters terminal mode (`startinsert`)
+- Click-and-drag → preserves visual selection for text copying
+- Uses `vim.b.terminal_click_pos` buffer variable to track state
 
 ### 2025-12-11
 

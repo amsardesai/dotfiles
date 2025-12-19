@@ -222,7 +222,7 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | **Claude Code** | `,a` | Toggle Claude Code terminal |
 | | `,sa` | Add file to Claude context |
 | **Git** | `,gg` | Open Lazygit |
-| | `,gc` | Open commit in GitHub |
+| | `,gc` | Open current line's blame commit in GitHub |
 | | `,gf` | Open file in GitHub |
 | | `,gb` | Git blame |
 | | `(` | Previous hunk |
@@ -237,6 +237,7 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | | `+` | Scroll down (page - 10 lines) |
 | **Pane Navigation** | `Shift+Arrows` | Move between splits (all modes) |
 | | `Option+Shift+Arrows` | Move between splits (alternative) |
+| **URL Opening** | `gx` | Open URL under cursor in browser |
 | **Utilities** | `<CR>` | Clear search highlight |
 | | `,fw` | Fix whitespace |
 | | `,r` | Reload config |
