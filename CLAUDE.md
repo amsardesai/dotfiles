@@ -210,6 +210,28 @@
 
 ### 2025-12-19 (Latest)
 
+#### Session Persistence (persistence.nvim)
+
+Added automatic session save/restore for directory-based workflows.
+
+**File:** `nvim/plugins/editor.lua`
+
+**Behavior:**
+- `nvim .` or `nvim` (no args) → auto-restores previous session (open buffers)
+- `nvim file.txt` → opens only that file, no session restore
+- `:qa` → saves session on quit
+- `:qa!` → does NOT save session (force quit skips save)
+
+**Implementation:**
+- Uses folke's `persistence.nvim` plugin
+- Sessions stored at `~/.local/state/nvim/sessions/` (hashed by directory)
+- Only saves buffers (not window layout/splits) via `options = { "buffers", "curdir", "tabpages" }`
+- VimEnter autocmd detects startup mode and conditionally restores
+- QuitPre autocmd detects `:qa!` (bang) and calls `persistence.stop()` to skip save
+
+**New directory without session:** Shows neo-tree + fzf picker (original behavior)
+**Existing session:** Shows neo-tree + restores buffers (skips fzf picker)
+
 #### GitHub Browse Keybindings
 
 Added snacks.gitbrowse keybindings for opening commits and files in GitHub.
