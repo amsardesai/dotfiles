@@ -108,7 +108,19 @@ return {
 			{
 				"<leader>gc",
 				function()
-					require("snacks").gitbrowse({ what = "commit" })
+					-- Get the commit hash that last modified the current line
+					local line = vim.fn.line(".")
+					local file = vim.fn.expand("%:p")
+					local result = vim.fn.system(
+						"git blame -L " .. line .. "," .. line .. " --porcelain " .. vim.fn.shellescape(file) .. " 2>/dev/null | head -1"
+					)
+					local commit = result:match("^(%x+)")
+
+					if commit and commit ~= "0000000000000000000000000000000000000000" then
+						require("snacks").gitbrowse({ what = "commit", commit = commit })
+					else
+						vim.notify("No commit found for this line (uncommitted change?)", vim.log.levels.WARN)
+					end
 				end,
 				desc = "Open commit in GitHub",
 			},
