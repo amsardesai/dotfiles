@@ -106,6 +106,20 @@ return {
 				desc = "Lazygit",
 			},
 			{
+				"<leader>gc",
+				function()
+					require("snacks").gitbrowse({ what = "commit" })
+				end,
+				desc = "Open commit in GitHub",
+			},
+			{
+				"<leader>gf",
+				function()
+					require("snacks").gitbrowse({ what = "file" })
+				end,
+				desc = "Open file in GitHub",
+			},
+			{
 				"<leader>S",
 				function()
 					require("snacks").scratch()
