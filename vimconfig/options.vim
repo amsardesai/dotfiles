@@ -186,6 +186,17 @@ if !has('nvim')
   let g:airline_symbols.maxlinenr = '☰ '
   let g:airline_symbols.dirty='⚡'
 
+  " Truncate long branch names (same as lualine in neovim)
+  function! AirlineBranchTruncate(name)
+    let l:max_len = 20
+    if len(a:name) > l:max_len
+      let l:side_len = (l:max_len - 1) / 2
+      return a:name[0:l:side_len-1] . '…' . a:name[-l:side_len:]
+    endif
+    return a:name
+  endfunction
+  let g:airline#extensions#branch#format = 'AirlineBranchTruncate'
+
   " NERDTree configuration (Vim only)
   function! s:toggleNERD()
     execute 'NERDTreeToggle'
