@@ -208,7 +208,30 @@
 
 ## Recent Discoveries
 
-### 2025-12-11 (Latest)
+### 2025-12-19 (Latest)
+
+#### GitHub Browse Keybindings
+
+Added snacks.gitbrowse keybindings for opening commits and files in GitHub.
+
+**File:** `nvim/plugins/ui.lua`
+| Key | Action |
+|-----|--------|
+| `,gc` | Open current line's commit in GitHub |
+| `,gf` | Open current file in GitHub |
+
+Useful workflow: `,gb` (blame) → `,gc` (open commit) → find PR on GitHub.
+
+#### claudecode.nvim Diff Panel Improvements
+
+Improved diff panel behavior for a less disruptive experience.
+
+**File:** `nvim/plugins/tools.lua`
+- `layout = "vertical"` - side-by-side diff view
+- `auto_close_on_accept = true` - panel closes after accepting changes
+- `keep_terminal_focus = true` - focus stays in Claude terminal after diff opens
+
+### 2025-12-11
 
 #### Lualine Branch Name Truncation
 

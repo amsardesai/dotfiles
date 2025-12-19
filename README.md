@@ -222,10 +222,11 @@ They are NOT trying to share code - only `vimconfig/options.vim` (basic options)
 | **Claude Code** | `,a` | Toggle Claude Code terminal |
 | | `,sa` | Add file to Claude context |
 | **Git** | `,gg` | Open Lazygit |
+| | `,gc` | Open commit in GitHub |
+| | `,gf` | Open file in GitHub |
+| | `,gb` | Git blame |
 | | `(` | Previous hunk |
 | | `)` | Next hunk |
-| | `,gb` | Git blame |
-| | `,go` | Open in GitHub |
 | **Scratch** | `,S` | Open scratch buffer |
 | | `,Sb` | Select scratch buffer |
 | | `[[` / `]]` | Prev/next reference |
