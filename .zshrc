@@ -146,9 +146,16 @@ alias ls='ls -alFh'
 alias ll='ls'
 alias l='ls'
 alias d='du -hs'
-alias v='nvim'
-alias vi='nvim'
-alias v.='nvim .'
+# Use vim instead of nvim when inside neovim terminal
+if [[ -n "$NVIM" ]]; then
+  alias v='vim'
+  alias vi='vim'
+  alias v.='vim .'
+else
+  alias v='nvim'
+  alias vi='nvim'
+  alias v.='nvim .'
+fi
 alias c='clear'
 alias ..='cd ..'
 alias ...='cd ../..'

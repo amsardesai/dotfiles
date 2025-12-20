@@ -13,6 +13,21 @@ else
 endif
 
 " ============================================================
+" Nested Vim Settings (vim running inside neovim terminal)
+" ============================================================
+
+if !has('nvim') && exists('$NVIM')
+  " Disable mouse - let neovim handle it
+  set mouse=
+
+  " Use simpler cursor (neovim controls the actual cursor)
+  set guicursor=
+
+  " Faster updatetime for responsive feel
+  set updatetime=100
+endif
+
+" ============================================================
 " Leader Keys
 " ============================================================
 
