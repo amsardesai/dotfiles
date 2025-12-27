@@ -208,7 +208,81 @@
 
 ## Recent Discoveries
 
-### 2025-12-19 (Latest)
+### 2025-12-27 (Latest)
+
+#### /remember-about-me Skill
+
+Added a custom Claude Code skill for persisting user preferences.
+
+**File:** `.claude/commands/remember-about-me.md`
+
+**Usage:** `/remember-about-me <message>` - Claude analyzes the message and adds it to the appropriate section in `~/.claude/CLAUDE.md`.
+
+**Behavior:**
+- Reads current CLAUDE.md
+- Categorizes info into: Professional, Personal Background, Products, Communication, Project-specific
+- Adds as concise bullet point in correct section
+- Updates existing info if it's a correction (no duplicates)
+
+#### Nested Vim Optimizations
+
+Improved experience when running vim inside neovim terminal panes.
+
+**Files:** `.zshrc`, `vimconfig/options.vim`
+
+**Shell aliases (.zshrc):**
+```bash
+# When $NVIM is set (inside neovim terminal), v/vi/v. point to vim, not nvim
+if [[ -n "$NVIM" ]]; then
+  alias v='vim'
+  alias vi='vim'
+  alias v.='vim .'
+fi
+```
+
+**Vim optimizations (options.vim):**
+- Disables mouse (let neovim handle it)
+- Uses simpler cursor (neovim controls actual cursor)
+- Faster updatetime (100ms) for responsive feel
+
+#### vim-airline Branch Truncation
+
+Added branch name truncation to vim-airline, matching lualine in Neovim.
+
+**File:** `vimconfig/options.vim`
+- Shows first 9 and last 9 chars with ellipsis for branches over 20 chars
+- Uses `AirlineBranchTruncate()` function and `g:airline#extensions#branch#format`
+
+#### Session Restore Bug Fixes
+
+Fixed two bugs with persistence.nvim session restore.
+
+**File:** `nvim/plugins/editor.lua`, `nvim/plugins/ui.lua`
+
+1. **Empty buffers:** Only delete `[No Name]` buffers when session is actually restored
+2. **Neo-tree in bufferline:** Added `custom_filter` to exclude neo-tree filetype from buffer tabs
+
+#### setup.sh Resilience
+
+Made setup script resilient to missing dependencies.
+
+**File:** `setup.sh`
+
+- Removed `set -e` (no longer exits on first error)
+- Skip npm packages gracefully if Node.js/npm not available
+- All sections now warn and continue instead of crashing
+- Added error handling for: npm installs, shell config writes, symlinks, git config
+
+#### Repository Public-Ready
+
+Prepared dotfiles for public GitHub release.
+
+**Changes:**
+- Removed personal info from `.claude/CLAUDE.md` (kept professional context only)
+- Replaced hardcoded `/Users/amsardesai` paths with `$HOME` in `.zshrc`
+- Used `~` instead of absolute path in `iterm_default_profile.json`
+
+### 2025-12-19
 
 #### Session Persistence (persistence.nvim)
 
