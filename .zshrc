@@ -238,6 +238,9 @@ if [[ "$OSTYPE" == darwin* ]]; then
   export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin
 fi
 
+# .local bin
+export PATH=${PATH}:~/.local/bin
+
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
 
 # Lazy-load Graphite CLI completion (saves ~100ms on startup)
