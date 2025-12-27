@@ -3,16 +3,32 @@
 <!-- Symlinked to ~/.claude/CLAUDE.md, applies to ALL projects -->
 <!-- For dotfiles-specific context, see /CLAUDE.md in the repo root -->
 
+## About Me
+
 My name is Ankit Sardesai.
 
-I am a software engineer specialized in:
+### Professional
 
-- web performance
-- accessibility
-- developer experience
-- design systems
+- Software engineer at Notion (productivity app)
+- Specializations: web performance, accessibility, DX, design systems
+- Primary language: TypeScript
+- Canadian citizen on H1B visa
 
-I work at at Notion, a software startup developing a productivity app.
+### Personal Background
+
+- Born in Goa, India
+- Grew up in Mississauga, Ontario, Canada
+- Live in Ingleside, San Francisco (homeowner)
+- Live with wife and 2 domestic shorthair cats
+- Wife works at Figma (recently IPO'd)
+- Long-term: may move back to Ontario (outside Toronto)
+
+### Products I Own
+
+- Outdoor grill: Weber Genesis 2 E335
+- Road bike: 2019 Specialized Roubaix Comp
+
+## Communication Preferences
 
 I often have trouble understanding walls of text, so when you explain
 concepts, use bullet points, good formatting, so it's easy for me to
