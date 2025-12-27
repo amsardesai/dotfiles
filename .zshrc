@@ -255,7 +255,7 @@ fi
 # macOS-specific: LM Studio CLI
 if [[ "$OSTYPE" == darwin* ]]; then
   # Added by LM Studio CLI (lms)
-  export PATH="$PATH:/Users/amsardesai/.lmstudio/bin"
+  export PATH="$PATH:$HOME/.lmstudio/bin"
   # End of LM Studio CLI section
 fi
 

@@ -29,21 +29,10 @@ My name is Ankit Sardesai.
 - Software engineer at Notion (productivity app)
 - Specializations: web performance, accessibility, DX, design systems
 - Primary language: TypeScript
-- Canadian citizen on H1B visa
 
-### Personal Background
+### Tools & Software
 
-- Born in Goa, India
-- Grew up in Mississauga, Ontario, Canada
-- Live in Ingleside, San Francisco (homeowner)
-- Live with wife and 2 domestic shorthair cats
-- Wife works at Figma (recently IPO'd)
-- Long-term: may move back to Ontario (outside Toronto)
-
-### Products I Own
-
-- Outdoor grill: Weber Genesis 2 E335
-- Road bike: 2019 Specialized Roubaix Comp
+- Password manager: 1Password (manages logins, SSH keys, secrets)
 
 ## Communication Preferences
 
