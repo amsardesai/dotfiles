@@ -1,7 +1,24 @@
 # Global User Preferences
 
-<!-- Symlinked to ~/.claude/CLAUDE.md, applies to ALL projects -->
-<!-- For dotfiles-specific context, see /CLAUDE.md in the repo root -->
+<!--
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  PERSISTENT MEMORY - User-level preferences for Claude Code            │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │  This file is symlinked to ~/.claude/CLAUDE.md and applies to ALL      │
+  │  Claude Code sessions on any device using these dotfiles.              │
+  │                                                                         │
+  │  Purpose:                                                               │
+  │  - Store facts about me that Claude should remember across sessions    │
+  │  - Define communication preferences and working styles                 │
+  │  - Set project-specific rules (detected by working directory path)     │
+  │                                                                         │
+  │  Updates:                                                               │
+  │  - Use `/remember-about-me <message>` to add new information           │
+  │  - Claude will maintain structure and place info in correct section    │
+  │                                                                         │
+  │  For dotfiles-specific AI context, see /CLAUDE.md in the repo root.    │
+  └─────────────────────────────────────────────────────────────────────────┘
+-->
 
 ## About Me
 
