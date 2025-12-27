@@ -85,13 +85,21 @@ download_file_quiet() {
 	fi
 }
 
+LINK_FAIL=0
+
 link_file_quiet() {
-	mkdir -p "$(dirname "$2")"
+	if ! mkdir -p "$(dirname "$2")" 2>/dev/null; then
+		LINK_FAIL=$((LINK_FAIL + 1))
+		return 1
+	fi
 	if [ -L "$2" ] && [ "$(readlink "$2")" = "$1" ]; then
 		LINK_SKIP=$((LINK_SKIP + 1))
 	else
-		ln -sfn "$1" "$2"
-		LINK_COUNT=$((LINK_COUNT + 1))
+		if ln -sfn "$1" "$2" 2>/dev/null; then
+			LINK_COUNT=$((LINK_COUNT + 1))
+		else
+			LINK_FAIL=$((LINK_FAIL + 1))
+		fi
 	fi
 }
 
@@ -102,10 +110,13 @@ make_dir_quiet() {
 reset_link_counters() {
 	LINK_COUNT=0
 	LINK_SKIP=0
+	LINK_FAIL=0
 }
 
 print_link_summary() {
-	if [ $LINK_COUNT -gt 0 ] && [ $LINK_SKIP -gt 0 ]; then
+	if [ $LINK_FAIL -gt 0 ]; then
+		echo_warn "Some symlinks failed ($LINK_FAIL failed, $LINK_COUNT created)"
+	elif [ $LINK_COUNT -gt 0 ] && [ $LINK_SKIP -gt 0 ]; then
 		echo_success "Created $LINK_COUNT symlinks ($LINK_SKIP unchanged)"
 	elif [ $LINK_COUNT -gt 0 ]; then
 		echo_success "Created $LINK_COUNT symlinks"
@@ -114,8 +125,6 @@ print_link_summary() {
 	fi
 	reset_link_counters
 }
-
-set -e
 
 # Safety check: If current TERM's terminfo doesn't exist, use xterm-256color
 if ! infocmp "$TERM" >/dev/null 2>&1; then
@@ -162,27 +171,33 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 # =============================================================================
-# Dependencies
+# Dependencies (optional - skipped if tools not available)
 # =============================================================================
 echo_section "🔍 Checking dependencies..."
 
-if node -e "process.exit(0)" 2>/dev/null; then
+if command -v node &>/dev/null && command -v npm &>/dev/null; then
 	echo_success "Node.js found"
-else
-	echo_error "Node.js not found"
-	exit 1
-fi
 
-if npm list -g $NPM_PACKAGES >/dev/null 2>&1; then
-	echo_success "npm packages already installed"
+	if npm list -g $NPM_PACKAGES >/dev/null 2>&1; then
+		echo_success "npm packages already installed"
+	else
+		echo_success "Installing npm packages..."
+		NPM_FAILED=0
+		for pkg in $NPM_PACKAGES; do
+			echo_progress "Installing $pkg..."
+			if ! npm install -g "$pkg" >/dev/null 2>&1; then
+				echo_warn "Failed to install $pkg"
+				NPM_FAILED=$((NPM_FAILED + 1))
+			fi
+		done
+		if [ $NPM_FAILED -eq 0 ]; then
+			echo_success "npm packages installed"
+		else
+			echo_warn "Some npm packages failed ($NPM_FAILED)"
+		fi
+	fi
 else
-	echo_success "Installing npm packages..."
-	# Show each package being installed
-	for pkg in $NPM_PACKAGES; do
-		echo_progress "Installing $pkg..."
-		npm install -g "$pkg" >/dev/null 2>&1
-	done
-	echo_success "npm packages installed"
+	echo_warn "Node.js/npm not found (skipping npm packages)"
 fi
 
 # =============================================================================
@@ -232,27 +247,40 @@ fi
 echo_section "🐚 Configuring shell..."
 
 SHELL_UPDATED=0
+SHELL_FAILED=0
 
 # Check for existing source line (use -F for literal match, not -x for whole line)
 if ! [ -f ~/.bash_profile ] || ! grep -Fq "source $SCRIPTPATH/.profile" ~/.bash_profile 2>/dev/null; then
-	echo "" >>~/.bash_profile
-	echo "# Source Ankit's profile" >>~/.bash_profile
-	echo "source $SCRIPTPATH/.profile" >>~/.bash_profile
-	echo "" >>~/.bash_profile
-	SHELL_UPDATED=$((SHELL_UPDATED + 1))
+	if {
+		echo ""
+		echo "# Source Ankit's profile"
+		echo "source $SCRIPTPATH/.profile"
+		echo ""
+	} >>~/.bash_profile 2>/dev/null; then
+		SHELL_UPDATED=$((SHELL_UPDATED + 1))
+	else
+		SHELL_FAILED=$((SHELL_FAILED + 1))
+	fi
 fi
 
 # Check for existing source line (use -F for literal match, not -x for whole line)
 # IMPORTANT: Must use $SCRIPTPATH (not hardcoded path) to match what we write
 if ! [ -f ~/.zshrc ] || ! grep -Fq "source $SCRIPTPATH/.zshrc" ~/.zshrc 2>/dev/null; then
-	echo "" >>~/.zshrc
-	echo "# Source Ankit's zshrc" >>~/.zshrc
-	echo "source $SCRIPTPATH/.zshrc" >>~/.zshrc
-	echo "" >>~/.zshrc
-	SHELL_UPDATED=$((SHELL_UPDATED + 1))
+	if {
+		echo ""
+		echo "# Source Ankit's zshrc"
+		echo "source $SCRIPTPATH/.zshrc"
+		echo ""
+	} >>~/.zshrc 2>/dev/null; then
+		SHELL_UPDATED=$((SHELL_UPDATED + 1))
+	else
+		SHELL_FAILED=$((SHELL_FAILED + 1))
+	fi
 fi
 
-if [ $SHELL_UPDATED -gt 0 ]; then
+if [ $SHELL_FAILED -gt 0 ]; then
+	echo_warn "Failed to update some shell profiles"
+elif [ $SHELL_UPDATED -gt 0 ]; then
 	echo_success "Updated shell profiles"
 else
 	echo_success "Shell profiles configured"
@@ -294,25 +322,40 @@ print_link_summary
 # =============================================================================
 echo_section "⚙️  Configuring git..."
 
-GIT_UPDATED=0
+if command -v git &>/dev/null; then
+	GIT_UPDATED=0
+	GIT_FAILED=0
 
-if ! [ -f ~/.gitconfig ]; then
-	touch ~/.gitconfig
-	GIT_UPDATED=$((GIT_UPDATED + 1))
-fi
+	if ! [ -f ~/.gitconfig ]; then
+		if touch ~/.gitconfig 2>/dev/null; then
+			GIT_UPDATED=$((GIT_UPDATED + 1))
+		else
+			GIT_FAILED=1
+		fi
+	fi
 
-if ! grep -q "path = $SCRIPTPATH/.gitconfig" ~/.gitconfig 2>/dev/null; then
-	echo "" >>~/.gitconfig
-	echo "[include]" >>~/.gitconfig
-	echo "	path = $SCRIPTPATH/.gitconfig" >>~/.gitconfig
-	echo "" >>~/.gitconfig
-	GIT_UPDATED=$((GIT_UPDATED + 1))
-fi
+	if [ $GIT_FAILED -eq 0 ] && ! grep -q "path = $SCRIPTPATH/.gitconfig" ~/.gitconfig 2>/dev/null; then
+		if {
+			echo ""
+			echo "[include]"
+			echo "	path = $SCRIPTPATH/.gitconfig"
+			echo ""
+		} >>~/.gitconfig 2>/dev/null; then
+			GIT_UPDATED=$((GIT_UPDATED + 1))
+		else
+			GIT_FAILED=1
+		fi
+	fi
 
-if [ $GIT_UPDATED -gt 0 ]; then
-	echo_success "Git configured"
+	if [ $GIT_FAILED -gt 0 ]; then
+		echo_warn "Failed to configure git"
+	elif [ $GIT_UPDATED -gt 0 ]; then
+		echo_success "Git configured"
+	else
+		echo_success "Git already configured"
+	fi
 else
-	echo_success "Git already configured"
+	echo_warn "Git not found (skipping git config)"
 fi
 
 # =============================================================================
