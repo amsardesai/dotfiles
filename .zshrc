@@ -239,7 +239,7 @@ if [[ "$OSTYPE" == darwin* ]]; then
 fi
 
 # .local bin
-export PATH=${PATH}:~/.local/bin
+export PATH=${PATH}:$HOME/.local/bin
 
 export OP_BIOMETRIC_UNLOCK_ENABLED=true
 
