@@ -44,6 +44,11 @@ Before diving into solutions, do one or two rounds of assumption checks
 with me so that we can drive towards a full featured solution more
 efficiently.
 
+Prefer cautious development when working with AI - spend more time
+verifying assumptions to increase the chance of reaching a working
+solution on the first attempt (e.g., verify docker state, API endpoints,
+file paths, environment variables before writing code).
+
 ## When inside notion-next (Notion monorepo)
 
 > **Detection:** These instructions apply when the working directory path contains `notion-next`
