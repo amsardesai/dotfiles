@@ -18,7 +18,7 @@ local function do_zoom()
 		title_pos = "center",
 	})
 	local win = vim.api.nvim_get_current_win()
-	vim.wo[win].winblend = 5
+	vim.wo[win].winblend = 25
 	vim.wo[win].winhighlight = "Normal:NormalFloat"
 end
 
@@ -55,76 +55,41 @@ return {
 
 			vim.api.nvim_create_autocmd("VimEnter", {
 				callback = function(data)
-					-- Determine if we should try to restore session:
-					-- - nvim (no args) OR nvim . (directory arg)
+					-- Only auto-open when launched with no args or a directory arg
 					local argc = vim.fn.argc()
-					local should_restore = argc == 0 or (argc == 1 and vim.fn.isdirectory(data.file) == 1)
+					local is_directory = argc == 1 and vim.fn.isdirectory(data.file) == 1
+					local should_auto_open = argc == 0 or is_directory
 
-					if not should_restore then
-						return -- Opening specific file(s), don't restore session
+					if not should_auto_open then
+						return -- Opening specific file(s), don't auto-open tree/picker
 					end
-
-					-- Count buffers before restore
-					local buffers_before = #vim.tbl_filter(function(b)
-						return vim.api.nvim_buf_is_valid(b) and vim.bo[b].buflisted
-					end, vim.api.nvim_list_bufs())
-
-					-- Try to restore session
-					require("lazy").load({ plugins = { "persistence.nvim" } })
-					require("persistence").load()
-
-					-- Count buffers after restore
-					local buffers_after = #vim.tbl_filter(function(b)
-						return vim.api.nvim_buf_is_valid(b) and vim.bo[b].buflisted
-					end, vim.api.nvim_list_bufs())
-
-					local session_restored = buffers_after > buffers_before
 
 					-- Load neo-tree and show sidebar
 					require("lazy").load({ plugins = { "neo-tree.nvim" } })
 					vim.cmd("Neotree action=show")
 
-					if session_restored then
-						-- Delete empty [No Name] buffers left over from startup
-						for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-							if vim.api.nvim_buf_is_valid(buf)
-								and vim.bo[buf].buflisted
-								and vim.api.nvim_buf_get_name(buf) == ""
-								and vim.api.nvim_buf_line_count(buf) == 1
-								and vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] == ""
-							then
-								vim.api.nvim_buf_delete(buf, { force = true })
-							end
+					-- Show fzf file picker
+					vim.defer_fn(function()
+						vim.cmd("wincmd l") -- Focus main window (right of tree)
+
+						require("lazy").load({ plugins = { "fzf-lua" } })
+						local file_cache = dofile(get_config_dir() .. "/util/file_cache.lua")
+						file_cache.setup()
+						local files = file_cache.get()
+						local fzf = require("fzf-lua")
+						if files and #files > 0 then
+							fzf.fzf_exec(files, {
+								prompt = "Files> ",
+								previewer = "builtin",
+								actions = fzf.defaults.actions.files,
+								file_icons = true,
+								color_icons = true,
+								winopts = { focusable = true },
+							})
+						else
+							fzf.files({ winopts = { focusable = true } })
 						end
-
-						-- Session restored with buffers - focus the main window
-						vim.defer_fn(function()
-							vim.cmd("wincmd l")
-						end, 50)
-					else
-						-- No session or empty session - show fzf picker
-						vim.defer_fn(function()
-							vim.cmd("wincmd l")
-
-							require("lazy").load({ plugins = { "fzf-lua" } })
-							local file_cache = dofile(get_config_dir() .. "/util/file_cache.lua")
-							file_cache.setup()
-							local files = file_cache.get()
-							local fzf = require("fzf-lua")
-							if files and #files > 0 then
-								fzf.fzf_exec(files, {
-									prompt = "Files> ",
-									previewer = "builtin",
-									actions = fzf.defaults.actions.files,
-									file_icons = true,
-									color_icons = true,
-									winopts = { focusable = true },
-								})
-							else
-								fzf.files({ winopts = { focusable = true } })
-							end
-						end, 100)
-					end
+					end, 100)
 				end,
 			})
 		end,
@@ -605,28 +570,5 @@ return {
 		cmd = { "Browse" },
 		dependencies = { "nvim-lua/plenary.nvim" },
 		config = true,
-	},
-
-	-- =============================================================================
-	-- PERSISTENCE.NVIM (session management)
-	-- =============================================================================
-
-	{
-		"folke/persistence.nvim",
-		event = "BufReadPre", -- Load early for session tracking
-		opts = {
-			-- Only save buffers, not full window layout
-			options = { "buffers", "curdir", "tabpages" },
-		},
-		init = function()
-			-- :qa! should NOT save session
-			vim.api.nvim_create_autocmd("QuitPre", {
-				callback = function()
-					if vim.v.cmdbang == 1 then
-						require("persistence").stop()
-					end
-				end,
-			})
-		end,
 	},
 }
