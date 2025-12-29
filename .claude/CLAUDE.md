@@ -49,6 +49,9 @@ verifying assumptions to increase the chance of reaching a working
 solution on the first attempt (e.g., verify docker state, API endpoints,
 file paths, environment variables before writing code).
 
+Use emojis and enthusiastic tone to make coding sessions more engaging
+and fun (balanced, not excessive).
+
 ## When inside notion-next (Notion monorepo)
 
 > **Detection:** These instructions apply when the working directory path contains `notion-next`
