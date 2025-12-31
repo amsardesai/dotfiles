@@ -9,6 +9,29 @@ Personal configuration files for shell, vim/neovim, tmux, and development tools.
 ./clean.sh    # Uninstall and cleanup
 ```
 
+## Architecture Overview
+
+This dotfiles repository uses a **symlink-based** approach for configuration management:
+
+- **All configs live in `~/.dotfiles/`** and are version-controlled via git
+- **Symlinks connect** configs to standard locations (`~/.vimrc`, `~/.config/nvim/`, etc.)
+- **Idempotent setup/teardown** - `setup.sh` can be run repeatedly without side effects
+- **Dual editor system** - Vim (VimScript + vim-plug) and Neovim (Lua + lazy.nvim) are **distinct, separate configs**
+
+### Key Design Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| **Symlinks vs Copying** | Changes reflect immediately, easy version control |
+| **Vim/Neovim Separation** | Neovim uses modern Lua stack (lazy.nvim, native LSP, 37ms startup). Vim uses VimScript (vim-plug, async plugins). Only `vimconfig/options.vim` and `ftplugin/*.vim` are shared. |
+| **Idempotent Scripts** | Uses `grep -Fq` (substring match), `ln -sfn`, `mkdir -p` patterns to ensure setup.sh works identically run 1x or 1000x |
+| **Layered Shell Sourcing** | `.zshrc`/`.bash_profile` → `.profile` → modular configs |
+| **Safety Aliases** | All destructive commands (`mv`/`cp`/`rm`) aliased with `-i` flag |
+
+**For detailed architecture patterns and file mappings, see [AGENTS.md](AGENTS.md).**
+
+---
+
 ## Prerequisites
 
 **Required:**
@@ -38,6 +61,8 @@ Personal configuration files for shell, vim/neovim, tmux, and development tools.
 - **Claude Code** - AI coding assistant
 - **1Password CLI** - Password management
 
+---
+
 ## Installation
 
 ### Quick Setup on New Device
@@ -66,39 +91,22 @@ nvim
    - Apps: wezterm
 
 2. **Downloads git completion files** from official git repository
-   - git-completion.bash, git-completion.zsh, git-prompt.bash
 
-3. **Installs npm packages globally** (from `npm-global-packages.txt`):
-   - `typescript-language-server`, `typescript`
-   - `vscode-langservers-extracted`
-   - `vim-language-server`
+3. **Installs npm packages globally** (LSP servers from `npm-global-packages.txt`)
 
 4. **Compiles WezTerm terminfo** for proper cursor/undercurl support
 
 5. **Installs bat Tokyo Night theme** for syntax-highlighted previews
 
-6. **Creates symlinks** to dotfiles:
-   - Shell: `.inputrc`, `.markdownlintrc`
-   - Terminal: `.tmux.conf`, `kitty.conf`, `wezterm/`
-   - Editors: vim (`vimconfig/`) and nvim (`nvim/`) configurations
-   - Claude: `USER_PREFERENCES.md`
+6. **Creates symlinks** to dotfiles (see Symlink Map below)
 
-7. **Updates shell configs** to source dotfiles:
-   - Adds source line to `~/.bash_profile` (bash)
-   - Adds source line to `~/.zshrc` (zsh)
+7. **Updates shell configs** to source dotfiles
 
-**Idempotency guarantee:**
+**Idempotency guarantee:** Running `setup.sh` multiple times is safe and fast (~5 seconds). It skips already-completed operations.
 
-> **setup.sh is fully idempotent.** Running it 1 time or 1000 times produces the same result.
+---
 
-- Skips Brewfile packages if already installed
-- Skips npm packages if already installed
-- Skips downloads if files already exist
-- Skips symlinks if already pointing to correct target
-- Skips shell config updates if source line already present
-- Re-running setup.sh is fast and safe (~5 seconds)
-
-### Symlink Map
+## Symlink Map
 
 | Source (in .dotfiles) | Destination |
 | --------------------- | ----------- |
@@ -109,8 +117,6 @@ nvim
 | `.gitconfig` | `~/.gitconfig` |
 | `themes.gitconfig` | `~/.themes.gitconfig` |
 | `USER_PREFERENCES.md` | `~/.claude/CLAUDE.md` (Claude Code) |
-| `USER_PREFERENCES.md` | `~/.codex/AGENTS.md` (OpenAI Codex) |
-| `USER_PREFERENCES.md` | `~/.gemini/GEMINI.md` (Gemini CLI) |
 | `AGENTS.md` | `.claude/CLAUDE.md` (repo-specific AI context) |
 | `kitty.conf` | `~/.config/kitty/kitty.conf` |
 | `wezterm/` | `~/.config/wezterm` |
@@ -119,226 +125,100 @@ nvim
 | `nvim/` | `~/.config/nvim/` (init.lua, plugins/, config/, util/) |
 | `vimconfig/`, `ftplugin/` | `~/.vim/` and `~/.config/nvim/` |
 
-## Post-Install Checklist
+---
 
-After running setup, verify:
+## Configuration Highlights
 
-- [ ] **Shell sources dotfiles:** Test with `v` (should launch neovim)
-- [ ] **Vim/Neovim plugins installed:** First launch runs `:PlugInstall` automatically
-- [ ] **Git completion working:** Type `git <TAB>` to test
-- [ ] **LSP servers available:** Run `npm list -g | grep language-server`
-- [ ] **Tmux prefix changed:** Prefix is `Ctrl+A` (not default `Ctrl+B`)
+### Shell (Zsh)
 
-## Configuration Overview
-
-### Shell Configuration
-
-**Git Aliases** (50+ shortcuts in `.zshrc`):
-
-- Common: `co` (checkout), `br` (branch), `st` (status), `dif` (diff with smart options)
-- Commit: `com`/`cam` (commit), `caam` (amend no-edit), `chp` (cherry-pick)
+**50+ Git Aliases** (`.zshrc`):
+- Common: `co` (checkout), `br` (branch), `st` (status), `dif` (diff)
+- Commit: `com`/`cam` (commit), `caam` (amend), `chp` (cherry-pick)
 - Log: `lg` (formatted log), `lb` (branch log), `lgm` (my commits)
 - Push/Pull: `pushme` (push to origin HEAD), `pullme` (pull from main)
 - Rebase: `rem` (rebase main), `rehu` (rebase with --update-refs)
-- **See `.zshrc` for complete list**
 
-**Safety Aliases:**
-
+**Safety Features:**
 - `mv="mv -i"`, `cp="cp -i"`, `rm="rm -i"` - Interactive mode prompts
 
-**Navigation Shortcuts:**
-
+**Navigation:**
 - `..`, `...`, `....`, `.....` - Go up 1-4 directories
-- `l`/`ll`/`ls` - Detailed listing with colors (`ls -alFh`)
+- `l`/`ll`/`ls` - Detailed listing with colors
 
-**Editor Shortcuts:**
-
+**Editor:**
 - `v`, `vi`, `n` - Launch neovim
 - `v.`, `n.` - Open neovim in current directory
 
 **Utilities:**
+- `c='clear'`, `rmswaps`, `rebash` (reload shell), `psg` (grep processes)
 
-- `c='clear'` - Clear screen
-- `rmswaps` - Remove vim swap files
-- `rebash` - Reload shell config
-- `psg` - Grep processes
+**For complete keyboard shortcuts, see [KEYBINDINGS.md](KEYBINDINGS.md).**
 
-**Less Pager Keybindings** (via `.lesskey`):
+### Vim/Neovim
 
-| Key | Action |
-| --- | ------ |
-| `_` | Page up |
-| `+` | Page down |
-| `{` | Half page up |
-| `}` | Half page down |
+**Leader Keys:** `,` (leader), `;` (local leader)
 
-### Vim/Neovim Setup
+**Vim and Neovim are DISTINCT configurations** - they do NOT share code:
 
-**Philosophy:** Vim and Neovim have **distinct, separate configurations**:
+| Editor | Stack | Entry Point | Keymaps |
+|--------|-------|-------------|---------|
+| **Neovim** | Lua-first + lazy.nvim (37ms startup) | `nvim/init.lua` | `nvim/config/keymaps.lua` |
+| **Vim** | VimScript + vim-plug | `init-vim.vim` | `vimconfig/mappings.vim` |
 
-- **Neovim:** Full Lua-first stack with **lazy.nvim** (lazy-loading, 37ms startup). All keymaps in `nvim/config/keymaps.lua`, plugins in `nvim/plugins/*.lua`.
-- **Vim:** VimScript with **vim-plug**. All keymaps in `vimconfig/mappings.vim`, plugins in `vimconfig/plugins.vim`.
+**Shared:** Only `vimconfig/options.vim` (basic vim options) and `ftplugin/*.vim` (filetype settings)
 
-They are NOT trying to share code - only `vimconfig/options.vim` (basic options) and `ftplugin/*.vim` (filetype settings) are used by both.
-
-**Leader Keys:**
-
-- Leader: `,`
-- Local Leader: `;`
-
-**Essential Keybindings:**
-
-| Category | Keybinding | Action |
-| -------- | ---------- | ------ |
-| **Buffer Management** | `,]` | Next buffer |
-| | `,[` | Previous buffer |
-| | `,bd` | Delete buffer (preserves layout) |
-| **Fuzzy Finder (fzf-lua)** | `<C-p>` | Find files (visual selection pre-fills query) |
-| | `<C-o>` | Live grep |
-| | `,ll` | Find files |
-| | `,lk` | Live grep |
-| | `,lj` | Grep word under cursor |
-| | `,lr` | Refresh file cache |
-| **File Explorer** | `,m` | Toggle file tree (no focus) |
-| | `,n` | Focus tree & reveal file |
-| | `,b` | Show tree (no focus) |
-| | `,g` | Toggle git status view |
-| **LSP** | `K` | Hover documentation |
-| | `gd` | Go to definition |
-| | `gr` | Find references |
-| | `gi` | Go to implementation |
-| | `<F2>` | Rename symbol |
-| | `<F3>` | Format document |
-| | `<F4>` | Code actions |
-| | `gh` | Toggle inlay hints |
-| | `gL` | Toggle LSP lens |
-| | `<C-LeftMouse>` | Go to definition (like VS Code) |
-| **Bottom Drawers** | `,z` | Toggle Terminal Z (blue) |
-| | `,x` | Toggle Terminal X (purple) |
-| | `,t` | Toggle Diagnostics (red) |
-| | `,s` | Toggle Git Status (yellow) |
-| | `,b` | Toggle Buffers (green) |
-| | `,d` | Toggle Document Symbols (brown) |
-| | `,q` | Close all drawers |
-| | `,Q` | Kill all terminals |
-| **LSP** | `,rl` | Restart all LSP servers |
-| **Claude Code** | `,a` | Toggle Claude Code terminal |
-| | `,sa` | Add file to Claude context |
-| **Git** | `,gg` | Open Lazygit |
-| | `,go` | Open current line's blame commit in GitHub |
-| | `,gf` | Open file in GitHub |
-| | `,gb` | Git blame |
-| | `(` | Previous hunk |
-| | `)` | Next hunk |
-| **Scratch** | `,S` | Open scratch buffer |
-| | `,Sb` | Select scratch buffer |
-| | `[[` / `]]` | Prev/next reference |
-| **Context Menu** | `<RightMouse>` | Open context menu (LSP, Git, File ops) |
-| **Diagnostics** | `gl` | Show diagnostic float |
-| | `[d` / `]d` | Prev/next diagnostic |
-| **Scrolling** | `_` | Scroll up (page - 10 lines) |
-| | `+` | Scroll down (page - 10 lines) |
-| **Pane Navigation** | `Shift+Arrows` | Move between splits (all modes) |
-| | `Option+Shift+Arrows` | Move between splits (alternative) |
-| **URL Opening** | `gx` | Open URL under cursor in browser |
-| **Utilities** | `<CR>` | Clear search highlight |
-| | `,fw` | Fix whitespace |
-| | `,r` | Reload config |
-| | `,rn` | Rename file (with LSP) |
-
-**Plugin Highlights:**
-
-*Neovim-specific (Lua):*
-
-- `Comment.nvim` - Treesitter-aware commenting (`<leader>c`)
-- `nvim-surround` - Surround manipulation (`cs`, `ds`, `ys`)
-- `flash.nvim` - Jump anywhere with labels (`s`/`S`)
-- `nvim-autopairs` - Auto-close brackets
-- `mini.trailspace` - Highlight trailing whitespace
-- `fzf-lua` - Fast fuzzy finder
-- `snacks.nvim` - QoL collection (bufdelete, terminal, scroll, indent, rename, gitbrowse)
+**Plugin Highlights (Neovim):**
+- `fzf-lua` - Fast fuzzy finder (sub-50ms in large repos)
+- `snacks.nvim` - QoL collection (bufdelete, terminal, scroll, gitbrowse, lazygit)
 - `neo-tree` - File explorer with git_status view
-- `trouble.nvim` - Diagnostics drawer
 - `treesitter` - Advanced syntax highlighting (20+ parsers)
-- `lualine` - Status line with LSP status
-- `bufferline` - Tab bar with diagnostics
 - `mason` + `mason-lspconfig` - Auto-installs 14 LSP servers
-- `typescript-tools` - Direct tsserver (faster than ts-language-server)
-- `none-ls` - Linters/formatters via LSP (prettier, eslint_d, biome, stylua, etc.)
-- `nvim-cmp` - Autocompletion
+- `typescript-tools` - Direct tsserver (28GB memory for large monorepos)
+- `none-ls` - Linters/formatters via LSP (prettier, eslint_d, stylua, shellcheck, etc.)
+- `nvim-cmp` - Autocompletion with LSP
 - `lsp-lens` - Reference counts above functions
-- `image.nvim` - View images in terminal
 - `claudecode.nvim` - Claude Code integration
-- `nvim-scrollbar` - Scrollbar with diagnostics, git, and search marks
+- `image.nvim` - View images in terminal (kitty graphics protocol)
 
-*Vim-specific (VimScript):*
+**For complete keybindings, see [KEYBINDINGS.md](KEYBINDINGS.md).**
 
-- `nerdcommenter` - Toggle comments
-- `vim-surround` - Surround manipulation
-- `auto-pairs` - Auto-close brackets
-- `NERDTree` - File explorer
-- `CtrlP` - Fuzzy finder
-- `vim-airline` - Status line
-- `vim-lsp` - LSP support
+**Full plugin lists:**
+- Neovim: `nvim/plugins/*.lua` (split by category: ui, editor, lsp, lang, tools)
+- Vim: `vimconfig/plugins.vim`
 
-**Full plugin list:**
-- Neovim: See `nvim/plugins/*.lua` (split by category: ui, editor, lsp, lang, tools)
-- Vim: See `vimconfig/plugins.vim`
+### Tmux
 
-### Tmux Configuration
+**Prefix:** `Ctrl+A` (not default `Ctrl+B`)
 
-**Key Settings:**
-
-- **Prefix:** `Ctrl+A` (unbinds default `Ctrl+B`)
-- **Vi mode:** Enabled for copy-mode
-- **Mouse support:** Full mouse integration with scroll
-- **Visual:** Status bar at top, 256 colors, custom formatting
-- **Base index:** Windows start at 1 (not 0)
-- **Auto-renumber:** Windows renumber on close
+**Features:**
+- Vi mode for copy-mode
+- Full mouse support with scroll
+- Status bar at top, 256 colors
+- Windows start at 1, auto-renumber on close
 
 **Plugin Manager:** Tmux Plugin Manager (tpm)
 
+**For keybindings, see [KEYBINDINGS.md](KEYBINDINGS.md).**
+
 ### Terminal Emulators
 
-#### Kitty
+#### WezTerm (Recommended)
 
-Comprehensive configuration (2,800+ lines) in `kitty.conf`:
-
-- Custom fonts and symbol mappings
-- Color scheme
-- Keyboard shortcuts
-- Window management
-
-#### WezTerm
-
-Lua-based configuration in `wezterm/` directory. Main config is `wezterm/wezterm.lua`.
-The entire directory is symlinked to support additional themes, plugins, and helper files.
-
-**Key Features:**
+Lua-based configuration in `wezterm/wezterm.lua`:
 
 - **Theme:** Tokyo Night
 - **Font:** FantasqueSansM Nerd Font Mono (14pt)
-- **Performance:** WebGPU acceleration, 120fps animations (ProMotion)
+- **Performance:** WebGPU acceleration, 120fps animations
 - **Scrollback:** 10,000 lines
 - **Transparency:** 90% opacity with blur (macOS)
 
-**Keybindings (macOS-friendly):**
+**For complete keybindings, see [KEYBINDINGS.md](KEYBINDINGS.md).**
 
-| Keybinding | Action |
-| ---------- | ------ |
-| `CMD+D` | Split horizontal |
-| `CMD+SHIFT+D` | Split vertical |
-| `CMD+SHIFT+Arrows` | Navigate panes |
-| `CMD+W` | Close pane |
-| `CMD+T` | New tab |
-| `CMD+SHIFT+[/]` | Navigate tabs |
-| `CMD+ALT+Arrows` | Navigate tabs |
-| `CMD+SHIFT+S` | Swap pane (select mode) |
-| `CMD+SHIFT+Return` | Toggle pane zoom |
-| `CMD+F` | Search scrollback |
-| `CMD+SHIFT+X` | Copy mode (vim navigation) |
-| `CMD+K` | Clear scrollback |
-| `CMD+SHIFT+Space` | Quick select (git hashes, UUIDs) |
+#### Kitty
+
+Comprehensive configuration (2,800+ lines) in `kitty.conf` with custom fonts, color scheme, and keyboard shortcuts.
+
+---
 
 ## Cleanup/Uninstall
 
@@ -347,99 +227,22 @@ The entire directory is symlinked to support additional themes, plugins, and hel
 ```
 
 **What clean.sh does:**
-
 - Removes all symlinks created by setup.sh
-- Cleans git completion files (git-ignored)
+- Cleans git completion files
 - Removes vim/neovim configuration directories
 - Prompts to manually clean shell config files
 
-## Troubleshooting
-
-### Plugins not installing in vim/neovim
-
-**Symptoms:** Empty editor, missing commands
-
-**Solutions for Neovim (lazy.nvim):**
-
-- Run `:Lazy` to open the plugin manager UI
-- Check `:Lazy health` for issues
-- Clear cache: `rm -rf ~/.local/share/nvim/lazy` and restart
-
-**Solutions for Vim (vim-plug):**
-
-- Manually run `:PlugInstall` inside vim
-- Check network connection (downloads from GitHub)
-- Verify vim-plug installed: `ls ~/.vim/autoload/plug.vim`
-
-### Shell aliases not working
-
-**Symptoms:** `v` command not found, git aliases don't work
-
-**Solutions:**
-
-- Verify shell sources dotfiles: `grep dotfiles ~/.zshrc` or `~/.bash_profile`
-- Restart shell: `exec $SHELL`
-- Manually source: `source ~/.zshrc`
-
-### LSP not working in neovim
-
-**Symptoms:** No autocomplete, no go-to-definition
-
-**Solutions:**
-
-- Check npm packages: `npm list -g | grep language-server`
-- Run `:LspInfo` (neovim) or `:LspStatus` (vim) to see server status
-- Check Mason installation (neovim): `:Mason`
-- Reinstall language servers: `npm install -g typescript-language-server`
-
-### Git completion not working
-
-**Symptoms:** Tab completion doesn't work for git commands
-
-**Solutions:**
-
-- Verify completion files exist: `ls ~/.dotfiles/git-completion.*`
-- Check `.profile` sources them correctly
-- Restart shell
-- Manually re-run setup: `./setup.sh`
-
-### Tmux prefix not Ctrl+A
-
-**Symptoms:** `Ctrl+B` still works, `Ctrl+A` doesn't
-
-**Solutions:**
-
-- Verify symlink: `ls -la ~/.tmux.conf` (should point to dotfiles)
-- Reload tmux config: `tmux source-file ~/.tmux.conf`
-- Restart tmux completely: exit all sessions and relaunch
-
-### Permission errors during setup
-
-**Symptoms:** setup.sh fails with permission denied
-
-**Solutions:**
-
-- Check write permissions in home directory
-- Remove existing symlink destinations manually if they exist
-- Ensure script is executable: `chmod +x setup.sh`
+---
 
 ## Maintenance
 
 ### Updating Plugins
 
-**Neovim (lazy.nvim):**
+**Neovim:** `:Lazy update`
 
-```vim
-:Lazy update
-```
+**Vim:** `:PlugUpdate`
 
-**Vim (vim-plug):**
-
-```vim
-:PlugUpdate
-```
-
-**Shell/Config:**
+### Updating Dotfiles
 
 ```bash
 cd ~/.dotfiles
@@ -448,10 +251,9 @@ git pull
 
 ### Adding New Configurations
 
-1. Edit files in `~/.dotfiles/`
-2. Changes automatically reflected (symlinked)
-3. Commit changes:
-
+1. Edit files in `~/.dotfiles/` (changes reflect immediately via symlinks)
+2. Test changes: `rebash` (shell), `,r` (vim/neovim)
+3. Commit and push:
    ```bash
    git add .
    git commit -m "Add feature X"
@@ -461,18 +263,48 @@ git pull
 ### Syncing Across Devices
 
 **On device with changes:**
-
 ```bash
-cd ~/.dotfiles
-git push
+cd ~/.dotfiles && git push
 ```
 
 **On other devices:**
-
 ```bash
-cd ~/.dotfiles
-git pull
+cd ~/.dotfiles && git pull
 ```
+
+---
+
+## Troubleshooting
+
+For common issues and solutions, see **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)**.
+
+**Quick FAQ:**
+
+**Q: Plugins not installing?**
+A: Neovim: `:Lazy`, `:Lazy health` | Vim: `:PlugInstall`
+
+**Q: Shell aliases not working?**
+A: Run `exec $SHELL` or `source ~/.zshrc`
+
+**Q: LSP not working?**
+A: Check `:LspInfo`, verify npm packages: `npm list -g | grep language-server`
+
+**Q: Tmux prefix not Ctrl+A?**
+A: Reload config: `tmux source-file ~/.tmux.conf` or restart tmux
+
+For detailed troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+
+---
+
+## Documentation
+
+This repository includes specialized documentation files:
+
+- **[AGENTS.md](AGENTS.md)** - AI-optimized context (architecture, file mappings, tech stack)
+- **[CHANGELOG.md](CHANGELOG.md)** - Historical changes and discoveries
+- **[KEYBINDINGS.md](KEYBINDINGS.md)** - Complete keyboard shortcuts reference
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and solutions
+- **[USER_PREFERENCES.md](USER_PREFERENCES.md)** - User-level preferences (Claude Code)
 
 ---
 
@@ -480,7 +312,7 @@ git pull
 
 - Shell: `.zshrc`, `.profile`, `.bash_prompt`, `.inputrc`
 - Git: `.gitconfig`, `themes.gitconfig`
-- Neovim: `nvim/` (Lua), `vimconfig/options.vim` (shared options)
+- Neovim: `nvim/` (Lua), `vimconfig/options.vim` (shared)
 - Vim: `vimconfig/` (VimScript)
 - Filetypes: `ftplugin/*.vim` (shared)
 - Tmux: `.tmux.conf`

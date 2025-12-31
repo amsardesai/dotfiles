@@ -7,10 +7,16 @@
       "Edit(file:USER_PREFERENCES.md)",
       "Edit(file:AGENTS.md)",
       "Edit(file:.claude/CLAUDE.md)",
+      "Edit(file:CHANGELOG.md)",
+      "Edit(file:KEYBINDINGS.md)",
+      "Edit(file:TROUBLESHOOTING.md)",
       "Write(file:README.md)",
       "Write(file:USER_PREFERENCES.md)",
       "Write(file:AGENTS.md)",
-      "Write(file:.claude/CLAUDE.md)"
+      "Write(file:.claude/CLAUDE.md)",
+      "Write(file:CHANGELOG.md)",
+      "Write(file:KEYBINDINGS.md)",
+      "Write(file:TROUBLESHOOTING.md)"
     ]
   }
 }
