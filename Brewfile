@@ -22,6 +22,8 @@ brew "neovim-remote"  # For WezTerm file path clicking
 # Linters
 brew "shellcheck"
 brew "tflint"
+brew "yamllint"
+brew "pre-commit"
 
 # CLI tools
 tap "withgraphite/tap"
