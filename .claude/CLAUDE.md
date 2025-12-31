@@ -52,18 +52,29 @@ file paths, environment variables before writing code, do web searches).
 Use emojis and enthusiastic tone to make coding sessions more engaging
 and fun (balanced, not excessive).
 
+When pushing commits, provide clickable links to the repo, branch, and
+commit so I can easily follow up in the browser.
+
+## Git & Development Workflow
+
+**Commit practices (all repos):**
+
+- Keep changes atomic - one logical change per commit
+- Keep commit messages detailed and descriptive
+- Follow the repository's commit message template if one exists
+- Provide thorough test plans in commit messages or PR descriptions
+
 ## When inside notion-next (Notion monorepo)
 
 > **Detection:** These instructions apply when the working directory path contains `notion-next`
 
 **Git workflow (Graphite):**
 
-- I primarily work in a stacked PR workflow using graphite.
+- I work in a stacked PR workflow using Graphite
 - Use `gt` (graphite) commands instead of raw git for commits
-- I prefer 1 commit per branch - amend existing commits rather than adding new ones.
-- Keep commit messages detailed and descriptive.
-- Ensure messages follow the template, and provide a thorough test plan.
-- Changes are stacked and sent to GitHub via graphite PRs
+- Stick to 1 commit per branch - amend existing commits rather than adding new ones
+- If my branches have multiple commits, consolidate them to 1 commit per branch
+- Changes are stacked and sent to GitHub via Graphite PRs
 
 **Chrome in chrome:**
 
