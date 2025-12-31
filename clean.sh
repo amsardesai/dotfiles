@@ -47,6 +47,9 @@ delete_file "$HOME/.tern-config"
 delete_file "$HOME/.tmux.conf"
 delete_file "$HOME/.markdownlintrc"
 delete_file "$HOME/.claude/CLAUDE.md"
+# Remove cross-agent user preference symlinks
+delete_file "$HOME/.codex/AGENTS.md"
+delete_file "$HOME/.gemini/GEMINI.md"
 
 echo_task "Deleting vim stuff..."
 

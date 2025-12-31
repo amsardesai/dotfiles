@@ -297,7 +297,10 @@ link_file_quiet "$SCRIPTPATH/.lesskey" "$HOME/.lesskey"
 link_file_quiet "$SCRIPTPATH/.tern-config" "$HOME/.tern-config"
 link_file_quiet "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
 link_file_quiet "$SCRIPTPATH/.markdownlintrc" "$HOME/.markdownlintrc"
-link_file_quiet "$SCRIPTPATH/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+link_file_quiet "$SCRIPTPATH/USER_PREFERENCES.md" "$HOME/.claude/CLAUDE.md"
+# USER_PREFERENCES.md symlinks for cross-agent compatibility
+link_file_quiet "$SCRIPTPATH/USER_PREFERENCES.md" "$HOME/.codex/AGENTS.md"
+link_file_quiet "$SCRIPTPATH/USER_PREFERENCES.md" "$HOME/.gemini/GEMINI.md"
 link_file_quiet "$SCRIPTPATH/kitty.conf" "$HOME/.config/kitty/kitty.conf"
 link_file_quiet "$SCRIPTPATH/wezterm" "$HOME/.config/wezterm"
 

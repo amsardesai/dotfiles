@@ -12,7 +12,7 @@ The user wants you to remember the following information about them:
 
 ## Your Task
 
-1. **Read** the current user preferences file at `~/.claude/CLAUDE.md` (or `~/.dotfiles/.claude/CLAUDE.md` if in the dotfiles repo)
+1. **Read** the current user preferences file at `~/.claude/CLAUDE.md` (or `~/.dotfiles/USER_PREFERENCES.md` if in the dotfiles repo)
 
 2. **Analyze** the message and determine which section it belongs to:
    - **About Me → Professional** - work, skills, job, technical expertise

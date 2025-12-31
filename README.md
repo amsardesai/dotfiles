@@ -81,7 +81,7 @@ nvim
    - Shell: `.inputrc`, `.markdownlintrc`
    - Terminal: `.tmux.conf`, `kitty.conf`, `wezterm/`
    - Editors: vim (`vimconfig/`) and nvim (`nvim/`) configurations
-   - Claude: `.claude/CLAUDE.md`
+   - Claude: `USER_PREFERENCES.md`
 
 7. **Updates shell configs** to source dotfiles:
    - Adds source line to `~/.bash_profile` (bash)
@@ -108,7 +108,10 @@ nvim
 | `.tmux.conf` | `~/.tmux.conf` |
 | `.gitconfig` | `~/.gitconfig` |
 | `themes.gitconfig` | `~/.themes.gitconfig` |
-| `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
+| `USER_PREFERENCES.md` | `~/.claude/CLAUDE.md` (Claude Code) |
+| `USER_PREFERENCES.md` | `~/.codex/AGENTS.md` (OpenAI Codex) |
+| `USER_PREFERENCES.md` | `~/.gemini/GEMINI.md` (Gemini CLI) |
+| `AGENTS.md` | `.claude/CLAUDE.md` (repo-specific AI context) |
 | `kitty.conf` | `~/.config/kitty/kitty.conf` |
 | `wezterm/` | `~/.config/wezterm` |
 | `init-vim.vim` | `~/.vimrc` |

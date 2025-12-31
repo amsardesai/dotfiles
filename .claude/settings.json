@@ -4,10 +4,12 @@
       "WebFetch",
       "WebSearch",
       "Edit(file:README.md)",
-      "Edit(file:CLAUDE.md)",
+      "Edit(file:USER_PREFERENCES.md)",
+      "Edit(file:AGENTS.md)",
       "Edit(file:.claude/CLAUDE.md)",
       "Write(file:README.md)",
-      "Write(file:CLAUDE.md)",
+      "Write(file:USER_PREFERENCES.md)",
+      "Write(file:AGENTS.md)",
       "Write(file:.claude/CLAUDE.md)"
     ]
   }

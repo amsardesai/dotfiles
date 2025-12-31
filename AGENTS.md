@@ -22,7 +22,8 @@
 >
 > **Documentation split:**
 >
-> - This file (CLAUDE.md) → AI context, mental models, where things are, internal patterns
+> - This file (AGENTS.md) → AI context, mental models, where things are, internal patterns
+> - USER_PREFERENCES.md → User-level preferences (symlinked to ~/.claude/CLAUDE.md)
 > - README.md → Human-facing docs, setup instructions, user-facing features
 >
 > Keep this documentation concise but informative. Future Claude instances rely on this!
