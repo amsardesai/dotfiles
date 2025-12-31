@@ -11,6 +11,13 @@
 > - **Tech stack changes** - new dependencies, tooling updates
 > - **Important conventions** - naming patterns, code organization rules
 >
+> **⚠️ PUBLIC REPOSITORY WARNING:**
+> This dotfiles repository is PUBLIC on GitHub. When updating this documentation:
+> - NEVER add credentials, API keys, tokens, or passwords
+> - NEVER add internal IP addresses, hostnames, or sensitive URLs
+> - NEVER add proprietary code or confidential information
+> - Use generic references instead of specific sensitive details
+>
 > **Update behavior:** Be proactive and automatic. When you learn something significant, immediately update the appropriate section below. Create new sections if needed. Add timestamped entries to "Recent Discoveries" for items that don't fit existing sections.
 >
 > **Documentation split:**

@@ -7,6 +7,10 @@
   │  This file is symlinked to ~/.claude/CLAUDE.md and applies to ALL      │
   │  Claude Code sessions on any device using these dotfiles.              │
   │                                                                         │
+  │  ⚠️  PUBLIC REPOSITORY WARNING                                          │
+  │  This dotfiles repository is PUBLIC. Never add credentials, API keys,  │
+  │  tokens, or sensitive information to this file. Use 1Password CLI.     │
+  │                                                                         │
   │  Purpose:                                                               │
   │  - Store facts about me that Claude should remember across sessions    │
   │  - Define communication preferences and working styles                 │
@@ -89,13 +93,6 @@ commit so I can easily follow up in the browser.
 - Stick to 1 commit per branch - amend existing commits rather than adding new ones
 - If my branches have multiple commits, consolidate them to 1 commit per branch
 - Changes are stacked and sent to GitHub via Graphite PRs
-
-**Chrome in chrome:**
-
-- Always feel free to use Chrome Chrome to open and test Notion.
-- Login with
-  - username: ankit@makenotion.com
-  - password: test
 
 **Notion monorepo:**
 
