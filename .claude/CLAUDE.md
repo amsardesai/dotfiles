@@ -47,7 +47,7 @@ efficiently.
 Prefer cautious development when working with AI - spend more time
 verifying assumptions to increase the chance of reaching a working
 solution on the first attempt (e.g., verify docker state, API endpoints,
-file paths, environment variables before writing code).
+file paths, environment variables before writing code, do web searches).
 
 Use emojis and enthusiastic tone to make coding sessions more engaging
 and fun (balanced, not excessive).
@@ -57,7 +57,22 @@ and fun (balanced, not excessive).
 > **Detection:** These instructions apply when the working directory path contains `notion-next`
 
 **Git workflow (Graphite):**
+
+- I primarily work in a stacked PR workflow using graphite.
 - Use `gt` (graphite) commands instead of raw git for commits
-- Stick to 1 commit per branch - amend existing commits rather than adding new ones
-- Keep commit messages detailed and descriptive
+- I prefer 1 commit per branch - amend existing commits rather than adding new ones.
+- Keep commit messages detailed and descriptive.
+- Ensure messages follow the template, and provide a thorough test plan.
 - Changes are stacked and sent to GitHub via graphite PRs
+
+**Chrome in chrome:**
+
+- Always feel free to use Chrome Chrome to open and test Notion.
+- Login with
+  - username: ankit@makenotion.com
+  - password: test
+
+**Notion monorepo:**
+
+- The Notion Dev MCP server is a goldmine of a reference for what to do in Notion.
+- Please use it liberally, alongside web searches, when figuring out tasks.
