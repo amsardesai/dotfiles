@@ -18,12 +18,22 @@ local function do_zoom()
 		title_pos = "center",
 	})
 	local win = vim.api.nvim_get_current_win()
-	vim.wo[win].winblend = 25
+	vim.wo[win].winblend = 0
 	vim.wo[win].winhighlight = "Normal:NormalFloat"
+
+	-- Mark this window as zoomed for resize handling
+	vim.w[win].is_zoomed = true
 end
 
 -- Helper: toggle zoom current window to fullscreen float
 local function toggle_zoom()
+	local win = vim.api.nvim_get_current_win()
+
+	-- Clear zoom flag when toggling off
+	if vim.w[win].is_zoomed then
+		vim.w[win].is_zoomed = false
+	end
+
 	-- Exit terminal mode first if we're in it
 	if vim.fn.mode() == "t" then
 		-- Send <C-\><C-n> to exit terminal mode, then schedule zoom
@@ -33,6 +43,29 @@ local function toggle_zoom()
 		do_zoom()
 	end
 end
+
+-- Setup VimResized autocommand to update zoomed window dimensions
+vim.api.nvim_create_autocmd("VimResized", {
+	group = vim.api.nvim_create_augroup("ZoomResize", { clear = true }),
+	callback = function()
+		-- Check all windows for zoomed ones
+		for _, win in ipairs(vim.api.nvim_list_wins()) do
+			if vim.w[win].is_zoomed then
+				-- Update the floating window dimensions
+				local config = vim.api.nvim_win_get_config(win)
+				if config.relative ~= "" then -- It's a floating window
+					vim.api.nvim_win_set_config(win, {
+						relative = config.relative,
+						width = vim.o.columns,
+						height = vim.o.lines,
+						row = 0,
+						col = 0,
+					})
+				end
+			end
+		end
+	end,
+})
 
 return {
 	-- =============================================================================
