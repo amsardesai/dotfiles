@@ -34,6 +34,20 @@ My name is Ankit Sardesai.
 
 - Password manager: 1Password (manages logins, SSH keys, secrets)
 
+## Shell Environment
+
+**Interactive mode aliases (safety):**
+
+My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
+- `alias mv="mv -i"`
+- `alias cp="cp -i"`
+- `alias rm="rm -i"`
+
+**Important for Claude:** When running `rm`, `cp`, or `mv` commands, always use the force flag (`-f`) to avoid confirmation prompts that will cause commands to hang:
+- Use `rm -f` instead of `rm`
+- Use `cp -f` instead of `cp`
+- Use `mv -f` instead of `mv`
+
 ## Communication Preferences
 
 I often have trouble understanding walls of text, so when you explain
