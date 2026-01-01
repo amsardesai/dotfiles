@@ -16,18 +16,15 @@
 > - NEVER add proprietary code or confidential information
 >
 > **Documentation Structure:**
-> - `AGENTS.md` (this file) → AI context, architecture, file mappings
+> - `.claude/CLAUDE.md` (this file) → AI context, architecture, file mappings
 > - `CHANGELOG.md` → Historical changes and discoveries
 > - `README.md` → Human-facing setup and features
 > - `KEYBINDINGS.md` → Keyboard shortcuts reference
 > - `TROUBLESHOOTING.md` → Common issues and solutions
-> - `USER_PREFERENCES.md` → User-level preferences (~/.claude/CLAUDE.md)
 
 ---
 
-## Quick Reference
-
-### Critical Rules
+## Critical Rules
 
 | Rule | Details |
 |------|---------|
@@ -37,45 +34,31 @@
 | **Leader Keys** | `,` (leader), `;` (local leader) |
 | **Git Branch** | `main` is primary branch |
 
-### Repository Overview
-
-| Aspect | Details |
-|--------|---------|
-| **Purpose** | Personal dotfiles for shell, vim/neovim, tmux, terminal emulators, git |
-| **Owner** | Ankit Sardesai (Notion - web perf/a11y/DX) |
-| **Strategy** | Symlink-based, version controlled, idempotent setup/teardown scripts |
-| **Main Branch** | `main` |
-| **Setup** | `./setup.sh` → symlinks to `~`, downloads deps, updates shell configs |
-| **Cleanup** | `./clean.sh` → removes all symlinks |
-
 ---
 
-## Architecture Patterns
+## Architecture & Patterns
 
 ### Configuration Strategy
 
-| Pattern | Implementation |
-|---------|----------------|
-| **Symlinks** | FROM `~/.dotfiles/` TO standard locations (`~/.vimrc`, `~/.config/nvim/`, etc.) |
-| **Version Control** | Entire `~/.dotfiles/` is a git repo |
-| **Idempotency** | Check before change, `ln -sfn`, `mkdir -p`, `grep -Fq` (substring match) |
-| **Shell Sourcing** | `.zshrc`/`.bash_profile` → `.profile` → modular configs |
-| **Safety** | All destructive commands (`mv`/`cp`/`rm`) aliased with `-i` flag |
+**Symlinks:** FROM `~/.dotfiles/` TO standard locations (`~/.vimrc`, `~/.config/nvim/`, etc.) - not reverse.
+
+**Idempotency:** Check before change. Use `ln -sfn`, `mkdir -p`, `grep -Fq` (substring match, NOT `-Fxq` whole line). Never append without checking if content exists first.
+
+**Shell Sourcing:** `.zshrc` and `.bash_profile` both source `~/.profile`, which loads modular configs.
+
+**Safety:** All destructive commands (`mv`/`cp`/`rm`) are aliased with `-i` flag for interactive confirmation.
 
 ### Editor Philosophy
 
 **Vim and Neovim are DISTINCT - not sharing code:**
 
-| Editor | Stack | Entry Point | Keymaps | Plugins |
-|--------|-------|-------------|---------|---------|
-| **Neovim** | Lua-first + lazy.nvim | `nvim/init.lua` | `nvim/config/keymaps.lua` | fzf-lua, treesitter, native LSP, snacks.nvim, typescript-tools |
-| **Vim** | VimScript + vim-plug | `init-vim.vim` | `vimconfig/mappings.vim` | CtrlP, vim-lsp, NERDTree, nerdcommenter, vim-airline |
+- **Neovim:** Lua-first with lazy.nvim plugin manager. Entry point: `nvim/init.lua` → bootstraps lazy.nvim → loads `nvim/plugins/*.lua` → sources `vimconfig/main.vim` (options only) → loads `nvim/config/*.lua`. Uses fzf-lua, treesitter, native LSP, snacks.nvim, typescript-tools.
 
-**Shared between both:** Only `vimconfig/options.vim` (basic options) and `ftplugin/*.vim` (filetype settings)
+- **Vim:** VimScript with vim-plug. Entry point: `init-vim.vim` → sources `vimconfig/main.vim` (full config with plugins, options, mappings). Uses CtrlP, vim-lsp, NERDTree, nerdcommenter, vim-airline.
 
-**Neovim load sequence:** `nvim/init.lua` → bootstrap lazy.nvim → `nvim/plugins/*.lua` → `vimconfig/main.vim` (options only) → `nvim/config/*.lua`
+**Shared:** Only `vimconfig/options.vim` (basic options) and `ftplugin/*.vim` (filetype settings).
 
-**Vim load sequence:** `init-vim.vim` → `vimconfig/main.vim` (full config with plugins, options, mappings)
+**Don't try to make them compatible.**
 
 ---
 
@@ -83,145 +66,73 @@
 
 ### Entry Points
 
-| File | Purpose | Symlink Target |
-|------|---------|----------------|
-| `setup.sh` | Install script (deps, symlinks, shell configs) | - |
-| `clean.sh` | Uninstall script (remove symlinks) | - |
-| `.profile` | Main shell config (bash & zsh) | `~/.profile` |
-| `.zshrc` | Zsh-specific (git aliases, oh-my-zsh) | Sources `~/.dotfiles/.zshrc` |
-| `init-vim.vim` | Vim entry point | `~/.vimrc` |
-| `nvim/init.lua` | Neovim entry point | `~/.config/nvim/init.lua` |
+**Setup Scripts:**
+- `setup.sh` - Install script (creates symlinks, downloads deps, updates shell configs)
+- `clean.sh` - Uninstall script (removes all symlinks)
 
-### Neovim Structure (LazyVim-style)
+**Shell:**
+- `.profile` - Main shell config (bash & zsh), symlinked to `~/.profile`
+- `.zshrc` - Zsh-specific (git aliases, oh-my-zsh), sources `~/.dotfiles/.zshrc`
 
-| Path | Contents |
-|------|----------|
-| `nvim/plugins/` | lazy.nvim specs split by category (ui, editor, lsp, lang, tools) |
-| `nvim/config/` | Global settings (options.lua, keymaps.lua) |
-| `nvim/util/` | Utilities (file_cache, context_menu, bottom_drawers) |
+**Neovim:**
+- `nvim/init.lua` → symlinked to `~/.config/nvim/init.lua`
+- `nvim/plugins/` - lazy.nvim specs by category (ui, editor, lsp, lang, tools)
+- `nvim/config/` - Global settings (options.lua, keymaps.lua)
+- `nvim/util/` - Utilities (file_cache, context_menu, bottom_drawers)
 
-### Vim Structure
+**Vim:**
+- `init-vim.vim` → symlinked to `~/.vimrc`
+- `vimconfig/main.vim` - Entry point (sources plugins, options, mappings)
+- `vimconfig/plugins.vim` - vim-plug declarations
+- `vimconfig/mappings.vim` - Vim-only keymaps (has `if has('nvim') finish endif` guard)
 
-| Path | Contents |
-|------|----------|
-| `vimconfig/main.vim` | Entry point (sources plugins, options, mappings) |
-| `vimconfig/plugins.vim` | vim-plug declarations (Vim-only) |
-| `vimconfig/options.vim` | Shared with Neovim |
-| `vimconfig/mappings.vim` | Vim-only (has `if has('nvim') finish endif` guard) |
-
-### Terminal & Git
-
-| File | Purpose | Symlink Target |
-|------|---------|----------------|
-| `.tmux.conf` | Tmux (Ctrl+A prefix, vi-mode) | `~/.tmux.conf` |
-| `kitty.conf` | Kitty emulator (2,800+ lines) | `~/.config/kitty/kitty.conf` |
-| `wezterm/` | WezTerm config directory | `~/.config/wezterm` |
-| `.gitconfig` | Git config (delta pager, merge settings) | `~/.gitconfig` |
-| `themes.gitconfig` | Delta theme (gruvmax-fang Gruvbox) | `~/.themes.gitconfig` |
-| `.lesskey` | Less pager (env + keybindings) | `~/.lesskey` |
+**Terminal & Git:**
+- `.tmux.conf` - Tmux config (Ctrl+A prefix, vi-mode) → `~/.tmux.conf`
+- `kitty.conf` - Kitty terminal emulator → `~/.config/kitty/kitty.conf`
+- `wezterm/` - WezTerm config directory → `~/.config/wezterm`
+- `.gitconfig` - Git config (delta pager, merge settings) → `~/.gitconfig`
+- `themes.gitconfig` - Delta theme (gruvmax-fang Gruvbox) → `~/.themes.gitconfig`
 
 ---
 
 ## Tech Stack
 
-### Required
+**Critical Non-Obvious Facts:**
 
-- **Git** - Version control
-- **Node.js + npm** - LSP servers: `typescript-language-server`, `vscode-langservers-extracted`, `vim-language-server`
-
-### Recommended
-
-- **Zsh** (oh-my-zsh) - Primary shell
-- **Neovim** 0.9.0+ - Primary editor (Vim fallback)
-- **Tmux** - Multiplexer
-- **WezTerm** or **Kitty** - Terminal emulator
-- **bat**, **fd**, **fzf**, **git-delta**, **ripgrep** - CLI enhancements
-
-### Package Managers
-
-| Manager | Purpose | Notable |
-|---------|---------|---------|
-| **lazy.nvim** | Neovim plugins (Lua-based, lazy-loading) | 37ms startup time |
-| **vim-plug** | Vim plugins (auto-install on first launch) | - |
-| **Mason** | LSP/linter/formatter installer (Neovim) | Auto-installs: cssls, html, jsonls, lua_ls, pylsp, etc. |
-| **none-ls** | Linters & formatters via LSP | eslint_d, prettier, shellcheck, stylua, etc. |
-| **Homebrew** | macOS packages | Declarative via `Brewfile` |
-| **npm** | Global packages | LSP servers (see `npm-global-packages.txt`) |
-
-### Brewfile (macOS)
-
-**Core:** git, neovim, tmux, node
-**CLI:** bat, fd, fzf, git-delta, ripgrep, shellcheck, tflint, imagemagick
-**GUI:** wezterm
+- **Neovim uses lazy.nvim for plugins, NOT vim-plug**
+- **Vim uses vim-plug for plugins, NOT lazy.nvim**
+- **Mason** (Neovim only) auto-installs LSP servers: cssls, html, jsonls, lua_ls, pylsp, etc.
+- **npm global packages required:** `typescript-language-server`, `vscode-langservers-extracted`, `vim-language-server`
+- **none-ls** provides linters/formatters via LSP: eslint_d, prettier, shellcheck, stylua
+- **Homebrew** manages macOS packages declaratively via `Brewfile`
 
 ---
 
-## Development Workflows
+## Conventions
 
-### Setup New Machine
+**Idempotency Rules:**
+- `setup.sh` must work identically whether run 1x or 1000x
+- Always check before making changes
+- Use `grep -Fq "substring"` for substring matching (NOT `grep -Fxq` which matches whole lines)
+- Never append to files without checking if content already exists
+- See `setup.sh` header comments for full idempotency rules
 
-```bash
-git clone <repo> ~/.dotfiles
-cd ~/.dotfiles
-./setup.sh           # Downloads deps, creates symlinks, updates shell configs
-exec $SHELL          # Restart shell
-nvim                 # Plugins auto-install
-```
+**Unicode Preservation:**
+- Repository uses box-drawing characters: `│ ─ ┌ └ ├ ┤ ┬ ┴ ┼`
+- LLMs frequently replace these with ASCII `| - +` - **NEVER DO THIS**
+- Always preserve exact Unicode characters in all files
 
-### Make Changes
+**Vim/Neovim Separation:**
+- These are distinct configurations with different architectures
+- Don't attempt to make them share code or become compatible
+- Neovim = Lua + lazy.nvim
+- Vim = VimScript + vim-plug
 
-1. Edit files in `~/.dotfiles/` (changes reflect immediately via symlinks)
-2. Test: `rebash` (shell), `,r` (vim/neovim), `Ctrl+A :source` (tmux)
-3. Commit & push
-4. Other devices: `cd ~/.dotfiles && git pull`
+**Symlink Direction:**
+- Always FROM `~/.dotfiles/` TO standard locations (like `~/.vimrc`)
+- Never create symlinks in the reverse direction
 
-### Common Operations
-
-| Task | Command |
-|------|---------|
-| **Update plugins** | Neovim: `:Lazy update`, Vim: `:PlugUpdate` |
-| **Reload config** | Shell: `rebash`, Vim/Neovim: `,r`, Tmux: `Ctrl+A :source-file ~/.tmux.conf` |
-| **Clean install** | `./clean.sh` then `./setup.sh` |
-| **Check LSP status** | Neovim: `:LspInfo`, Vim: `:LspStatus` |
-| **Restart LSP** | Neovim: `,rl` or `:LspRestart` |
-
----
-
-## Notes & Patterns
-
-**Critical Conventions:**
-
-- **Idempotency:** `setup.sh` must work identically 1x or 1000x
-  - Check before making changes
-  - Use `grep -Fq` (substring), NOT `grep -Fxq` (whole line)
-  - Never append without checking if content exists
-  - See `setup.sh` header for full rules
-
-- **Unicode Preservation:** Repository uses `│ ─ ┌ └ ├ ┤ ┬ ┴ ┼` (box-drawing chars)
-  - LLMs frequently replace with ASCII `| - +` - **DON'T DO THIS**
-  - Always preserve exact Unicode characters
-
-- **Vim/Neovim Separation:** Distinct configs, NOT sharing code
-  - Neovim = Lua + lazy.nvim
-  - Vim = VimScript + vim-plug
-  - Don't try to make them compatible
-
-- **Git Branch:** `main` is primary, PRs target `main`
-
-- **Leader Keys:** `,` (leader), `;` (local leader)
-
-- **Naming:** Config files use lowercase with dashes (`.tmux.conf`, `.bash_profile`)
-
-- **Symlink Direction:** FROM `.dotfiles/` TO standard locations (not reverse)
-
----
-
-## Documentation Index
-
-For detailed information, see specialized documentation files:
-
-- **CHANGELOG.md** - Historical changes and discoveries (extracted from this file)
-- **KEYBINDINGS.md** - All keyboard shortcuts across tools (Neovim, Tmux, WezTerm, Shell, Less)
-- **TROUBLESHOOTING.md** - Common issues and solutions
-- **README.md** - Human-facing setup instructions and feature overview
-- **USER_PREFERENCES.md** - User-level preferences (symlinked to ~/.claude/CLAUDE.md)
+**Naming Conventions:**
+- Config files use lowercase with dashes (`.tmux.conf`, `.bash_profile`)
+- Leader key is `,` (comma)
+- Local leader key is `;` (semicolon)
