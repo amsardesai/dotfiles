@@ -104,29 +104,6 @@ return {
 					-- Load neo-tree and show sidebar
 					require("lazy").load({ plugins = { "neo-tree.nvim" } })
 					vim.cmd("Neotree action=show")
-
-					-- Show fzf file picker
-					vim.defer_fn(function()
-						vim.cmd("wincmd l") -- Focus main window (right of tree)
-
-						require("lazy").load({ plugins = { "fzf-lua" } })
-						local file_cache = dofile(get_config_dir() .. "/util/file_cache.lua")
-						file_cache.setup()
-						local files = file_cache.get()
-						local fzf = require("fzf-lua")
-						if files and #files > 0 then
-							fzf.fzf_exec(files, {
-								prompt = "Files> ",
-								previewer = "builtin",
-								actions = fzf.defaults.actions.files,
-								file_icons = true,
-								color_icons = true,
-								winopts = { focusable = true },
-							})
-						else
-							fzf.files({ winopts = { focusable = true } })
-						end
-					end, 100)
 				end,
 			})
 		end,
