@@ -19,10 +19,14 @@ local function do_zoom()
 	})
 	local win = vim.api.nvim_get_current_win()
 	vim.wo[win].winblend = 0
-	vim.wo[win].winhighlight = "Normal:NormalFloat"
 
 	-- Mark this window as zoomed for resize handling
 	vim.w[win].is_zoomed = true
+
+	-- Setup mode-aware border colors
+	local zoom_border = dofile(get_config_dir() .. "/util/zoom_border.lua")
+	zoom_border.setup()
+	vim.wo[win].winhighlight = zoom_border.get_winhighlight()
 end
 
 -- Helper: toggle zoom current window to fullscreen float
