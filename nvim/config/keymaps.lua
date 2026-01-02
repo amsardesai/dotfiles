@@ -238,6 +238,13 @@ local context_menu = dofile(config_dir .. "/util/context_menu.lua")
 vim.keymap.set({ "n", "v" }, "<RightMouse>", context_menu.show, { desc = "Context menu" })
 
 -- =============================================================================
+-- CLAUDE CODE STATUS
+-- =============================================================================
+
+-- Terminal title status indicator (🤖 awaiting, 🟢 connected)
+dofile(config_dir .. "/util/claude_status.lua").setup()
+
+-- =============================================================================
 -- LEGACY VIMSCRIPT
 -- =============================================================================
 
