@@ -145,6 +145,13 @@ config.window_padding = {
 config.use_resize_increments = true
 config.enable_scroll_bar = true
 
+-- Hide scrollbar when in alt screen mode (Neovim uses alt screen, scrollbar is useless there)
+wezterm.on("update-status", function(window, pane)
+	local overrides = window:get_config_overrides() or {}
+	overrides.enable_scroll_bar = not pane:is_alt_screen_active()
+	window:set_config_overrides(overrides)
+end)
+
 -- Tab bar
 config.enable_tab_bar = true
 config.use_fancy_tab_bar = true
@@ -194,7 +201,7 @@ config.term = "wezterm"
 -- =============================================================================
 
 -- Scrollback
-config.scrollback_lines = 10000
+config.scrollback_lines = 3500
 
 -- Cursor
 config.default_cursor_style = "BlinkingBlock"
@@ -387,6 +394,13 @@ end)
 -- =============================================================================
 
 config.keys = {
+	-- Disable Cmd+Q to prevent accidental quit (use Cmd+W to close panes/windows)
+	{
+		key = "q",
+		mods = "CMD",
+		action = wezterm.action.Nop,
+	},
+
 	-- Split panes
 	{
 		key = "d",

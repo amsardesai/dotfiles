@@ -108,3 +108,26 @@ vim.api.nvim_create_autocmd("VimEnter", {
 		set_cursor_shape(1)
 	end,
 })
+
+-- =============================================================================
+-- TERMINAL PERFORMANCE
+-- =============================================================================
+
+-- Aggressive scrollback limit for terminal buffers (reduces memory/rendering overhead)
+-- Default is 10000, but this causes severe slowdowns at 12k+ lines
+-- See: https://github.com/neovim/neovim/issues/11090
+vim.api.nvim_create_autocmd("TermOpen", {
+	group = vim.api.nvim_create_augroup("TerminalPerformance", { clear = true }),
+	callback = function()
+		-- Scrollback: 1000 lines (aggressive optimization for Claude Code output)
+		vim.opt_local.scrollback = 1000
+
+		-- Disable expensive visual features
+		vim.opt_local.signcolumn = "no"
+		vim.opt_local.foldcolumn = "0"
+		vim.opt_local.cursorline = false
+		vim.opt_local.cursorcolumn = false
+		vim.opt_local.spell = false
+		vim.opt_local.list = false
+	end,
+})
