@@ -5,6 +5,7 @@ All notable changes and discoveries in this dotfiles repository.
 ## 2026-01-02
 
 ### Features
+- **Claude Code settings in dotfiles** - Stop hook configuration now managed in `claude-settings.json`. `setup.sh` merges hooks into `~/.claude/settings.json` for cross-repo usage (`setup.sh`, `claude-settings.json`)
 - **Claude Code auto-open** - Automatically opens Claude Code terminal when launching Neovim to a directory (`nvim .` or `nvim`). Claude Code terminal gets focus. Disabled when opening specific files (`nvim/plugins/tools.lua`)
 - **Claude Code status indicator** - Terminal title shows AI agent status with per-instance emojis: ⚠️ (stale), ⏳ (diff pending), 🔄 (connecting), 🤖 (thinking), ✏️ (idle/your turn). Detects all Claude instances in current directory via CPU monitoring (`nvim/util/claude_status.lua`)
 - **LSP status indicator** - Terminal title shows LSP state on right side: 🔵 (busy/processing), 🟢 (ready). Instance-wide detection persists across all panes including terminals (`nvim/util/claude_status.lua`)

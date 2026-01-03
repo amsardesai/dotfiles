@@ -82,6 +82,7 @@
 
 **Scripts:**
 - `scripts/claude-stop-hook.sh` - Claude Code stop hook that blocks if incomplete todos or uncommitted changes
+- `claude-settings.json` - Claude Code hooks (merged into ~/.claude/settings.json by setup.sh)
 
 **Vim:**
 - `init-vim.vim` → symlinked to `~/.vimrc`

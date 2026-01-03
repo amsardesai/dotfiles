@@ -382,6 +382,44 @@ if command -v bat &>/dev/null; then
 fi
 
 # =============================================================================
+# Claude Code Settings
+# =============================================================================
+echo_section "CLAUDE CODE SETTINGS"
+
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+REPO_CLAUDE_SETTINGS="$SCRIPTPATH/claude-settings.json"
+
+# Ensure ~/.claude directory exists
+mkdir -p "$HOME/.claude"
+
+if [ -f "$REPO_CLAUDE_SETTINGS" ]; then
+	# Expand $HOME in the repo settings file
+	EXPANDED_SETTINGS=$(envsubst < "$REPO_CLAUDE_SETTINGS")
+
+	if [ -f "$CLAUDE_SETTINGS" ]; then
+		# Merge hooks into existing settings (deep merge)
+		MERGED=$(jq -s '.[0] * .[1]' "$CLAUDE_SETTINGS" <(echo "$EXPANDED_SETTINGS"))
+
+		# Check if hooks already match (idempotency)
+		CURRENT_HOOKS=$(jq '.hooks' "$CLAUDE_SETTINGS" 2>/dev/null || echo "null")
+		NEW_HOOKS=$(echo "$EXPANDED_SETTINGS" | jq '.hooks')
+
+		if [ "$CURRENT_HOOKS" = "$NEW_HOOKS" ]; then
+			echo_success "Claude Code settings already up to date"
+		else
+			echo "$MERGED" > "$CLAUDE_SETTINGS"
+			echo_success "Merged hooks into Claude Code settings"
+		fi
+	else
+		# Create new settings file
+		echo "$EXPANDED_SETTINGS" > "$CLAUDE_SETTINGS"
+		echo_success "Created Claude Code settings with hooks"
+	fi
+else
+	echo_warn "claude-settings.json not found in repo"
+fi
+
+# =============================================================================
 # Done
 # =============================================================================
 echo_section "✨ Done! Open vim/neovim to install plugins."
