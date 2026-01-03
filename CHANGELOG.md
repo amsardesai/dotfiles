@@ -7,7 +7,7 @@ All notable changes and discoveries in this dotfiles repository.
 ### Features
 - **Claude Code status indicator** - Terminal title shows AI agent status with per-instance emojis: ⚠️ (stale), ⏳ (diff pending), 🔄 (connecting), 🤖 (thinking), 📝 (idle/your turn). Detects all Claude instances in current directory via CPU monitoring (`nvim/util/claude_status.lua`)
 - **LSP status indicator** - Terminal title shows LSP state on right side: 🔵 (busy/processing), 🟢 (ready). Instance-wide detection persists across all panes including terminals (`nvim/util/claude_status.lua`)
-- **Claude Code stop hook** - Shell script hook that stops Claude when switching away from terminal. Uses `lsof` to find Claude process by cwd, sends SIGINT gracefully (`scripts/claude-stop-hook.sh`)
+- **Claude Code stop hook** - Blocks Claude from stopping if work appears incomplete. Checks for incomplete todos and staged uncommitted git changes (`scripts/claude-stop-hook.sh`)
 - **Mode-aware zoom borders** - Zoom window border color changes based on Vim mode: blue (normal), green (insert), magenta (visual), yellow (command), red (replace) (`nvim/util/zoom_border.lua`)
 
 ### Improvements
