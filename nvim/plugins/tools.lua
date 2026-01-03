@@ -13,34 +13,13 @@ return {
 			{ "<leader>a", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
 		},
 		init = function()
-			-- Define highlight groups for Claude Code winbar (orange theme)
-			vim.api.nvim_set_hl(0, "ClaudeCodeTitle", { fg = "#ffffff", bg = "#ea580c", bold = true })
-			vim.api.nvim_set_hl(0, "ClaudeCodeHint", { fg = "#fed7aa", bg = "#ea580c", italic = true })
-
-			-- Apply orange winbar to Claude Code terminal via filetype detection
-			-- snacks terminal sets filetype to "snacks_terminal"
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "snacks_terminal",
-				callback = function(args)
-					-- Defer to ensure window is ready
-					vim.defer_fn(function()
-						local buf = args.buf
-						if not vim.api.nvim_buf_is_valid(buf) then
-							return
-						end
-						-- Find window showing this buffer
-						for _, win in ipairs(vim.api.nvim_list_wins()) do
-							if vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == buf then
-								-- Check if this is a right-side split (Claude Code)
-								local pos = vim.api.nvim_win_get_position(win)
-								if pos[2] > vim.o.columns * 0.3 then
-									vim.wo[win].winbar = "%#ClaudeCodeTitle# %{b:term_title} %*"
-								end
-							end
-						end
-					end, 150)
-				end,
-			})
+			-- Define highlight group for Claude Code winbar (orange theme)
+			-- Use autocmd to persist across colorscheme changes
+			local function set_claude_hl()
+				vim.api.nvim_set_hl(0, "ClaudeCodeTitle", { fg = "#ffffff", bg = "#c15f3c", bold = true })
+			end
+			set_claude_hl()
+			vim.api.nvim_create_autocmd("ColorScheme", { callback = set_claude_hl })
 
 			-- Auto-open Claude Code when launching with a directory
 			vim.api.nvim_create_autocmd("VimEnter", {
@@ -94,7 +73,8 @@ return {
 						return math.min(percentage_width, 75)
 					end,
 					wo = {
-						winbar = "%#ClaudeCodeTitle# %{b:term_title} %*",
+						winbar = " %{get(b:,'term_title','')=~#'^term://'?'Claude Code':get(b:,'term_title','Claude Code')} ",
+						winhighlight = "WinBar:ClaudeCodeTitle,WinBarNC:ClaudeCodeTitle",
 					},
 				},
 			},
