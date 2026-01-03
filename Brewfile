@@ -28,6 +28,7 @@ brew "pre-commit"
 # CLI tools
 tap "withgraphite/tap"
 brew "withgraphite/tap/graphite"
+brew "terminal-notifier"  # For Claude Code task completion notifications
 cask "claude-code"
 cask "1password-cli"
 
