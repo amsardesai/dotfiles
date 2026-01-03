@@ -6,13 +6,13 @@
 --   ⏳ - Diff pending review (claudecode.nvim: openDiff tool waiting)
 --   🔄 - Connecting (claudecode.nvim: WebSocket handshake in progress)
 --   🤖 - Thinking (CPU > 2% - Claude is processing)
---   📝 - Idle (CPU ≤ 2% - user's turn to write)
+--   ✏️ - Idle (CPU ≤ 2% - user's turn to write)
 --
 -- LSP Status (right side):
 --   🔵 - LSP busy (processing/indexing)
 --   🟢 - LSP ready (idle)
 --
--- Example: "🤖¹ 📝² project 🟢" (2 Claude instances, LSP ready)
+-- Example: "🤖¹ ✏️² project 🟢" (2 Claude instances, LSP ready)
 -- Detects ALL Claude instances in current directory (including external terminals)
 
 local M = {}
@@ -35,7 +35,7 @@ local STATUS_EMOJI = {
 	diff_pending = "⏳", -- User action required: review diff
 	connecting = "🔄", -- Handshake in progress
 	thinking = "🤖", -- CPU active - Claude processing
-	idle = "📝", -- CPU idle - user's turn to write
+	idle = "✏️", -- CPU idle - user's turn to write
 }
 
 -- LSP status to emoji mapping (shown on right)

@@ -78,7 +78,10 @@
 - `nvim/init.lua` → symlinked to `~/.config/nvim/init.lua`
 - `nvim/plugins/` - lazy.nvim specs by category (ui, editor, lsp, lang, tools)
 - `nvim/config/` - Global settings (options.lua, keymaps.lua)
-- `nvim/util/` - Utilities (file_cache, context_menu, bottom_drawers)
+- `nvim/util/` - Utilities (file_cache, context_menu, bottom_drawers, claude_status, zoom_border)
+
+**Scripts:**
+- `scripts/claude-stop-hook.sh` - Claude Code stop hook that blocks if incomplete todos or uncommitted changes
 
 **Vim:**
 - `init-vim.vim` → symlinked to `~/.vimrc`

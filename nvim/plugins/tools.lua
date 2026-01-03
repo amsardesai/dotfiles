@@ -42,6 +42,45 @@ return {
 					end, 150)
 				end,
 			})
+
+			-- Auto-open Claude Code when launching with a directory
+			vim.api.nvim_create_autocmd("VimEnter", {
+				callback = function(data)
+					-- Same condition as neo-tree: only when opening directory
+					local argc = vim.fn.argc()
+					local is_directory = argc == 1 and vim.fn.isdirectory(data.file) == 1
+					local should_auto_open = argc == 0 or is_directory
+
+					if not should_auto_open then
+						return
+					end
+
+					-- Defer to ensure neo-tree is ready first, then open Claude Code
+					vim.defer_fn(function()
+						require("lazy").load({ plugins = { "claudecode.nvim" } })
+						vim.cmd("ClaudeCode")
+
+						-- Focus the Claude Code terminal (rightmost window)
+						vim.defer_fn(function()
+							local max_col = -1
+							local target_win = nil
+							for _, win in ipairs(vim.api.nvim_list_wins()) do
+								if vim.api.nvim_win_is_valid(win) then
+									local pos = vim.api.nvim_win_get_position(win)
+									if pos[2] > max_col then
+										max_col = pos[2]
+										target_win = win
+									end
+								end
+							end
+							if target_win then
+								vim.api.nvim_set_current_win(target_win)
+								vim.cmd("startinsert")
+							end
+						end, 100)
+					end, 100)
+				end,
+			})
 		end,
 		opts = {
 			log_level = "warn",
