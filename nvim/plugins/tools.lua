@@ -13,10 +13,11 @@ return {
 			{ "<leader>a", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
 		},
 		init = function()
-			-- Define highlight group for Claude Code winbar (orange theme)
+			-- Define highlight groups for Claude Code winbar (orange theme)
 			-- Use autocmd to persist across colorscheme changes
 			local function set_claude_hl()
 				vim.api.nvim_set_hl(0, "ClaudeCodeTitle", { fg = "#ffffff", bg = "#c15f3c", bold = true })
+				vim.api.nvim_set_hl(0, "ClaudeCodeLabel", { fg = "#f4a261", bg = "#c15f3c", italic = true })
 			end
 			set_claude_hl()
 			vim.api.nvim_create_autocmd("ColorScheme", { callback = set_claude_hl })
@@ -73,7 +74,7 @@ return {
 						return math.min(percentage_width, 75)
 					end,
 					wo = {
-						winbar = " %{get(b:,'term_title','')=~#'^term://'?'Claude Code':get(b:,'term_title','Claude Code')} ",
+						winbar = "%#ClaudeCodeTitle# %{get(b:,'term_title','')=~#'^term://'?'Claude Code':get(b:,'term_title','Claude Code')} %#ClaudeCodeLabel#,a ",
 						winhighlight = "WinBar:ClaudeCodeTitle,WinBarNC:ClaudeCodeTitle",
 					},
 				},
