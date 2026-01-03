@@ -34,8 +34,7 @@ return {
 								-- Check if this is a right-side split (Claude Code)
 								local pos = vim.api.nvim_win_get_position(win)
 								if pos[2] > vim.o.columns * 0.3 then
-									vim.wo[win].winbar =
-										"%#ClaudeCodeTitle# %{b:term_title} %#ClaudeCodeHint#(type ,a to toggle) %*"
+									vim.wo[win].winbar = "%#ClaudeCodeTitle# %{b:term_title} %*"
 								end
 							end
 						end
@@ -95,7 +94,7 @@ return {
 						return math.min(percentage_width, 75)
 					end,
 					wo = {
-						winbar = "%#ClaudeCodeTitle# %{b:term_title} %#ClaudeCodeHint#(type ,a to toggle) %*",
+						winbar = "%#ClaudeCodeTitle# %{b:term_title} %*",
 					},
 				},
 			},

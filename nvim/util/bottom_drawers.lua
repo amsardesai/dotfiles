@@ -35,10 +35,12 @@ M.state = {
 }
 
 -- Drawer metadata for winbars
+-- bold_title: static bold text (nil = use term_title dynamically)
+-- label: italic suffix text
 local drawer_meta = {
-	primary = { title = "Terminal Z", key = ",z", hl_title = "TerminalZTitle", hl_hint = "TerminalZHint" },
-	secondary = { title = "Terminal X", key = ",x", hl_title = "TerminalXTitle", hl_hint = "TerminalXHint" },
-	trouble = { title = "Trouble.nvim Diagnostics", key = ",t", hl_title = "TroubleTitle", hl_hint = "TroubleHint" },
+	primary = { bold_title = nil, label = "Terminal ,z", hl_title = "TerminalZTitle", hl_label = "TerminalZHint" },
+	secondary = { bold_title = nil, label = "Terminal ,x", hl_title = "TerminalXTitle", hl_label = "TerminalXHint" },
+	trouble = { bold_title = "Trouble.nvim Diagnostics", label = ",t", hl_title = "TroubleTitle", hl_label = "TroubleHint" },
 }
 
 -- =============================================================================
@@ -77,6 +79,20 @@ local function get_height()
 	return math.floor(vim.o.lines * M.config.height)
 end
 
+-- Global function for dynamic winbar content (called by winbar %{} expression)
+-- Returns: "bold_title label" with appropriate highlight groups
+function _G._bottom_drawer_winbar(bufnr, slot)
+	local meta = drawer_meta[slot]
+	if not meta then
+		return ""
+	end
+	-- Bold part: term_title for terminals, static text for trouble
+	local bold = meta.bold_title or vim.b[bufnr].term_title or "zsh"
+	-- Italic part: "Terminal ,z" / ",t" etc
+	local label = meta.label
+	return "%#" .. meta.hl_title .. "# " .. bold .. " %#" .. meta.hl_label .. "#" .. label .. " %*"
+end
+
 -- Set winbar title for a drawer window
 local function set_winbar(win, slot)
 	if not vim.api.nvim_win_is_valid(win) then
@@ -86,15 +102,9 @@ local function set_winbar(win, slot)
 	if not meta then
 		return
 	end
-	vim.wo[win].winbar = "%#"
-		.. meta.hl_title
-		.. "# "
-		.. meta.title
-		.. " %#"
-		.. meta.hl_hint
-		.. "#(type "
-		.. meta.key
-		.. " to toggle) %*"
+	local buf = vim.api.nvim_win_get_buf(win)
+	-- Use dynamic winbar that re-evaluates on each redraw
+	vim.wo[win].winbar = "%{%v:lua._bottom_drawer_winbar(" .. buf .. ", '" .. slot .. "')%}"
 
 	-- Disable line numbers for terminal drawers
 	if slot == "primary" or slot == "secondary" then
