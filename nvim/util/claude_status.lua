@@ -6,12 +6,12 @@
 --   ⏳ - Diff pending review (claudecode.nvim: openDiff tool waiting)
 --   🔄 - Connecting (claudecode.nvim: WebSocket handshake in progress)
 --   🤖 - Thinking (CPU > 2% - Claude is processing)
---   ✏️ - Idle (CPU ≤ 2% - user's turn to write)
+--   👤 - Idle (CPU ≤ 2% - user's turn)
 --
 -- LSP Status (right side, only shown when busy):
 --   🔵 - LSP busy (processing/indexing)
 --
--- Example: "🤖¹ ✏️² project 🔵" (2 Claude instances, LSP busy)
+-- Examples: "🤖 project" (1 instance), "🤖¹ ✏️² project 🔵" (2 instances, LSP busy)
 -- Detects ALL Claude instances in current directory (including external terminals)
 
 local M = {}
@@ -34,7 +34,7 @@ local STATUS_EMOJI = {
 	diff_pending = "⏳", -- User action required: review diff
 	connecting = "🔄", -- Handshake in progress
 	thinking = "🤖", -- CPU active - Claude processing
-	idle = "✏️", -- CPU idle - user's turn to write
+	idle = "👤", -- CPU idle - user's turn
 }
 
 -- LSP status to emoji mapping (shown on right, only when busy)
@@ -192,8 +192,13 @@ local function build_prefix(instances, override_status)
 		end
 
 		local emoji = STATUS_EMOJI[status] or STATUS_EMOJI.idle
-		local superscript = SUPERSCRIPTS[i] or tostring(i)
-		table.insert(emojis, emoji .. superscript)
+		-- Only show superscript numbers when there are multiple instances
+		if #instances > 1 then
+			local superscript = SUPERSCRIPTS[i] or tostring(i)
+			table.insert(emojis, emoji .. superscript)
+		else
+			table.insert(emojis, emoji)
+		end
 	end
 
 	return table.concat(emojis, " ") .. " "
