@@ -85,15 +85,25 @@ local function get_height()
 end
 
 -- Global function for dynamic winbar content (called by winbar %{} expression)
--- Returns formatted text with inline highlights (bold title + italic label)
+-- Returns formatted text with inline highlights (bold title + right-aligned italic label)
 function _G._bottom_drawer_winbar(bufnr, slot)
 	local meta = drawer_meta[slot]
 	if not meta then
 		return ""
 	end
 	local title = meta.bold_title or vim.b[bufnr].term_title or "zsh"
-	-- Use inline highlight codes for bold/italic styling
-	return "%#" .. meta.hl_title .. "# " .. title .. " %#" .. meta.hl_label .. "#" .. meta.label .. " "
+
+	-- Get window width to conditionally show label
+	local win = vim.fn.bufwinid(bufnr)
+	local width = win > 0 and vim.api.nvim_win_get_width(win) or 80
+
+	if width >= 30 then
+		-- Full format with right-aligned label
+		return "%#" .. meta.hl_title .. "# " .. title .. " %=%#" .. meta.hl_label .. "#" .. meta.label .. " "
+	else
+		-- Narrow: hide label
+		return "%#" .. meta.hl_title .. "# " .. title .. " "
+	end
 end
 
 -- Set winbar title for a drawer window

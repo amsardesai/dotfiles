@@ -22,6 +22,24 @@ return {
 			set_claude_hl()
 			vim.api.nvim_create_autocmd("ColorScheme", { callback = set_claude_hl })
 
+			-- Dynamic winbar function for right-aligned label and width-based hiding
+			function _G._claude_code_winbar()
+				local bufnr = vim.api.nvim_get_current_buf()
+				local title = vim.b[bufnr].term_title or ""
+				if title == "" or title:match("^term://") then
+					title = "Claude Code"
+				end
+
+				local win = vim.fn.bufwinid(bufnr)
+				local width = win > 0 and vim.api.nvim_win_get_width(win) or 80
+
+				if width >= 30 then
+					return "%#ClaudeCodeTitle# " .. title .. " %=%#ClaudeCodeLabel#,a "
+				else
+					return "%#ClaudeCodeTitle# " .. title .. " "
+				end
+			end
+
 			-- Auto-open Claude Code when launching with a directory
 			vim.api.nvim_create_autocmd("VimEnter", {
 				callback = function(data)
@@ -74,7 +92,7 @@ return {
 						return math.min(percentage_width, 75)
 					end,
 					wo = {
-						winbar = "%#ClaudeCodeTitle# %{get(b:,'term_title','')=~#'^term://'?'Claude Code':get(b:,'term_title','Claude Code')} %#ClaudeCodeLabel#,a ",
+						winbar = "%{%v:lua._claude_code_winbar()%}",
 						winhighlight = "WinBar:ClaudeCodeTitle,WinBarNC:ClaudeCodeTitle",
 					},
 				},
