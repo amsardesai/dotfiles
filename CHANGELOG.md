@@ -2,6 +2,23 @@
 
 All notable changes and discoveries in this dotfiles repository.
 
+## 2026-01-02
+
+### Features
+- **Claude Code status indicator** - Terminal title shows AI agent status with per-instance emojis: ⚠️ (stale), ⏳ (diff pending), 🔄 (connecting), 🤖 (thinking), 📝 (idle/your turn). Detects all Claude instances in current directory via CPU monitoring (`nvim/util/claude_status.lua`)
+- **LSP status indicator** - Terminal title shows LSP state on right side: 🔵 (busy/processing), 🟢 (ready). Instance-wide detection persists across all panes including terminals (`nvim/util/claude_status.lua`)
+- **Claude Code stop hook** - Shell script hook that stops Claude when switching away from terminal. Uses `lsof` to find Claude process by cwd, sends SIGINT gracefully (`scripts/claude-stop-hook.sh`)
+- **Mode-aware zoom borders** - Zoom window border color changes based on Vim mode: blue (normal), green (insert), magenta (visual), yellow (command), red (replace) (`nvim/util/zoom_border.lua`)
+
+### Improvements
+- **Terminal scrollback optimization** - Reduced scrollback from 10000 to 1000 lines for Claude Code output. Prevents severe slowdowns at 12k+ lines (`nvim/config/options.lua`)
+- **Terminal buffer performance** - Disabled expensive visual features in terminal buffers: signcolumn, foldcolumn, cursorline, cursorcolumn, spell, list (`nvim/config/options.lua`)
+
+### Bug Fixes
+- **fzf-lua startup focus** - Removed auto-open behavior that was stealing focus on Neovim startup (`nvim/plugins/editor.lua`)
+
+---
+
 ## 2025-12-27
 
 ### Features
