@@ -72,7 +72,6 @@ Quick reference for all keyboard shortcuts across development tools.
 | Key | Action |
 |-----|--------|
 | `,a` | Toggle Claude Code terminal |
-| `,sa` | Add file to Claude context |
 
 **Note:** Claude Code automatically opens and focuses when launching Neovim to a directory (`nvim .` or `nvim`).
 
