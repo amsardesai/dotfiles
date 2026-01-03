@@ -137,11 +137,11 @@ end
 -- LSP Status Detection
 -- =============================================================================
 
--- Get LSP status for current buffer
+-- Get LSP status for entire Neovim instance
 -- Returns: "busy" if any LSP is processing, "ready" if idle, nil if no LSPs attached
 local function get_lsp_status()
-	-- Check if any LSP clients are attached to current buffer
-	local clients = vim.lsp.get_clients({ bufnr = 0 })
+	-- Check if any LSP clients are attached (across all buffers)
+	local clients = vim.lsp.get_clients()
 	if #clients == 0 then
 		return nil
 	end
