@@ -8,11 +8,10 @@
 --   🤖 - Thinking (CPU > 2% - Claude is processing)
 --   ✏️ - Idle (CPU ≤ 2% - user's turn to write)
 --
--- LSP Status (right side):
+-- LSP Status (right side, only shown when busy):
 --   🔵 - LSP busy (processing/indexing)
---   🟢 - LSP ready (idle)
 --
--- Example: "🤖¹ ✏️² project 🟢" (2 Claude instances, LSP ready)
+-- Example: "🤖¹ ✏️² project 🔵" (2 Claude instances, LSP busy)
 -- Detects ALL Claude instances in current directory (including external terminals)
 
 local M = {}
@@ -38,10 +37,9 @@ local STATUS_EMOJI = {
 	idle = "✏️", -- CPU idle - user's turn to write
 }
 
--- LSP status to emoji mapping (shown on right)
+-- LSP status to emoji mapping (shown on right, only when busy)
 local LSP_EMOJI = {
 	busy = "🔵", -- LSP processing
-	ready = "🟢", -- LSP idle/ready
 }
 
 -- =============================================================================
@@ -155,11 +153,11 @@ local function get_lsp_status()
 	return "ready"
 end
 
--- Build LSP suffix for title
+-- Build LSP suffix for title (only shows when busy)
 local function build_lsp_suffix()
 	local lsp_status = get_lsp_status()
-	if lsp_status then
-		return " " .. LSP_EMOJI[lsp_status]
+	if lsp_status == "busy" then
+		return " " .. LSP_EMOJI.busy
 	end
 	return ""
 end
