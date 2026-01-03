@@ -1,12 +1,19 @@
 -- Claude Code Status Indicator for WezTerm Tab Titles
--- Updates terminal title with emoji prefixes based on Claude Code process state:
+-- Updates terminal title with emoji indicators based on Claude Code and LSP state:
+--
+-- AI Agent Status (left side, per-instance with superscript numbers):
 --   ⚠️ - Stale connection (claudecode.nvim: no ping response for 30+ seconds)
 --   ⏳ - Diff pending review (claudecode.nvim: openDiff tool waiting)
 --   🔄 - Connecting (claudecode.nvim: WebSocket handshake in progress)
 --   🤖 - Thinking (CPU > 2% - Claude is processing)
---   🟢 - Idle (CPU ≤ 2% - Claude awaiting input)
+--   📝 - Idle (CPU ≤ 2% - user's turn to write)
+--
+-- LSP Status (right side):
+--   🔵 - LSP busy (processing/indexing)
+--   🟢 - LSP ready (idle)
+--
+-- Example: "🤖¹ 📝² project 🟢" (2 Claude instances, LSP ready)
 -- Detects ALL Claude instances in current directory (including external terminals)
--- Shows one emoji per instance with superscript numbers (e.g., "🤖¹ 🟢² project")
 
 local M = {}
 
@@ -22,13 +29,19 @@ local CPU_THRESHOLD = 2 -- CPU > 2% = thinking
 -- Unicode superscript numbers
 local SUPERSCRIPTS = { "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹" }
 
--- Status to emoji mapping
+-- Status to emoji mapping (AI agent status - shown on left)
 local STATUS_EMOJI = {
 	stale = "⚠️", -- Connection stale (highest priority - problem)
 	diff_pending = "⏳", -- User action required: review diff
 	connecting = "🔄", -- Handshake in progress
 	thinking = "🤖", -- CPU active - Claude processing
-	idle = "🟢", -- CPU idle - awaiting input
+	idle = "📝", -- CPU idle - user's turn to write
+}
+
+-- LSP status to emoji mapping (shown on right)
+local LSP_EMOJI = {
+	busy = "🔵", -- LSP processing
+	ready = "🟢", -- LSP idle/ready
 }
 
 -- =============================================================================
@@ -121,6 +134,37 @@ local function has_diff_pending()
 end
 
 -- =============================================================================
+-- LSP Status Detection
+-- =============================================================================
+
+-- Get LSP status for current buffer
+-- Returns: "busy" if any LSP is processing, "ready" if idle, nil if no LSPs attached
+local function get_lsp_status()
+	-- Check if any LSP clients are attached to current buffer
+	local clients = vim.lsp.get_clients({ bufnr = 0 })
+	if #clients == 0 then
+		return nil
+	end
+
+	-- Check if any LSP has active progress (vim.lsp.status returns progress message)
+	local status = vim.lsp.status()
+	if status and status ~= "" then
+		return "busy"
+	end
+
+	return "ready"
+end
+
+-- Build LSP suffix for title
+local function build_lsp_suffix()
+	local lsp_status = get_lsp_status()
+	if lsp_status then
+		return " " .. LSP_EMOJI[lsp_status]
+	end
+	return ""
+end
+
+-- =============================================================================
 -- Title Building
 -- =============================================================================
 
@@ -188,7 +232,8 @@ function M._update_title()
 
 	local base_title = get_base_title()
 	local prefix = build_prefix(instances, override_status)
-	local title = prefix .. base_title
+	local suffix = build_lsp_suffix()
+	local title = prefix .. base_title .. suffix
 
 	set_terminal_title(title)
 end
@@ -198,7 +243,7 @@ end
 -- =============================================================================
 
 -- Get current status info (for debugging/statusline)
--- Returns: instances array, override_status (or nil)
+-- Returns: instances array, override_status (or nil), lsp_status (or nil)
 function M.get_status()
 	local instances = detect_system_claude_instances()
 
@@ -211,7 +256,9 @@ function M.get_status()
 		override_status = "connecting"
 	end
 
-	return instances, override_status
+	local lsp_status = get_lsp_status()
+
+	return instances, override_status, lsp_status
 end
 
 -- Force immediate title update
