@@ -14,15 +14,27 @@ return {
 		},
 		init = function()
 			-- Define highlight groups for Claude Code winbar (orange theme)
+			-- NC variants are for unfocused windows (even darker bg, title not bold)
 			-- Use autocmd to persist across colorscheme changes
 			local function set_claude_hl()
 				vim.api.nvim_set_hl(0, "ClaudeCodeTitle", { fg = "#ffffff", bg = "#c15f3c", bold = true })
-				vim.api.nvim_set_hl(0, "ClaudeCodeLabel", { fg = "#ffffff", bg = "#c15f3c", italic = true })
+				vim.api.nvim_set_hl(0, "ClaudeCodeTitleNC", { fg = "#ffffff", bg = "#7b3b25", bold = false })
+				vim.api.nvim_set_hl(0, "ClaudeCodeLabel", { fg = "#ffffff", bg = "#c15f3c", bold = false, italic = true })
+				vim.api.nvim_set_hl(0, "ClaudeCodeLabelNC", { fg = "#ffffff", bg = "#7b3b25", bold = false, italic = true })
 			end
 			set_claude_hl()
 			vim.api.nvim_create_autocmd("ColorScheme", { callback = set_claude_hl })
 
+			-- Redraw screen on window focus changes to update dynamic winbar expressions
+			vim.api.nvim_create_autocmd({ "WinEnter", "WinLeave" }, {
+				callback = function()
+					vim.cmd("redraw")
+				end,
+				desc = "Redraw to update Claude Code winbar on focus change",
+			})
+
 			-- Dynamic winbar function for right-aligned label and width-based hiding
+			-- Uses NC variants when window is unfocused for darker background + non-bold title
 			function _G._claude_code_winbar()
 				local bufnr = vim.api.nvim_get_current_buf()
 				local title = vim.b[bufnr].term_title or ""
@@ -33,10 +45,12 @@ return {
 				local win = vim.fn.bufwinid(bufnr)
 				local width = win > 0 and vim.api.nvim_win_get_width(win) or 80
 
+
 				if width >= 30 then
-					return "%#ClaudeCodeTitle# " .. title .. " %=%#ClaudeCodeLabel#,a "
+					-- Title and label both use winhighlight for consistent background (no inline hl)
+					return " " .. title .. " %=,a "
 				else
-					return "%#ClaudeCodeTitle# " .. title .. " "
+					return " " .. title .. " "
 				end
 			end
 
@@ -93,7 +107,7 @@ return {
 					end,
 					wo = {
 						winbar = "%{%v:lua._claude_code_winbar()%}",
-						winhighlight = "WinBar:ClaudeCodeTitle,WinBarNC:ClaudeCodeTitle",
+						winhighlight = "WinBar:ClaudeCodeTitle,WinBarNC:ClaudeCodeTitleNC",
 					},
 				},
 			},

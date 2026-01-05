@@ -11,16 +11,36 @@ local M = {}
 
 -- Define highlight groups for drawer winbars (persist across colorscheme changes)
 -- Each drawer has Title (bold) and Label (italic) variants with same background
+-- NC variants are for unfocused windows (even darker bg, title not bold)
 local function set_drawer_highlights()
-	vim.api.nvim_set_hl(0, "TerminalZTitle", { fg = "#ffffff", bg = "#2563eb", bold = true }) -- Blue
-	vim.api.nvim_set_hl(0, "TerminalZLabel", { fg = "#ffffff", bg = "#2563eb", italic = true })
-	vim.api.nvim_set_hl(0, "TerminalXTitle", { fg = "#ffffff", bg = "#9333ea", bold = true }) -- Purple
-	vim.api.nvim_set_hl(0, "TerminalXLabel", { fg = "#ffffff", bg = "#9333ea", italic = true })
-	vim.api.nvim_set_hl(0, "TroubleTitle", { fg = "#ffffff", bg = "#dc2626", bold = true }) -- Red
-	vim.api.nvim_set_hl(0, "TroubleLabel", { fg = "#ffffff", bg = "#dc2626", italic = true })
+	-- Terminal Z (blue) - focused=600, unfocused=800 (darker)
+	vim.api.nvim_set_hl(0, "TerminalZTitle", { fg = "#ffffff", bg = "#2563eb", bold = true })
+	vim.api.nvim_set_hl(0, "TerminalZTitleNC", { fg = "#ffffff", bg = "#1e40af", bold = false })
+	vim.api.nvim_set_hl(0, "TerminalZLabel", { fg = "#ffffff", bg = "#2563eb", bold = false, italic = true })
+	vim.api.nvim_set_hl(0, "TerminalZLabelNC", { fg = "#ffffff", bg = "#1e40af", bold = false, italic = true })
+
+	-- Terminal X (purple) - focused=600, unfocused=800 (darker)
+	vim.api.nvim_set_hl(0, "TerminalXTitle", { fg = "#ffffff", bg = "#9333ea", bold = true })
+	vim.api.nvim_set_hl(0, "TerminalXTitleNC", { fg = "#ffffff", bg = "#6b21a8", bold = false })
+	vim.api.nvim_set_hl(0, "TerminalXLabel", { fg = "#ffffff", bg = "#9333ea", bold = false, italic = true })
+	vim.api.nvim_set_hl(0, "TerminalXLabelNC", { fg = "#ffffff", bg = "#6b21a8", bold = false, italic = true })
+
+	-- Trouble (red) - focused=600, unfocused=800 (darker)
+	vim.api.nvim_set_hl(0, "TroubleTitle", { fg = "#ffffff", bg = "#dc2626", bold = true })
+	vim.api.nvim_set_hl(0, "TroubleTitleNC", { fg = "#ffffff", bg = "#991b1b", bold = false })
+	vim.api.nvim_set_hl(0, "TroubleLabel", { fg = "#ffffff", bg = "#dc2626", bold = false, italic = true })
+	vim.api.nvim_set_hl(0, "TroubleLabelNC", { fg = "#ffffff", bg = "#991b1b", bold = false, italic = true })
 end
 set_drawer_highlights()
 vim.api.nvim_create_autocmd("ColorScheme", { callback = set_drawer_highlights })
+
+-- Redraw screen on window focus changes to update dynamic winbar expressions
+vim.api.nvim_create_autocmd({ "WinEnter", "WinLeave" }, {
+	callback = function()
+		vim.cmd("redraw")
+	end,
+	desc = "Redraw to update bottom drawer winbars on focus change",
+})
 
 M.config = {
 	height = 0.3, -- 30% of screen height
@@ -86,6 +106,7 @@ end
 
 -- Global function for dynamic winbar content (called by winbar %{} expression)
 -- Returns formatted text with inline highlights (bold title + right-aligned italic label)
+-- Uses NC variants when window is unfocused for darker background + non-bold title
 function _G._bottom_drawer_winbar(bufnr, slot)
 	local meta = drawer_meta[slot]
 	if not meta then
@@ -98,11 +119,11 @@ function _G._bottom_drawer_winbar(bufnr, slot)
 	local width = win > 0 and vim.api.nvim_win_get_width(win) or 80
 
 	if width >= 30 then
-		-- Full format with right-aligned label
-		return "%#" .. meta.hl_title .. "# " .. title .. " %=%#" .. meta.hl_label .. "#" .. meta.label .. " "
+		-- Title and label both use winhighlight for consistent background (no inline hl)
+		return " " .. title .. " %=" .. meta.label .. " "
 	else
 		-- Narrow: hide label
-		return "%#" .. meta.hl_title .. "# " .. title .. " "
+		return " " .. title .. " "
 	end
 end
 
@@ -119,8 +140,8 @@ local function set_winbar(win, slot)
 
 	-- Use dynamic winbar that re-evaluates on each redraw
 	vim.wo[win].winbar = "%{%v:lua._bottom_drawer_winbar(" .. buf .. ", '" .. slot .. "')%}"
-	-- Apply full-width background via winhighlight (uses title highlight for any empty space)
-	vim.wo[win].winhighlight = "WinBar:" .. meta.hl_title .. ",WinBarNC:" .. meta.hl_title
+	-- Apply full-width background via winhighlight (uses NC variant when unfocused)
+	vim.wo[win].winhighlight = "WinBar:" .. meta.hl_title .. ",WinBarNC:" .. meta.hl_title .. "NC"
 
 	-- Disable line numbers for terminal drawers
 	if slot == "primary" or slot == "secondary" then
