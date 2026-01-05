@@ -17,7 +17,7 @@ return {
 			-- Use autocmd to persist across colorscheme changes
 			local function set_claude_hl()
 				vim.api.nvim_set_hl(0, "ClaudeCodeTitle", { fg = "#ffffff", bg = "#c15f3c", bold = true })
-				vim.api.nvim_set_hl(0, "ClaudeCodeLabel", { fg = "#f4a261", bg = "#c15f3c", italic = true })
+				vim.api.nvim_set_hl(0, "ClaudeCodeLabel", { fg = "#ffffff", bg = "#c15f3c", italic = true })
 			end
 			set_claude_hl()
 			vim.api.nvim_create_autocmd("ColorScheme", { callback = set_claude_hl })

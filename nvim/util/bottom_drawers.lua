@@ -13,11 +13,11 @@ local M = {}
 -- Each drawer has Title (bold) and Label (italic) variants with same background
 local function set_drawer_highlights()
 	vim.api.nvim_set_hl(0, "TerminalZTitle", { fg = "#ffffff", bg = "#2563eb", bold = true }) -- Blue
-	vim.api.nvim_set_hl(0, "TerminalZLabel", { fg = "#93c5fd", bg = "#2563eb", italic = true })
+	vim.api.nvim_set_hl(0, "TerminalZLabel", { fg = "#ffffff", bg = "#2563eb", italic = true })
 	vim.api.nvim_set_hl(0, "TerminalXTitle", { fg = "#ffffff", bg = "#9333ea", bold = true }) -- Purple
-	vim.api.nvim_set_hl(0, "TerminalXLabel", { fg = "#d8b4fe", bg = "#9333ea", italic = true })
+	vim.api.nvim_set_hl(0, "TerminalXLabel", { fg = "#ffffff", bg = "#9333ea", italic = true })
 	vim.api.nvim_set_hl(0, "TroubleTitle", { fg = "#ffffff", bg = "#dc2626", bold = true }) -- Red
-	vim.api.nvim_set_hl(0, "TroubleLabel", { fg = "#fca5a5", bg = "#dc2626", italic = true })
+	vim.api.nvim_set_hl(0, "TroubleLabel", { fg = "#ffffff", bg = "#dc2626", italic = true })
 end
 set_drawer_highlights()
 vim.api.nvim_create_autocmd("ColorScheme", { callback = set_drawer_highlights })
