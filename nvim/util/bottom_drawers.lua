@@ -34,12 +34,21 @@ end
 set_drawer_highlights()
 vim.api.nvim_create_autocmd("ColorScheme", { callback = set_drawer_highlights })
 
--- Redraw screen on window focus changes to update dynamic winbar expressions
+-- Debounced redraw on window focus changes to update dynamic winbar expressions
+-- Uses vim.schedule() to coalesce rapid WinEnter/WinLeave events into single redraw
+-- This also handles Claude Code winbar updates (removed duplicate autocmd from tools.lua)
+local redraw_pending = false
 vim.api.nvim_create_autocmd({ "WinEnter", "WinLeave" }, {
 	callback = function()
-		vim.cmd("redraw")
+		if not redraw_pending then
+			redraw_pending = true
+			vim.schedule(function()
+				vim.cmd("redraw")
+				redraw_pending = false
+			end)
+		end
 	end,
-	desc = "Redraw to update bottom drawer winbars on focus change",
+	desc = "Debounced redraw to update drawer/Claude Code winbars on focus change",
 })
 
 M.config = {

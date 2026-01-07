@@ -25,13 +25,7 @@ return {
 			set_claude_hl()
 			vim.api.nvim_create_autocmd("ColorScheme", { callback = set_claude_hl })
 
-			-- Redraw screen on window focus changes to update dynamic winbar expressions
-			vim.api.nvim_create_autocmd({ "WinEnter", "WinLeave" }, {
-				callback = function()
-					vim.cmd("redraw")
-				end,
-				desc = "Redraw to update Claude Code winbar on focus change",
-			})
+			-- Note: WinEnter/WinLeave redraw is handled by bottom_drawers.lua (consolidated + debounced)
 
 			-- Dynamic winbar function for right-aligned label and width-based hiding
 			-- Uses NC variants when window is unfocused for darker background + non-bold title

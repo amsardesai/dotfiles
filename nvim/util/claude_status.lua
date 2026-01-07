@@ -13,6 +13,8 @@
 --
 -- Examples: "🤖 project" (1 instance), "🤖¹ ✏️² project 🔵" (2 instances, LSP busy)
 -- Detects ALL Claude instances in current directory (including external terminals)
+--
+-- Performance: Uses async vim.system() calls to avoid blocking Neovim's main loop
 
 local M = {}
 
@@ -21,9 +23,14 @@ vim.g._claude_status_setup_done = vim.g._claude_status_setup_done or false
 
 -- Local state (doesn't need persistence)
 local poll_timer = nil
-local POLL_INTERVAL_MS = 500
+local POLL_INTERVAL_MS = 2000 -- 2 seconds (was 500ms - reduced for performance)
 local STALE_THRESHOLD_MS = 30000 -- Consider connection stale after 30 seconds without pong
 local CPU_THRESHOLD = 2 -- CPU > 2% = thinking
+
+-- Cached state for async operations
+local cached_instances = {}
+local last_title = "" -- Cache to avoid redundant terminal writes
+local async_in_progress = false
 
 -- Unicode superscript numbers
 local SUPERSCRIPTS = { "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹" }
@@ -43,17 +50,104 @@ local LSP_EMOJI = {
 }
 
 -- =============================================================================
--- Process-Based Detection (Universal - works for all Claude instances)
+-- Process-Based Detection (Async - non-blocking)
 -- =============================================================================
 
--- Detect all Claude Code instances working on current directory
--- Returns: array of { pid, cpu, status } sorted by PID for stable ordering
-local function detect_system_claude_instances()
+-- Async detection of Claude instances - calls callback(instances) when done
+-- Uses vim.system() for non-blocking execution
+local function detect_system_claude_instances_async(callback)
+	if async_in_progress then
+		-- Don't stack up async calls - use cached data
+		callback(cached_instances)
+		return
+	end
+
+	async_in_progress = true
+	local cwd = vim.fn.getcwd()
+
+	-- Step 1: Get all claude PIDs asynchronously
+	vim.system(
+		{ "sh", "-c", "ps -ax -o pid,comm | grep '[c]laude' | awk '{print $1}'" },
+		{ text = true },
+		function(ps_result)
+			if ps_result.code ~= 0 or not ps_result.stdout then
+				async_in_progress = false
+				vim.schedule(function()
+					callback({})
+				end)
+				return
+			end
+
+			local pids = vim.split(ps_result.stdout, "\n", { trimempty = true })
+			if #pids == 0 then
+				async_in_progress = false
+				vim.schedule(function()
+					callback({})
+				end)
+				return
+			end
+
+			-- Step 2: For each PID, get cwd and CPU usage in parallel
+			local instances = {}
+			local pending = #pids
+			local completed = 0
+
+			for _, pid in ipairs(pids) do
+				-- Get working directory for this process
+				vim.system(
+					{ "sh", "-c", "lsof -p " .. pid .. " 2>/dev/null | grep cwd | awk '{print $NF}'" },
+					{ text = true },
+					function(lsof_result)
+						local proc_cwd = lsof_result.stdout and vim.trim(lsof_result.stdout) or ""
+
+						if proc_cwd == cwd then
+							-- Get CPU usage for matching process
+							vim.system(
+								{ "sh", "-c", "ps -p " .. pid .. " -o %cpu= 2>/dev/null" },
+								{ text = true },
+								function(cpu_result)
+									local cpu = tonumber(vim.trim(cpu_result.stdout or "0")) or 0
+									local status = cpu > CPU_THRESHOLD and "thinking" or "idle"
+									table.insert(instances, { pid = tonumber(pid), cpu = cpu, status = status })
+
+									completed = completed + 1
+									if completed >= pending then
+										-- All done - sort and callback
+										table.sort(instances, function(a, b)
+											return a.pid < b.pid
+										end)
+										async_in_progress = false
+										vim.schedule(function()
+											callback(instances)
+										end)
+									end
+								end
+							)
+						else
+							-- Process not in our cwd - skip
+							completed = completed + 1
+							if completed >= pending then
+								table.sort(instances, function(a, b)
+									return a.pid < b.pid
+								end)
+								async_in_progress = false
+								vim.schedule(function()
+									callback(instances)
+								end)
+							end
+						end
+					end
+				)
+			end
+		end
+	)
+end
+
+-- Synchronous version for public API (M.get_status) - still needed for debugging
+local function detect_system_claude_instances_sync()
 	local cwd = vim.fn.getcwd()
 	local instances = {}
 
-	-- Get all claude PIDs using ps (pgrep uses executable name which is 'node', not 'claude')
-	-- Claude Code sets its process title to 'claude' but runs as node
 	local ps_result = vim.fn.system("ps -ax -o pid,comm | grep '[c]laude' | awk '{print $1}'")
 	local pids = vim.split(ps_result, "\n", { trimempty = true })
 
@@ -62,22 +156,17 @@ local function detect_system_claude_instances()
 	end
 
 	for _, pid in ipairs(pids) do
-		-- Get working directory for this process
 		local lsof_result = vim.fn.system("lsof -p " .. pid .. " 2>/dev/null | grep cwd")
-		-- Trim whitespace and extract the last field (the path)
 		local proc_cwd = vim.trim(lsof_result):match("%S+$")
 
 		if proc_cwd == cwd then
-			-- Get CPU usage
-			local ps_result = vim.fn.system("ps -p " .. pid .. " -o %cpu= 2>/dev/null")
-			local cpu = tonumber(vim.trim(ps_result)) or 0
-
+			local cpu_result = vim.fn.system("ps -p " .. pid .. " -o %cpu= 2>/dev/null")
+			local cpu = tonumber(vim.trim(cpu_result)) or 0
 			local status = cpu > CPU_THRESHOLD and "thinking" or "idle"
 			table.insert(instances, { pid = tonumber(pid), cpu = cpu, status = status })
 		end
 	end
 
-	-- Sort by PID for stable ordering
 	table.sort(instances, function(a, b)
 		return a.pid < b.pid
 	end)
@@ -208,21 +297,21 @@ end
 -- Terminal Title Control
 -- =============================================================================
 
--- Emit OSC 2 sequence to set terminal title
+-- Emit OSC 2 sequence to set terminal title (with caching to avoid redundant writes)
 local function set_terminal_title(title)
+	-- Only write if title actually changed
+	if title == last_title then
+		return
+	end
+	last_title = title
+
 	-- OSC 2 sets window/tab title - read by WezTerm for tab title
 	io.write("\x1b]2;" .. title .. "\x07")
 	io.flush()
 end
 
--- Update terminal title based on current status
-function M._update_title()
-	-- Get all Claude instances for current directory
-	local instances = detect_system_claude_instances()
-
-	-- Debug: log instance count (remove after debugging)
-	-- vim.notify("Claude instances: " .. #instances, vim.log.levels.DEBUG)
-
+-- Build and set title from current state (uses cached instances)
+local function apply_title(instances)
 	-- Determine override status from claudecode.nvim (highest priority states)
 	local override_status = nil
 	if is_any_stale() then
@@ -241,14 +330,24 @@ function M._update_title()
 	set_terminal_title(title)
 end
 
+-- Update terminal title based on current status (async)
+function M._update_title()
+	-- Trigger async detection - will update title when complete
+	detect_system_claude_instances_async(function(instances)
+		cached_instances = instances
+		apply_title(instances)
+	end)
+end
+
 -- =============================================================================
 -- Public API
 -- =============================================================================
 
 -- Get current status info (for debugging/statusline)
+-- Note: Uses synchronous calls - don't call frequently
 -- Returns: instances array, override_status (or nil), lsp_status (or nil)
 function M.get_status()
-	local instances = detect_system_claude_instances()
+	local instances = detect_system_claude_instances_sync()
 
 	local override_status = nil
 	if is_any_stale() then
