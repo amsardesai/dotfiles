@@ -101,3 +101,35 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 
 - The **Notion Dev MCP server** is a goldmine of reference for what to do in Notion
 - Use it liberally, alongside web searches, when figuring out tasks
+
+**Creating commits (when user says "create commit", "commit this", etc.):**
+
+1. First, gather context by running these commands:
+   - `git branch --show-current` - current branch
+   - `git status --short` - changed files
+   - `git diff --stat` - diff summary
+   - `git diff` - full diff
+   - `cat .github/pull_request_template.md` - PR template
+
+2. Analyze the diff and determine the **Area** (one word):
+   - Component name (e.g., `Button`, `Modal`, `Sidebar`)
+   - Product area (e.g., `onboarding`, `billing`, `search`)
+   - Category (e.g., `a11y`, `perf`, `refactor`, `fix`, `feat`)
+
+3. Generate commit message following the **exact** structure from the PR template (read in step 1):
+   - Start with `Area: specific change description` as the title
+   - Fill in each section from the template
+   - Add at the end:
+     ```
+     🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+     Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+     ```
+
+4. Run: `gt create -a -m "FULL_COMMIT_MESSAGE"`
+
+**Commit rules:**
+- Check at least one `[x]` box in each checkbox section (testing and feature gate)
+- 1 commit per branch (amend if needed with `gt modify -a --amend`)
+- Be specific - explain WHAT changed and WHY
+- Infer testing approach from the changes made
