@@ -23,7 +23,9 @@ vim.g._claude_status_setup_done = vim.g._claude_status_setup_done or false
 
 -- Local state (doesn't need persistence)
 local poll_timer = nil
-local POLL_INTERVAL_MS = 2000 -- 2 seconds (was 500ms - reduced for performance)
+local refresh_timer = nil
+local POLL_INTERVAL_MS = 2000 -- Expensive detection: async ps/lsof every 2 seconds
+local REFRESH_INTERVAL_MS = 200 -- Fast title refresh: re-apply cached title every 200ms
 local STALE_THRESHOLD_MS = 30000 -- Consider connection stale after 30 seconds without pong
 local CPU_THRESHOLD = 2 -- CPU > 2% = thinking
 
@@ -297,10 +299,11 @@ end
 -- Terminal Title Control
 -- =============================================================================
 
--- Emit OSC 2 sequence to set terminal title (with caching to avoid redundant writes)
-local function set_terminal_title(title)
-	-- Only write if title actually changed
-	if title == last_title then
+-- Emit OSC 2 sequence to set terminal title
+-- force=true bypasses cache check (for refresh timer to combat external title overwrites)
+local function set_terminal_title(title, force)
+	-- Skip if unchanged (unless forced)
+	if not force and title == last_title then
 		return
 	end
 	last_title = title
@@ -331,12 +334,35 @@ local function apply_title(instances)
 end
 
 -- Update terminal title based on current status (async)
+-- Called by detection timer (2s) - runs expensive process detection
 function M._update_title()
 	-- Trigger async detection - will update title when complete
 	detect_system_claude_instances_async(function(instances)
 		cached_instances = instances
 		apply_title(instances)
 	end)
+end
+
+-- Refresh title from cache (no process detection)
+-- Called by refresh timer (200ms) - cheap, always writes to combat external overwrites
+function M._refresh_title()
+	-- Determine override status from claudecode.nvim (highest priority states)
+	local override_status = nil
+	if is_any_stale() then
+		override_status = "stale"
+	elseif has_diff_pending() then
+		override_status = "diff_pending"
+	elseif is_any_connecting() then
+		override_status = "connecting"
+	end
+
+	local base_title = get_base_title()
+	local prefix = build_prefix(cached_instances, override_status)
+	local suffix = build_lsp_suffix()
+	local title = prefix .. base_title .. suffix
+
+	-- Force write to combat external title overwrites (WezTerm focus events, etc.)
+	set_terminal_title(title, true)
 end
 
 -- =============================================================================
@@ -368,12 +394,13 @@ function M.force_update()
 	M._update_title()
 end
 
--- Start polling timer
+-- Start both timers (detection + refresh)
 function M.start()
 	if poll_timer then
 		return
 	end
 
+	-- Detection timer: expensive async process detection every 2s
 	poll_timer = vim.uv.new_timer()
 	poll_timer:start(
 		0,
@@ -382,14 +409,29 @@ function M.start()
 			pcall(M._update_title)
 		end)
 	)
+
+	-- Refresh timer: cheap title re-apply every 200ms to combat external overwrites
+	refresh_timer = vim.uv.new_timer()
+	refresh_timer:start(
+		100, -- Start after 100ms (let detection run first)
+		REFRESH_INTERVAL_MS,
+		vim.schedule_wrap(function()
+			pcall(M._refresh_title)
+		end)
+	)
 end
 
--- Stop polling timer
+-- Stop both timers
 function M.stop()
 	if poll_timer then
 		poll_timer:stop()
 		poll_timer:close()
 		poll_timer = nil
+	end
+	if refresh_timer then
+		refresh_timer:stop()
+		refresh_timer:close()
+		refresh_timer = nil
 	end
 end
 
