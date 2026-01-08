@@ -1,17 +1,20 @@
 -- Claude Code Status Indicator for WezTerm Tab Titles
--- Updates terminal title with emoji indicators based on Claude Code and LSP state:
+-- Updates terminal title with emoji indicators based on Claude Code, terminal, and LSP state:
 --
--- AI Agent Status (left side, per-instance with superscript numbers):
+-- AI Agent Status (left side prefix, one emoji per instance):
 --   ⚠️ - Stale connection (claudecode.nvim: no ping response for 30+ seconds)
 --   ⏳ - Diff pending review (claudecode.nvim: openDiff tool waiting)
 --   🔄 - Connecting (claudecode.nvim: WebSocket handshake in progress)
 --   🤖 - Thinking (CPU > 2% - Claude is processing)
 --   👤 - Idle (CPU ≤ 2% - user's turn)
 --
+-- Terminal Activity (left side prefix, after Claude icons):
+--   🖥️ - Terminal drawer has active command (not Claude)
+--
 -- LSP Status (right side, only shown when busy):
 --   🔵 - LSP busy (processing/indexing)
 --
--- Examples: "🤖 project" (1 instance), "🤖¹ ✏️² project 🔵" (2 instances, LSP busy)
+-- Examples: "🤖 project", "🤖 👤 🖥️ project 🔵", "🖥️ project"
 -- Detects ALL Claude instances in current directory (including external terminals)
 --
 -- Performance: Uses async vim.system() calls to avoid blocking Neovim's main loop
@@ -31,11 +34,9 @@ local CPU_THRESHOLD = 2 -- CPU > 2% = thinking
 
 -- Cached state for async operations
 local cached_instances = {}
+local cached_terminal_activity = false -- Any terminal has active (non-Claude) command
 local last_title = "" -- Cache to avoid redundant terminal writes
 local async_in_progress = false
-
--- Unicode superscript numbers
-local SUPERSCRIPTS = { "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹" }
 
 -- Status to emoji mapping (AI agent status - shown on left)
 local STATUS_EMOJI = {
@@ -50,6 +51,9 @@ local STATUS_EMOJI = {
 local LSP_EMOJI = {
 	busy = "🔵", -- LSP processing
 }
+
+-- Terminal activity emoji (shown in prefix when terminal has active command)
+local TERMINAL_EMOJI = "🖥️"
 
 -- =============================================================================
 -- Process-Based Detection (Async - non-blocking)
@@ -177,6 +181,71 @@ local function detect_system_claude_instances_sync()
 end
 
 -- =============================================================================
+-- Terminal Activity Detection (Async - for bottom drawer terminals)
+-- =============================================================================
+
+-- Detect if any terminal drawer has active child processes (async)
+-- Excludes Claude processes from "activity" (Claude icon takes precedence)
+-- @param claude_pids: array of Claude PIDs to exclude from activity detection
+-- @param callback: function(has_activity: boolean)
+local function detect_terminal_activity_async(claude_pids, callback)
+	-- Get bottom_drawers module (cached in _G)
+	local drawers = _G._bottom_drawers
+	if not drawers or not drawers.state then
+		callback(false)
+		return
+	end
+
+	-- Collect valid terminal PIDs from drawer job_ids
+	local terminal_pids = {}
+	for _, slot in ipairs({ "primary", "secondary" }) do
+		local drawer = drawers.state.drawers[slot]
+		if drawer and drawer.job_id then
+			local ok, pid = pcall(vim.fn.jobpid, drawer.job_id)
+			if ok and pid and pid > 0 then
+				table.insert(terminal_pids, pid)
+			end
+		end
+	end
+
+	if #terminal_pids == 0 then
+		callback(false)
+		return
+	end
+
+	-- Build set of Claude PIDs for fast lookup
+	local claude_pid_set = {}
+	for _, pid in ipairs(claude_pids) do
+		claude_pid_set[pid] = true
+	end
+
+	-- Check each terminal for non-Claude children
+	local pending = #terminal_pids
+	local found_activity = false
+
+	for _, term_pid in ipairs(terminal_pids) do
+		vim.system({ "pgrep", "-P", tostring(term_pid) }, { text = true }, function(result)
+			if result.code == 0 and result.stdout then
+				local children = vim.split(result.stdout, "\n", { trimempty = true })
+				for _, child_pid_str in ipairs(children) do
+					local child_pid = tonumber(child_pid_str)
+					if child_pid and not claude_pid_set[child_pid] then
+						found_activity = true
+					end
+				end
+			end
+
+			pending = pending - 1
+			if pending <= 0 then
+				vim.schedule(function()
+					callback(found_activity)
+				end)
+			end
+		end)
+	end
+end
+
+-- =============================================================================
 -- claudecode.nvim State Overrides (for connected instances only)
 -- =============================================================================
 
@@ -267,32 +336,32 @@ local function get_base_title()
 	return base
 end
 
--- Build emoji prefix from instance list
--- Each instance gets its own numbered emoji based on its status
-local function build_prefix(instances, override_status)
-	if #instances == 0 then
-		return ""
-	end
+-- Build emoji prefix from instance list and terminal activity
+-- Each instance gets its emoji based on status (no superscripts)
+-- Terminal activity icon appears after Claude icons
+local function build_prefix(instances, override_status, has_terminal_activity)
+	local parts = {}
 
-	local emojis = {}
+	-- Claude instance emojis (no superscripts - just emoji per instance)
 	for i, instance in ipairs(instances) do
-		-- Apply override status to first instance if present
 		local status = instance.status
+		-- Apply override status to first instance if present
 		if i == 1 and override_status then
 			status = override_status
 		end
-
 		local emoji = STATUS_EMOJI[status] or STATUS_EMOJI.idle
-		-- Only show superscript numbers when there are multiple instances
-		if #instances > 1 then
-			local superscript = SUPERSCRIPTS[i] or tostring(i)
-			table.insert(emojis, emoji .. superscript)
-		else
-			table.insert(emojis, emoji)
-		end
+		table.insert(parts, emoji)
 	end
 
-	return table.concat(emojis, " ") .. " "
+	-- Terminal activity icon (after Claude icons, if any)
+	if has_terminal_activity then
+		table.insert(parts, TERMINAL_EMOJI)
+	end
+
+	if #parts == 0 then
+		return ""
+	end
+	return table.concat(parts, " ") .. " "
 end
 
 -- =============================================================================
@@ -313,8 +382,8 @@ local function set_terminal_title(title, force)
 	io.flush()
 end
 
--- Build and set title from current state (uses cached instances)
-local function apply_title(instances)
+-- Build and set title from current state
+local function apply_title(instances, has_terminal_activity)
 	-- Determine override status from claudecode.nvim (highest priority states)
 	local override_status = nil
 	if is_any_stale() then
@@ -326,7 +395,7 @@ local function apply_title(instances)
 	end
 
 	local base_title = get_base_title()
-	local prefix = build_prefix(instances, override_status)
+	local prefix = build_prefix(instances, override_status, has_terminal_activity)
 	local suffix = build_lsp_suffix()
 	local title = prefix .. base_title .. suffix
 
@@ -336,10 +405,21 @@ end
 -- Update terminal title based on current status (async)
 -- Called by detection timer (2s) - runs expensive process detection
 function M._update_title()
-	-- Trigger async detection - will update title when complete
+	-- Step 1: Detect Claude instances
 	detect_system_claude_instances_async(function(instances)
 		cached_instances = instances
-		apply_title(instances)
+
+		-- Step 2: Extract Claude PIDs for exclusion from terminal activity
+		local claude_pids = {}
+		for _, inst in ipairs(instances) do
+			table.insert(claude_pids, inst.pid)
+		end
+
+		-- Step 3: Detect terminal activity (excludes Claude processes)
+		detect_terminal_activity_async(claude_pids, function(has_activity)
+			cached_terminal_activity = has_activity
+			apply_title(instances, has_activity)
+		end)
 	end)
 end
 
@@ -357,7 +437,7 @@ function M._refresh_title()
 	end
 
 	local base_title = get_base_title()
-	local prefix = build_prefix(cached_instances, override_status)
+	local prefix = build_prefix(cached_instances, override_status, cached_terminal_activity)
 	local suffix = build_lsp_suffix()
 	local title = prefix .. base_title .. suffix
 
