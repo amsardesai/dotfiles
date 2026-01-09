@@ -28,7 +28,9 @@ vim.g._claude_status_setup_done = vim.g._claude_status_setup_done or false
 local poll_timer = nil
 local refresh_timer = nil
 local POLL_INTERVAL_MS = 2000 -- Expensive detection: async ps/lsof every 2 seconds
-local REFRESH_INTERVAL_MS = 200 -- Fast title refresh: re-apply cached title every 200ms
+local REFRESH_INTERVAL_FAST = 200 -- Fast title refresh when idle: 200ms (5 Hz)
+local REFRESH_INTERVAL_SLOW = 1000 -- Slow title refresh when Claude outputting: 1000ms (1 Hz)
+local current_refresh_interval = REFRESH_INTERVAL_FAST -- Track current interval
 local STALE_THRESHOLD_MS = 30000 -- Consider connection stale after 30 seconds without pong
 local CPU_THRESHOLD = 2 -- CPU > 2% = thinking
 
@@ -441,6 +443,22 @@ function M._refresh_title()
 	local suffix = build_lsp_suffix()
 	local title = prefix .. base_title .. suffix
 
+	-- Dynamically adjust refresh interval based on Claude activity
+	-- Slow down (1000ms) when Claude is outputting, speed up (200ms) when idle
+	local any_thinking = false
+	for _, instance in ipairs(cached_instances) do
+		if instance.status == "thinking" then
+			any_thinking = true
+			break
+		end
+	end
+
+	local desired_interval = any_thinking and REFRESH_INTERVAL_SLOW or REFRESH_INTERVAL_FAST
+	if refresh_timer and desired_interval ~= current_refresh_interval then
+		current_refresh_interval = desired_interval
+		refresh_timer:set_repeat(desired_interval)
+	end
+
 	-- Force write to combat external title overwrites (WezTerm focus events, etc.)
 	set_terminal_title(title, true)
 end
@@ -490,11 +508,11 @@ function M.start()
 		end)
 	)
 
-	-- Refresh timer: cheap title re-apply every 200ms to combat external overwrites
+	-- Refresh timer: cheap title re-apply (200ms idle, 1000ms when Claude outputting)
 	refresh_timer = vim.uv.new_timer()
 	refresh_timer:start(
 		100, -- Start after 100ms (let detection run first)
-		REFRESH_INTERVAL_MS,
+		REFRESH_INTERVAL_FAST, -- Start at fast interval, dynamically adjusts
 		vim.schedule_wrap(function()
 			pcall(M._refresh_title)
 		end)

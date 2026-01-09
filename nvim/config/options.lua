@@ -34,6 +34,9 @@ vim.o.equalalways = false
 -- Faster update time for git signs and other plugins
 vim.o.updatetime = 200
 
+-- Prevent redraws during macros/command execution for better performance
+vim.o.lazyredraw = true
+
 -- Enable mouse move events (required for some plugins)
 vim.o.mousemoveevent = true
 

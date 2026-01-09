@@ -211,9 +211,9 @@ config.cursor_blink_rate = 500
 -- Aesthetics
 -- =============================================================================
 
--- Transparency with blur (macOS)
-config.window_background_opacity = 0.9
-config.macos_window_background_blur = 40
+-- Transparency with blur (macOS) - DISABLED for performance during heavy terminal output
+config.window_background_opacity = 1.0 -- No transparency (was 0.9)
+config.macos_window_background_blur = 0 -- No blur (was 40)
 
 -- Dim inactive panes for focus clarity
 config.inactive_pane_hsb = {
