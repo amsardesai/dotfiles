@@ -40,6 +40,10 @@ local cached_terminal_activity = false -- Any terminal has active (non-Claude) c
 local last_title = "" -- Cache to avoid redundant terminal writes
 local async_in_progress = false
 
+-- LSP progress tracking (event-driven via LspProgress autocmd)
+local lsp_busy_until = 0 -- Timestamp when LSP "busy" state expires
+local LSP_BUSY_TIMEOUT_MS = 1500 -- Keep busy for 1.5s after last progress event
+
 -- Status to emoji mapping (AI agent status - shown on left)
 local STATUS_EMOJI = {
 	stale = "⚠️", -- Connection stale (highest priority - problem)
@@ -298,7 +302,7 @@ end
 -- =============================================================================
 
 -- Get LSP status for entire Neovim instance
--- Returns: "busy" if any LSP is processing, "ready" if idle, nil if no LSPs attached
+-- Returns: "busy" if recently received progress, "ready" if idle, nil if no LSPs attached
 local function get_lsp_status()
 	-- Check if any LSP clients are attached (across all buffers)
 	local clients = vim.lsp.get_clients()
@@ -306,7 +310,12 @@ local function get_lsp_status()
 		return nil
 	end
 
-	-- Check if any LSP has active progress (vim.lsp.status returns progress message)
+	-- Check if we're within the "busy" timeout window (set by LspProgress autocmd)
+	if vim.uv.now() < lsp_busy_until then
+		return "busy"
+	end
+
+	-- Fallback: also check vim.lsp.status() for any current progress
 	local status = vim.lsp.status()
 	if status and status ~= "" then
 		return "busy"
@@ -562,6 +571,16 @@ function M.setup()
 			M.force_update()
 		end,
 		desc = "Update Claude status on directory change",
+	})
+
+	-- Track LSP progress events to maintain "busy" state
+	vim.api.nvim_create_autocmd("LspProgress", {
+		group = group,
+		callback = function()
+			-- Extend busy state on any progress event
+			lsp_busy_until = vim.uv.now() + LSP_BUSY_TIMEOUT_MS
+		end,
+		desc = "Track LSP progress for title indicator",
 	})
 
 	return M
