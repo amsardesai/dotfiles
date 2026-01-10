@@ -343,7 +343,12 @@ return {
 			fzf.setup({
 				{ "fzf-native", "hide" },
 				fzf_bin = "fzf",
-				previewers = { bat = { theme = "tokyonight_night" } },
+				previewers = {
+					bat = { theme = "tokyonight_night" },
+					builtin = {
+						snacks_image = { enabled = false },
+					},
+				},
 				files = {
 					cmd = "git ls-files --cached --others --exclude-standard 2>/dev/null || fd --type f --strip-cwd-prefix --hidden --exclude .git --exclude node_modules --exclude build",
 					git_icons = false,
