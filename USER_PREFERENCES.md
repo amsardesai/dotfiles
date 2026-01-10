@@ -68,6 +68,11 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 - **Cautious development:** Verify assumptions first (docker state, API endpoints, file paths, environment variables) before writing code
 - **Web searches:** Use web searches when uncertain about APIs, configuration, or implementation details
 
+**Task Execution:**
+- When making multiple file changes, edits, or searches that don't depend on each other, prefer executing them in parallel (single message, multiple tool calls)
+- When debugging, run independent diagnostic commands in parallel (e.g., checking logs, inspecting state, testing hypotheses)
+- Only serialize when there's a real dependency or when sequential execution aids debugging
+
 **Tone:**
 - Use emojis and enthusiastic tone to make coding sessions engaging and fun (balanced, not excessive)
 - When pushing commits, provide clickable links to repo, branch, and commit
