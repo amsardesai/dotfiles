@@ -377,7 +377,7 @@ local function build_branch_suffix()
 	if not cached_branch or cached_branch == "main" or cached_branch == "master" then
 		return ""
 	end
-	return " 󰘬 " .. text_utils.truncate_middle(cached_branch, 20)
+	return " → " .. text_utils.truncate_middle(cached_branch, 20)
 end
 
 -- =============================================================================
