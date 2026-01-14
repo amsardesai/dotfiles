@@ -194,12 +194,10 @@ return {
 					{
 						"branch",
 						fmt = function(name)
-							local max_len = 20
-							if #name > max_len then
-								local side_len = math.floor((max_len - 1) / 2)
-								return name:sub(1, side_len) .. "…" .. name:sub(-side_len)
-							end
-							return name
+							-- Lazy-load and cache text utils (only reads file once)
+							_G._text_utils = _G._text_utils
+								or dofile(vim.fn.stdpath("config") .. "/util/text.lua")
+							return _G._text_utils.truncate_middle(name, 20)
 						end,
 					},
 					"diff",

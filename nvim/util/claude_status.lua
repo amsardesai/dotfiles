@@ -21,6 +21,9 @@
 
 local M = {}
 
+-- Shared utilities
+local text_utils = dofile(vim.fn.stdpath("config") .. "/util/text.lua")
+
 -- Use vim.g for state so it persists across dofile() calls
 vim.g._claude_status_setup_done = vim.g._claude_status_setup_done or false
 
@@ -37,6 +40,8 @@ local CPU_THRESHOLD = 2 -- CPU > 2% = thinking
 -- Cached state for async operations
 local cached_instances = {}
 local cached_terminal_activity = false -- Any terminal has active (non-Claude) command
+local cached_branch = nil -- Current git branch name
+local cached_is_git_repo = nil -- nil = unknown, true/false = cached result
 local last_title = "" -- Cache to avoid redundant terminal writes
 local async_in_progress = false
 
@@ -252,6 +257,39 @@ local function detect_terminal_activity_async(claude_pids, callback)
 end
 
 -- =============================================================================
+-- Git Branch Detection (Async - for title display)
+-- =============================================================================
+
+-- Detect git branch asynchronously
+-- Caches is_git_repo status to skip calls in non-git directories
+local function detect_git_branch_async(callback)
+	-- Skip if we know we're not in a git repo
+	if cached_is_git_repo == false then
+		callback(nil)
+		return
+	end
+
+	vim.system(
+		{ "git", "rev-parse", "--abbrev-ref", "HEAD" },
+		{ text = true, cwd = vim.fn.getcwd() },
+		function(result)
+			vim.schedule(function()
+				if result.code == 0 and result.stdout then
+					local branch = vim.trim(result.stdout)
+					-- Cache git repo status as side effect
+					cached_is_git_repo = true
+					callback(branch ~= "" and branch or nil)
+				else
+					-- Not a git repo or error
+					cached_is_git_repo = false
+					callback(nil)
+				end
+			end)
+		end
+	)
+end
+
+-- =============================================================================
 -- claudecode.nvim State Overrides (for connected instances only)
 -- =============================================================================
 
@@ -333,6 +371,15 @@ local function build_lsp_suffix()
 	return ""
 end
 
+-- Build branch suffix for title (hidden for main/master)
+local function build_branch_suffix()
+	-- Don't show main/master branches
+	if not cached_branch or cached_branch == "main" or cached_branch == "master" then
+		return ""
+	end
+	return " [" .. text_utils.truncate_middle(cached_branch, 20) .. "]"
+end
+
 -- =============================================================================
 -- Title Building
 -- =============================================================================
@@ -407,8 +454,9 @@ local function apply_title(instances, has_terminal_activity)
 
 	local base_title = get_base_title()
 	local prefix = build_prefix(instances, override_status, has_terminal_activity)
-	local suffix = build_lsp_suffix()
-	local title = prefix .. base_title .. suffix
+	local branch_suffix = build_branch_suffix()
+	local lsp_suffix = build_lsp_suffix()
+	local title = prefix .. base_title .. branch_suffix .. lsp_suffix
 
 	set_terminal_title(title)
 end
@@ -416,17 +464,22 @@ end
 -- Update terminal title based on current status (async)
 -- Called by detection timer (2s) - runs expensive process detection
 function M._update_title()
-	-- Step 1: Detect Claude instances
+	-- Run git branch detection in parallel (fast ~5ms, updates cache)
+	detect_git_branch_async(function(branch)
+		cached_branch = branch
+	end)
+
+	-- Detect Claude instances (slower ~50-100ms)
 	detect_system_claude_instances_async(function(instances)
 		cached_instances = instances
 
-		-- Step 2: Extract Claude PIDs for exclusion from terminal activity
+		-- Extract Claude PIDs for exclusion from terminal activity
 		local claude_pids = {}
 		for _, inst in ipairs(instances) do
 			table.insert(claude_pids, inst.pid)
 		end
 
-		-- Step 3: Detect terminal activity (excludes Claude processes)
+		-- Detect terminal activity (excludes Claude processes)
 		detect_terminal_activity_async(claude_pids, function(has_activity)
 			cached_terminal_activity = has_activity
 			apply_title(instances, has_activity)
@@ -449,8 +502,9 @@ function M._refresh_title()
 
 	local base_title = get_base_title()
 	local prefix = build_prefix(cached_instances, override_status, cached_terminal_activity)
-	local suffix = build_lsp_suffix()
-	local title = prefix .. base_title .. suffix
+	local branch_suffix = build_branch_suffix()
+	local lsp_suffix = build_lsp_suffix()
+	local title = prefix .. base_title .. branch_suffix .. lsp_suffix
 
 	-- Dynamically adjust refresh interval based on Claude activity
 	-- Slow down (1000ms) when Claude is outputting, speed up (200ms) when idle
@@ -568,6 +622,9 @@ function M.setup()
 	vim.api.nvim_create_autocmd("DirChanged", {
 		group = group,
 		callback = function()
+			-- Reset git cache when changing directories
+			cached_is_git_repo = nil
+			cached_branch = nil
 			M.force_update()
 		end,
 		desc = "Update Claude status on directory change",

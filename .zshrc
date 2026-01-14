@@ -186,6 +186,7 @@ alias camn='git commit --no-verify -m'
 # Git Checkout
 alias co='git checkout'
 alias com='git checkout main'
+alias detach='git checkout --detach'  # Detach HEAD for worktree flexibility
 
 # Git Diff
 GIT_DIFF_OPTIONS="--ignore-all-space --minimal --find-copies"
