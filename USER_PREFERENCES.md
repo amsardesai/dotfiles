@@ -88,6 +88,11 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 - Follow the repository's commit message template if one exists
 - Provide thorough **test plans** in commit messages or PR descriptions
 
+**PR descriptions:**
+- Keep descriptions **concise and casual**
+- Focus on the **"why"** behind the change
+- If the "why" isn't obvious from the code, ask me before writing the description
+
 ---
 
 ## When inside notion-next (Notion monorepo)
