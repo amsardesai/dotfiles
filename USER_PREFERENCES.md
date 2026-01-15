@@ -100,13 +100,33 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 
 > **Detection:** These instructions apply when the working directory path contains `notion-next`
 
-**Git workflow (Graphite):**
+> ⚠️ **CRITICAL: ALWAYS USE GRAPHITE (`gt`) COMMANDS**
+>
+> **NEVER use raw git commands** for commits, pushes, syncing, or rebasing.
+> Using raw git WILL break the stacked PR workflow. This is non-negotiable.
 
-- I work in a **stacked PR workflow** using Graphite
-- Use `gt` (graphite) commands instead of raw git for commits
-- Stick to **1 commit per branch** - amend existing commits rather than adding new ones
-- If my branches have multiple commits, consolidate them to 1 commit per branch
-- Changes are stacked and sent to GitHub via Graphite PRs
+**Prohibited git commands → Use Graphite instead:**
+
+| ❌ NEVER Use | ✅ Use Instead | Purpose |
+|--------------|----------------|---------|
+| `git commit` | `gt create -a -m "msg"` | New branch + commit |
+| `git commit --amend` | `gt modify -a --amend` | Amend current commit |
+| `git push` | `gt submit` | Push to remote |
+| `git pull` | `gt sync` | Sync with trunk |
+| `git fetch && git rebase` | `gt sync` then `gt restack` | Update and restack |
+| `git rebase` | `gt restack` | Rebase stack on trunk |
+| `git checkout -b` | `gt create` | Create new branch |
+| `git merge` | Never (Graphite handles) | Merge branches |
+
+**One commit per branch (strictly enforced):**
+
+- ALWAYS amend with `gt modify -a --amend`, NEVER add new commits
+- Before committing, check `gt log` - if branch has commits, amend don't add
+- If a branch has multiple commits, consolidate them before proceeding
+
+**Safe read-only git commands (OK to use):**
+
+- `git status`, `git diff`, `git log`, `git branch`, `git show`, `git blame`, `git stash`
 
 **Notion monorepo context:**
 
