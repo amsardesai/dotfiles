@@ -86,6 +86,32 @@ return {
 					end, 100)
 				end,
 			})
+
+			-- Kill Claude terminal process on Neovim exit to prevent orphaned processes
+			vim.api.nvim_create_autocmd("VimLeavePre", {
+				callback = function()
+					local ok, terminal = pcall(require, "claudecode.terminal")
+					if not ok or not terminal then
+						return
+					end
+
+					-- Get the terminal buffer that this plugin is tracking
+					local bufnr = terminal.get_active_terminal_bufnr and terminal.get_active_terminal_bufnr()
+					if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
+						return
+					end
+
+					-- Get the job channel from the terminal buffer
+					local channel_ok, channel = pcall(vim.api.nvim_buf_get_option, bufnr, "channel")
+					if not channel_ok or not channel or channel == 0 then
+						return
+					end
+
+					-- Kill the job - this only affects THIS Neovim instance's Claude process
+					pcall(vim.fn.jobstop, channel)
+				end,
+				desc = "Kill Claude terminal process on Neovim exit",
+			})
 		end,
 		opts = {
 			log_level = "warn",
