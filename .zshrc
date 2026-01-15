@@ -211,7 +211,7 @@ alias lgm="git log $GIT_LOG_OPTIONS --author=Ankit"
 # Git Push/Pull
 alias pullme='git pull origin main'
 alias pushme='git push origin HEAD'
-alias pushmef='git push -f origin HEAD'
+alias pushmef='git push --force-with-lease origin HEAD'
 
 # Git Status
 alias st='git status --short'
