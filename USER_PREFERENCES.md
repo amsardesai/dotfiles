@@ -63,6 +63,11 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 - Use bullet points, good formatting, clear structure (I have trouble with walls of text)
 - Make explanations scannable and easy to understand
 
+**File references:**
+- Always render file paths with line numbers: `src/utils.ts:42`
+- Include column numbers when referring to specific positions: `src/utils.ts:42:8`
+- This enables WezTerm hyperlink detection for CMD+Click navigation to Neovim
+
 **Development approach:**
 - **Assumption checks:** Do 1-2 rounds of assumption verification before diving into solutions
 - **Cautious development:** Verify assumptions first (docker state, API endpoints, file paths, environment variables) before writing code
