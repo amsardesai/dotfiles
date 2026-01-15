@@ -128,6 +128,17 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 
 - `git status`, `git diff`, `git log`, `git branch`, `git show`, `git blame`, `git stash`
 
+**GitHub CLI (`gh`) commands:**
+
+| ❌ NEVER Use | ✅ Use Instead | Why |
+|--------------|----------------|-----|
+| `gh pr create` | `gt submit` | Graphite creates PRs |
+| `gh pr merge` | Never | Graphite handles merging |
+
+OK to use `gh` for read/info operations:
+- `gh pr view`, `gh pr checks`, `gh pr comment`, `gh pr list`
+- `gh api`, `gh issue`, `gh repo view`
+
 **Notion monorepo context:**
 
 - The **Notion Dev MCP server** is a goldmine of reference for what to do in Notion
