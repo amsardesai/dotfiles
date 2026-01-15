@@ -92,6 +92,7 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 - Keep descriptions **concise and casual**
 - Focus on the **"why"** behind the change
 - If the "why" isn't obvious from the code, ask me before writing the description
+- **Include links to Notion docs** when relevant (task links, important context docs)
 
 ---
 
