@@ -82,10 +82,29 @@ return {
 					if not _G.bottom_drawers then
 						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
 					end
-					_G.bottom_drawers.close_all_drawer_windows()
+					-- Hide terminal windows (preserve buffers, don't kill processes)
+					_G.bottom_drawers.hide_all()
+
+					-- Close neo-tree sidebar (if open)
+					pcall(vim.cmd, "Neotree close")
+
+					-- Close Claude Code panel (only if open)
+					local ok, terminal = pcall(require, "claudecode.terminal")
+					if ok and terminal and terminal.get_active_terminal_bufnr then
+						local bufnr = terminal.get_active_terminal_bufnr()
+						if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
+							-- Find window containing this buffer and close it
+							for _, win in ipairs(vim.api.nvim_list_wins()) do
+								if vim.api.nvim_win_get_buf(win) == bufnr then
+									vim.api.nvim_win_close(win, false)
+									break
+								end
+							end
+						end
+					end
 				end,
 				mode = { "n", "v", "t" },
-				desc = "Close all drawer windows",
+				desc = "Hide all drawers",
 			},
 			{
 				"<leader>Q",
