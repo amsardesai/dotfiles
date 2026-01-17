@@ -30,6 +30,7 @@ tap "withgraphite/tap"
 brew "withgraphite/tap/graphite"
 brew "terminal-notifier"  # For Claude Code task completion notifications
 cask "claude-code"
+cask "codex"  # OpenAI Codex CLI
 cask "1password-cli"
 
 # GUI apps
