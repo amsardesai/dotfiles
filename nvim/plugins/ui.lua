@@ -109,13 +109,48 @@ return {
 			{
 				"<leader>Q",
 				function()
+					-- Close bottom drawer terminals (kills processes)
 					if not _G.bottom_drawers then
 						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
 					end
 					_G.bottom_drawers.close_all()
+
+					-- Close neo-tree sidebar
+					pcall(vim.cmd, "Neotree close")
+
+					-- Kill claudecode.nvim terminal
+					local ok, terminal = pcall(require, "claudecode.terminal")
+					if ok and terminal then
+						local bufnr = terminal.get_active_terminal_bufnr and terminal.get_active_terminal_bufnr()
+						if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
+							local channel = vim.bo[bufnr].channel
+							if channel and channel > 0 then
+								pcall(vim.fn.jobstop, channel)
+							end
+							pcall(vim.api.nvim_buf_delete, bufnr, { force = true })
+						end
+					end
+
+					-- Kill stray claude processes in current directory
+					local cwd = vim.fn.getcwd()
+					local handle = io.popen("pgrep -x claude 2>/dev/null")
+					if handle then
+						local pids = handle:read("*a")
+						handle:close()
+						for pid in pids:gmatch("%d+") do
+							local lsof = io.popen("lsof -p " .. pid .. " 2>/dev/null | grep cwd | awk '{print $NF}'")
+							if lsof then
+								local proc_cwd = lsof:read("*a"):gsub("%s+$", "")
+								lsof:close()
+								if proc_cwd == cwd then
+									os.execute("kill -9 " .. pid .. " 2>/dev/null")
+								end
+							end
+						end
+					end
 				end,
 				mode = { "n", "v", "t" },
-				desc = "Kill all terminals",
+				desc = "Kill all panels and Claude processes",
 			},
 			{
 				"<leader>gg",
