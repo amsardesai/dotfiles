@@ -2,6 +2,27 @@
 
 All notable changes and discoveries in this dotfiles repository.
 
+## 2026-01-21
+
+### Features
+- **Claude Code skills with `!`command`` pre-execution** - Skills now use inline command syntax to pre-gather context before Claude sees the prompt. Eliminates multiple round trips by running git commands during skill loading (`.claude/commands/commit-push.md`, `.claude/commands/document-changes.md`)
+- **`/commit-push` skill** - New skill that stages all changes, gathers diff and recent commits, then commits and pushes in one command. Uses `!`command`` syntax for instant context gathering (`.claude/commands/commit-push.md`)
+
+### Improvements
+- **Optimized `/document-changes` skill** - Pre-gathers current state of all 5 doc files, full diff since last update, and git history. Reduces typical execution from ~5-8 round trips to ~2-3. Explicit instruction to make all edits in parallel (`.claude/commands/document-changes.md`)
+- **Skill frontmatter standardization** - All skills now have proper frontmatter with `name`, `description`, and `allowed-tools` fields (`.claude/commands/*.md`)
+
+### Bug Fixes
+- **Kill all terminal processes on Neovim exit** - VimLeavePre hook now kills both bottom drawer terminals (`,z`, `,x`) and Claude terminal. Uses modern `vim.bo[buf].channel` API instead of deprecated `nvim_buf_get_option`. Prevents orphaned zsh/claude processes (`nvim/plugins/tools.lua:90-117`)
+
+### Performance
+- **Disable separate TypeScript diagnostic server** - Reduced tsserver instances by setting `separate_diagnostic_server = false`. Lowers memory usage in large monorepos (`nvim/plugins/lang.lua`)
+
+### Dependencies
+- **OpenAI Codex CLI** - Added `codex` cask to Brewfile (`Brewfile`)
+
+---
+
 ## 2026-01-02
 
 ### Features
