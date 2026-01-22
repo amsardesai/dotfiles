@@ -9,12 +9,12 @@
 --   👤 - Idle (CPU ≤ 2% - user's turn)
 --
 -- Terminal Activity (left side prefix, after Claude icons):
---   🖥️ - Terminal drawer has active command (not Claude)
+--   🖥️ - Per-drawer indicator (one icon per active drawer, max 2)
 --
 -- LSP Status (right side, only shown when busy):
 --   🔵 - LSP busy (processing/indexing)
 --
--- Examples: "🤖 project", "🤖 👤 🖥️ project 🔵", "🖥️ project"
+-- Examples: "🤖 project", "🤖 👤 🖥️ 🖥️ project 🔵", "🖥️ project"
 -- Detects ALL Claude instances in current directory (including external terminals)
 --
 -- Performance: Uses async vim.system() calls to avoid blocking Neovim's main loop
@@ -39,7 +39,7 @@ local CPU_THRESHOLD = 2 -- CPU > 2% = thinking
 
 -- Cached state for async operations
 local cached_instances = {}
-local cached_terminal_activity = false -- Any terminal has active (non-Claude) command
+local cached_drawer_activity = { primary = false, secondary = false } -- Per-drawer activity
 local cached_branch = nil -- Current git branch name
 local cached_is_git_repo = nil -- nil = unknown, true/false = cached result
 local last_title = "" -- Cache to avoid redundant terminal writes
@@ -195,32 +195,15 @@ end
 -- Terminal Activity Detection (Async - for bottom drawer terminals)
 -- =============================================================================
 
--- Detect if any terminal drawer has active child processes (async)
+-- Detect which terminal drawers have active child processes (async)
 -- Excludes Claude processes from "activity" (Claude icon takes precedence)
 -- @param claude_pids: array of Claude PIDs to exclude from activity detection
--- @param callback: function(has_activity: boolean)
+-- @param callback: function(activity: {primary: boolean, secondary: boolean})
 local function detect_terminal_activity_async(claude_pids, callback)
 	-- Get bottom_drawers module (cached in _G)
 	local drawers = _G._bottom_drawers
 	if not drawers or not drawers.state then
-		callback(false)
-		return
-	end
-
-	-- Collect valid terminal PIDs from drawer job_ids
-	local terminal_pids = {}
-	for _, slot in ipairs({ "primary", "secondary" }) do
-		local drawer = drawers.state.drawers[slot]
-		if drawer and drawer.job_id then
-			local ok, pid = pcall(vim.fn.jobpid, drawer.job_id)
-			if ok and pid and pid > 0 then
-				table.insert(terminal_pids, pid)
-			end
-		end
-	end
-
-	if #terminal_pids == 0 then
-		callback(false)
+		callback({ primary = false, secondary = false })
 		return
 	end
 
@@ -230,18 +213,38 @@ local function detect_terminal_activity_async(claude_pids, callback)
 		claude_pid_set[pid] = true
 	end
 
-	-- Check each terminal for non-Claude children
-	local pending = #terminal_pids
-	local found_activity = false
+	-- Track activity per drawer
+	local activity = { primary = false, secondary = false }
+	local slots_to_check = {}
 
-	for _, term_pid in ipairs(terminal_pids) do
-		vim.system({ "pgrep", "-P", tostring(term_pid) }, { text = true }, function(result)
+	-- Collect valid terminal PIDs with their slot names
+	for _, slot in ipairs({ "primary", "secondary" }) do
+		local drawer = drawers.state.drawers[slot]
+		if drawer and drawer.job_id then
+			local ok, pid = pcall(vim.fn.jobpid, drawer.job_id)
+			if ok and pid and pid > 0 then
+				table.insert(slots_to_check, { slot = slot, pid = pid })
+			end
+		end
+	end
+
+	if #slots_to_check == 0 then
+		callback(activity)
+		return
+	end
+
+	-- Check each terminal for non-Claude children
+	local pending = #slots_to_check
+
+	for _, entry in ipairs(slots_to_check) do
+		vim.system({ "pgrep", "-P", tostring(entry.pid) }, { text = true }, function(result)
 			if result.code == 0 and result.stdout then
 				local children = vim.split(result.stdout, "\n", { trimempty = true })
 				for _, child_pid_str in ipairs(children) do
 					local child_pid = tonumber(child_pid_str)
 					if child_pid and not claude_pid_set[child_pid] then
-						found_activity = true
+						activity[entry.slot] = true
+						break -- Found activity, no need to check more children
 					end
 				end
 			end
@@ -249,7 +252,7 @@ local function detect_terminal_activity_async(claude_pids, callback)
 			pending = pending - 1
 			if pending <= 0 then
 				vim.schedule(function()
-					callback(found_activity)
+					callback(activity)
 				end)
 			end
 		end)
@@ -396,8 +399,8 @@ end
 
 -- Build emoji prefix from instance list and terminal activity
 -- Each instance gets its emoji based on status (no superscripts)
--- Terminal activity icon appears after Claude icons
-local function build_prefix(instances, override_status, has_terminal_activity)
+-- Terminal activity icons appear after Claude icons (one per active drawer)
+local function build_prefix(instances, override_status, drawer_activity)
 	local parts = {}
 
 	-- Claude instance emojis (no superscripts - just emoji per instance)
@@ -411,9 +414,14 @@ local function build_prefix(instances, override_status, has_terminal_activity)
 		table.insert(parts, emoji)
 	end
 
-	-- Terminal activity icon (after Claude icons, if any)
-	if has_terminal_activity then
-		table.insert(parts, TERMINAL_EMOJI)
+	-- Terminal activity icons (one per active drawer, in order: primary, secondary)
+	if drawer_activity then
+		if drawer_activity.primary then
+			table.insert(parts, TERMINAL_EMOJI)
+		end
+		if drawer_activity.secondary then
+			table.insert(parts, TERMINAL_EMOJI)
+		end
 	end
 
 	if #parts == 0 then
@@ -441,7 +449,7 @@ local function set_terminal_title(title, force)
 end
 
 -- Build and set title from current state
-local function apply_title(instances, has_terminal_activity)
+local function apply_title(instances, drawer_activity)
 	-- Determine override status from claudecode.nvim (highest priority states)
 	local override_status = nil
 	if is_any_stale() then
@@ -453,7 +461,7 @@ local function apply_title(instances, has_terminal_activity)
 	end
 
 	local base_title = get_base_title()
-	local prefix = build_prefix(instances, override_status, has_terminal_activity)
+	local prefix = build_prefix(instances, override_status, drawer_activity)
 	local branch_suffix = build_branch_suffix()
 	local lsp_suffix = build_lsp_suffix()
 	local title = prefix .. base_title .. branch_suffix .. lsp_suffix
@@ -479,10 +487,10 @@ function M._update_title()
 			table.insert(claude_pids, inst.pid)
 		end
 
-		-- Detect terminal activity (excludes Claude processes)
-		detect_terminal_activity_async(claude_pids, function(has_activity)
-			cached_terminal_activity = has_activity
-			apply_title(instances, has_activity)
+		-- Detect terminal activity per drawer (excludes Claude processes)
+		detect_terminal_activity_async(claude_pids, function(drawer_activity)
+			cached_drawer_activity = drawer_activity
+			apply_title(instances, drawer_activity)
 		end)
 	end)
 end
@@ -501,7 +509,7 @@ function M._refresh_title()
 	end
 
 	local base_title = get_base_title()
-	local prefix = build_prefix(cached_instances, override_status, cached_terminal_activity)
+	local prefix = build_prefix(cached_instances, override_status, cached_drawer_activity)
 	local branch_suffix = build_branch_suffix()
 	local lsp_suffix = build_lsp_suffix()
 	local title = prefix .. base_title .. branch_suffix .. lsp_suffix
