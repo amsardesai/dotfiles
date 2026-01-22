@@ -18,17 +18,5 @@
       "Write(file:KEYBINDINGS.md)",
       "Write(file:TROUBLESHOOTING.md)"
     ]
-  },
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/scripts/commit-push-hook.sh"
-          }
-        ]
-      }
-    ]
   }
 }

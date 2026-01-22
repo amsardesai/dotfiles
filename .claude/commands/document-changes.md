@@ -1,26 +1,43 @@
+---
+name: document-changes
+description: Analyze recent commits and update CLAUDE.md, README.md, CHANGELOG.md
+---
+
 # Document Recent Changes
 
 Analyze all changes made to this repository since the last documentation update and update CLAUDE.md and README.md accordingly.
 
+## Context (pre-gathered)
+
+### Last Documentation Updates
+
+!`git log --format="%h %ad %s" --date=short -- CLAUDE.md README.md CHANGELOG.md | head -10`
+
+### Recent Commits
+
+!`git log --oneline -20`
+
+### Changed Files (last 20 commits)
+
+!`git diff --stat $(git log --format="%h" -20 | tail -1)..HEAD 2>/dev/null || git diff --stat HEAD~20..HEAD 2>/dev/null || echo "Unable to get diff stats"`
+
+---
+
 ## Steps
 
-1. **Find the last documentation update:**
-   - Check `git log --format="%h %ad %s" --date=short -- CLAUDE.md README.md` to find when docs were last updated
-   - Identify the commit hash to use as the baseline
+1. **Analyze the context above:**
+   - Find the baseline commit (last doc update)
+   - Identify commits since then that need documentation
+   - Read key changed files to understand what was modified
 
-2. **Analyze changes since then:**
-   - Run `git log --oneline <baseline>..HEAD` to see all commits
-   - Run `git diff --stat <baseline>..HEAD` to see changed files
-   - Read key changed files to understand what was modified and why
-
-3. **Categorize the changes:**
+2. **Categorize the changes:**
    - **Features** - new plugins, tools, integrations, functionality
    - **Bug Fixes** - issues resolved, regressions fixed
    - **Improvements** - optimizations, refactors, enhancements
    - **Configuration** - settings, options, keybindings changes
    - **Dependencies** - new tools, removed tools, version updates
 
-4. **Update documentation files:**
+3. **Update documentation files:**
 
    **CHANGELOG.md** (for recent discoveries/changes):
    - Add a new dated section at the top
@@ -49,24 +66,25 @@ Analyze all changes made to this repository since the last documentation update 
    - Update Installation steps if setup.sh changed
    - Keep it concise - detailed info goes in other docs
 
-5. **Verify updates:**
+4. **Verify updates:**
    - Ensure all documentation files are consistent
    - Check that information isn't duplicated unnecessarily
    - Verify formatting is clean and Unicode characters preserved (│ ─ ┌ └ etc.)
    - Cross-check that links between docs are valid
 
-6. **Test the changes:**
+5. **Test the changes:**
    - Verify symlinks still work (`.claude/CLAUDE.md` → `AGENTS.md`)
    - Ensure Claude Code can read all files
    - Check that markdown formatting renders correctly
 
-7. **Commit documentation changes:**
+6. **Commit documentation changes:**
    - Stage documentation files: `git add CHANGELOG.md AGENTS.md README.md KEYBINDINGS.md TROUBLESHOOTING.md`
    - Create a detailed commit summarizing what was documented:
      - List the major changes/features that were documented
      - Mention which sections/files were updated
      - Use format: "docs: Document [changes] from [date range]"
    - Example commit message:
+
      ```
      docs: Document lazy.nvim migration and keybinding updates from Dec 2024
 

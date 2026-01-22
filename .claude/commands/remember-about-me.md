@@ -1,7 +1,7 @@
 ---
+name: remember-about-me
 description: Add new information to my persistent user preferences
 argument-hint: <message>
-allowed-tools: Read, Edit
 ---
 
 # Remember About Me

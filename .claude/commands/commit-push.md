@@ -1,16 +1,41 @@
+---
+name: commit-push
+description: Commit all staged changes and push to remote
+allowed-tools: Bash
+---
+
 # Commit and Push
 
-The hook has already staged all changes and gathered git info. Now:
+## Context (pre-gathered)
 
-1. **Analyze the staged changes** shown above
-2. **Create a descriptive commit** following the repo's style (check recent commits)
-3. **Push to remote**
+### Staged Changes
+!`git add -A >&2 && git diff --cached --stat`
 
-Use conventional commits if the repo uses them. Include footer:
-```
+### Full Diff
+!`git diff --cached`
+
+### Recent Commits (for style)
+!`git log --oneline -5`
+
+---
+
+## Task
+
+The context above shows all staged changes. Do NOT run git diff, git log, git status, or git add.
+
+**Immediately commit and push in ONE command:**
+
+```bash
+git commit -m "$(cat <<'EOF'
+<title>
+
+<body>
+
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude <model> <noreply@anthropic.com>
+EOF
+)" && git push
 ```
 
-Do NOT ask for confirmation - commit and push immediately.
+Use conventional commits if the repo uses them (check recent commits above).
