@@ -90,25 +90,16 @@ return {
 			-- Kill all terminal processes on Neovim exit to prevent orphaned processes
 			vim.api.nvim_create_autocmd("VimLeavePre", {
 				callback = function()
-					-- 1. Kill bottom drawer terminals (primary, secondary)
-					local drawers = _G._bottom_drawers
-					if drawers and drawers.state and drawers.state.drawers then
-						for _, slot in ipairs({ "primary", "secondary" }) do
-							local drawer = drawers.state.drawers[slot]
-							if drawer and drawer.job_id then
-								pcall(vim.fn.jobstop, drawer.job_id)
-							end
-						end
-					end
-
-					-- 2. Kill Claude terminal (via claudecode.nvim)
-					local ok, terminal = pcall(require, "claudecode.terminal")
-					if ok and terminal and terminal.get_active_terminal_bufnr then
-						local bufnr = terminal.get_active_terminal_bufnr()
-						if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
-							local channel = vim.bo[bufnr].channel
-							if channel and channel > 0 then
-								pcall(vim.fn.jobstop, channel)
+					-- Iterate ALL buffers and kill any terminal jobs
+					-- This is more robust than relying on plugin state which can be nil
+					for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+						if vim.api.nvim_buf_is_valid(bufnr) then
+							local buftype = vim.bo[bufnr].buftype
+							if buftype == "terminal" then
+								local channel = vim.bo[bufnr].channel
+								if channel and channel > 0 then
+									pcall(vim.fn.jobstop, channel)
+								end
 							end
 						end
 					end
