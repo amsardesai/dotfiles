@@ -1,111 +1,125 @@
 ---
 name: document-changes
 description: Analyze recent commits and update CLAUDE.md, README.md, CHANGELOG.md
+allowed-tools: Read, Edit, Bash, Grep, Glob
 ---
 
 # Document Recent Changes
 
-Analyze all changes made to this repository since the last documentation update and update CLAUDE.md and README.md accordingly.
+Update documentation files based on recent repository changes.
 
 ## Context (pre-gathered)
 
-### Last Documentation Updates
+### Git History
 
-!`git log --format="%h %ad %s" --date=short -- CLAUDE.md README.md CHANGELOG.md | head -10`
+**Last documentation updates:**
+!`git log --format="%h %ad %s" --date=short -- CHANGELOG.md AGENTS.md README.md KEYBINDINGS.md TROUBLESHOOTING.md | head -10`
 
-### Recent Commits
-
+**Recent commits (newest first):**
 !`git log --oneline -20`
 
-### Changed Files (last 20 commits)
+**Changed files since last doc update:**
+!`LAST_DOC_COMMIT=$(git log --format="%h" -1 -- CHANGELOG.md AGENTS.md README.md 2>/dev/null || echo "HEAD~20"); git diff --stat $LAST_DOC_COMMIT..HEAD 2>/dev/null || echo "Unable to determine changes"`
 
-!`git diff --stat $(git log --format="%h" -20 | tail -1)..HEAD 2>/dev/null || git diff --stat HEAD~20..HEAD 2>/dev/null || echo "Unable to get diff stats"`
+### Current Documentation State
+
+**CHANGELOG.md (first 80 lines):**
+!`head -80 CHANGELOG.md 2>/dev/null || echo "File not found"`
+
+**AGENTS.md structure:**
+!`head -100 AGENTS.md 2>/dev/null || echo "File not found"`
+
+**README.md structure:**
+!`head -60 README.md 2>/dev/null || echo "File not found"`
+
+**KEYBINDINGS.md structure:**
+!`head -40 KEYBINDINGS.md 2>/dev/null || echo "File not found"`
+
+**TROUBLESHOOTING.md structure:**
+!`head -40 TROUBLESHOOTING.md 2>/dev/null || echo "File not found"`
+
+### Full Diff (for understanding changes)
+
+!`LAST_DOC_COMMIT=$(git log --format="%h" -1 -- CHANGELOG.md AGENTS.md README.md 2>/dev/null || echo "HEAD~10"); git diff $LAST_DOC_COMMIT..HEAD 2>/dev/null | head -500 || echo "Unable to get diff"`
 
 ---
 
-## Steps
+## Task
 
-1. **Analyze the context above:**
-   - Find the baseline commit (last doc update)
-   - Identify commits since then that need documentation
-   - Read key changed files to understand what was modified
+**CRITICAL: Minimize round trips.** You have all the context above. Do NOT read files unless absolutely necessary. Make ALL documentation edits in a SINGLE message with parallel Edit tool calls.
 
-2. **Categorize the changes:**
-   - **Features** - new plugins, tools, integrations, functionality
-   - **Bug Fixes** - issues resolved, regressions fixed
-   - **Improvements** - optimizations, refactors, enhancements
-   - **Configuration** - settings, options, keybindings changes
-   - **Dependencies** - new tools, removed tools, version updates
+### Step 1: Analyze (no tool calls needed)
 
-3. **Update documentation files:**
+From the context above, identify:
+- Baseline commit (last doc update)
+- Commits that need documentation
+- Categories of changes:
+  - **Features** - new plugins, tools, integrations, functionality
+  - **Bug Fixes** - issues resolved, regressions fixed
+  - **Improvements** - optimizations, refactors, enhancements
+  - **Configuration** - settings, options, keybindings changes
+  - **Dependencies** - new tools, removed tools, version updates
 
-   **CHANGELOG.md** (for recent discoveries/changes):
-   - Add a new dated section at the top
-   - Categorize changes as: Features, Bug Fixes, Improvements, Configuration
-   - Include what changed, why (if apparent), key files affected
-   - Use clear headers for each change
-   - This is the primary historical record
+### Step 2: Edit ALL documentation files in ONE message
 
-   **AGENTS.md** (for architecture/patterns only):
-   - Update "Key Files & Directories" if structure changed
-   - Update "Tech Stack & Dependencies" if tools changed
-   - Update "Architecture & Patterns" if design decisions changed
-   - Do NOT add to changelog - that's in CHANGELOG.md now
+Use parallel Edit tool calls to update all relevant files simultaneously:
 
-   **KEYBINDINGS.md** (if keybindings changed):
-   - Update relevant sections with new shortcuts
-   - Maintain categorical organization (Neovim, Tmux, WezTerm, etc.)
-   - Keep table format consistent
+**CHANGELOG.md** (always update):
+- Add a new dated section at the TOP (below any header)
+- Format: `## YYYY-MM-DD` followed by categorized changes
+- Include: what changed, why (if apparent), key files affected
+- Use headers: Features, Bug Fixes, Improvements, Configuration
+- This is the primary historical record
 
-   **TROUBLESHOOTING.md** (if new common issues discovered):
-   - Add new issue + solution sections
-   - Use clear problem/solution format
+**AGENTS.md** (update if architecture/patterns changed):
+- Update "Key Files & Directories" if structure changed
+- Update "Tech Stack & Dependencies" if tools changed
+- Update "Architecture & Patterns" if design decisions changed
+- Do NOT duplicate changelog entries here
 
-   **README.md** (user-facing changes only):
-   - Update Prerequisites if dependencies changed
-   - Update Installation steps if setup.sh changed
-   - Keep it concise - detailed info goes in other docs
+**README.md** (update if user-facing setup changed):
+- Update Prerequisites if dependencies changed
+- Update Installation steps if setup.sh changed
+- Keep it concise - detailed info goes in other docs
 
-4. **Verify updates:**
-   - Ensure all documentation files are consistent
-   - Check that information isn't duplicated unnecessarily
-   - Verify formatting is clean and Unicode characters preserved (│ ─ ┌ └ etc.)
-   - Cross-check that links between docs are valid
+**KEYBINDINGS.md** (update if keybindings changed):
+- Update relevant sections with new shortcuts
+- Maintain categorical organization (Neovim, Tmux, WezTerm, etc.)
+- Keep table format consistent
 
-5. **Test the changes:**
-   - Verify symlinks still work (`.claude/CLAUDE.md` → `AGENTS.md`)
-   - Ensure Claude Code can read all files
-   - Check that markdown formatting renders correctly
+**TROUBLESHOOTING.md** (update if new issues discovered):
+- Add new issue + solution sections
+- Use clear problem/solution format
 
-6. **Commit documentation changes:**
-   - Stage documentation files: `git add CHANGELOG.md AGENTS.md README.md KEYBINDINGS.md TROUBLESHOOTING.md`
-   - Create a detailed commit summarizing what was documented:
-     - List the major changes/features that were documented
-     - Mention which sections/files were updated
-     - Use format: "docs: Document [changes] from [date range]"
-   - Example commit message:
+**Formatting rules:**
+- Preserve Unicode box-drawing characters: │ ─ ┌ └ ├ ┤ ┬ ┴ ┼
+- Maintain consistent formatting with existing content
+- Don't duplicate information across files
 
-     ```
-     docs: Document lazy.nvim migration and keybinding updates from Dec 2024
+### Step 3: Commit in ONE command
 
-     Updated CHANGELOG.md:
-     - Added 2025-12-07 entry for lazy.nvim migration
-     - Documented startup time improvements (200ms → 37ms)
+```bash
+git add CHANGELOG.md AGENTS.md README.md KEYBINDINGS.md TROUBLESHOOTING.md && git commit -m "$(cat <<'EOF'
+docs: Document [brief summary] from [date range]
 
-     Updated AGENTS.md:
-     - Updated plugin manager info (lazy.nvim instead of vim-plug)
-     - Updated directory structure for LazyVim-style organization
+Updated CHANGELOG.md:
+- [list main entries added]
 
-     Updated KEYBINDINGS.md:
-     - Added new LSP keybindings (,rl for restart)
-     - Added zoom fix keybindings
-     ```
+Updated [other files if changed]:
+- [what was updated]
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <model> <noreply@anthropic.com>
+EOF
+)"
+```
+
+---
 
 ## Output
 
-Provide a summary of:
-
-- Number of commits analyzed
-- Major changes documented
-- Files updated (CHANGELOG, AGENTS, README, KEYBINDINGS, TROUBLESHOOTING)
-- Sections updated in each file
+Provide a brief summary:
+- Commits analyzed
+- Files updated
+- Key changes documented
