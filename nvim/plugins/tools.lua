@@ -87,34 +87,40 @@ return {
 				end,
 			})
 
-			-- Kill Claude terminal process on Neovim exit to prevent orphaned processes
+			-- Kill all terminal processes on Neovim exit to prevent orphaned processes
 			vim.api.nvim_create_autocmd("VimLeavePre", {
 				callback = function()
+					-- 1. Kill bottom drawer terminals (primary, secondary)
+					local drawers = _G._bottom_drawers
+					if drawers and drawers.state and drawers.state.drawers then
+						for _, slot in ipairs({ "primary", "secondary" }) do
+							local drawer = drawers.state.drawers[slot]
+							if drawer and drawer.job_id then
+								pcall(vim.fn.jobstop, drawer.job_id)
+							end
+						end
+					end
+
+					-- 2. Kill Claude terminal (via claudecode.nvim)
 					local ok, terminal = pcall(require, "claudecode.terminal")
-					if not ok or not terminal then
-						return
+					if ok and terminal and terminal.get_active_terminal_bufnr then
+						local bufnr = terminal.get_active_terminal_bufnr()
+						if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
+							local channel = vim.bo[bufnr].channel
+							if channel and channel > 0 then
+								pcall(vim.fn.jobstop, channel)
+							end
+						end
 					end
-
-					-- Get the terminal buffer that this plugin is tracking
-					local bufnr = terminal.get_active_terminal_bufnr and terminal.get_active_terminal_bufnr()
-					if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
-						return
-					end
-
-					-- Get the job channel from the terminal buffer
-					local channel_ok, channel = pcall(vim.api.nvim_buf_get_option, bufnr, "channel")
-					if not channel_ok or not channel or channel == 0 then
-						return
-					end
-
-					-- Kill the job - this only affects THIS Neovim instance's Claude process
-					pcall(vim.fn.jobstop, channel)
 				end,
-				desc = "Kill Claude terminal process on Neovim exit",
+				desc = "Kill all terminal processes on Neovim exit",
 			})
 		end,
 		opts = {
 			log_level = "warn",
+			terminal_cmd = vim.fn.expand("~/.local/bin/claude"),
+			-- Pass full environment so snacks doesn't replace it (jobstart replaces env, doesn't merge)
+			env = vim.fn.environ(),
 			terminal = {
 				split_side = "right",
 				split_width_percentage = 0.40,
