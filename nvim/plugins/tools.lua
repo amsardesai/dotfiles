@@ -87,22 +87,44 @@ return {
 				end,
 			})
 
-			-- Kill all terminal processes on Neovim exit to prevent orphaned processes
-			vim.api.nvim_create_autocmd("VimLeavePre", {
-				callback = function()
-					-- Iterate ALL buffers and kill any terminal jobs
-					-- This is more robust than relying on plugin state which can be nil
-					for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-						if vim.api.nvim_buf_is_valid(bufnr) then
-							local buftype = vim.bo[bufnr].buftype
-							if buftype == "terminal" then
-								local channel = vim.bo[bufnr].channel
-								if channel and channel > 0 then
-									pcall(vim.fn.jobstop, channel)
+			-- Track terminal PIDs as they're created (snacks cleans up buffers before VimLeavePre)
+			_G._terminal_pids = _G._terminal_pids or {}
+
+			vim.api.nvim_create_autocmd("TermOpen", {
+				callback = function(ev)
+					-- Capture immediately AND after a short delay (belt and suspenders)
+					local function capture_pid(bufnr)
+						if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buftype == "terminal" then
+							local channel = vim.bo[bufnr].channel
+							if channel and channel > 0 then
+								local ok, pid = pcall(vim.fn.jobpid, channel)
+								if ok and pid and pid > 0 then
+									_G._terminal_pids[bufnr] = pid
 								end
 							end
 						end
 					end
+					-- Try immediately
+					capture_pid(ev.buf)
+					-- Also try after short delays in case terminal isn't ready
+					vim.defer_fn(function() capture_pid(ev.buf) end, 10)
+					vim.defer_fn(function() capture_pid(ev.buf) end, 50)
+				end,
+				desc = "Track terminal PIDs for cleanup",
+			})
+
+			-- Kill tracked terminal processes on Neovim exit
+			vim.api.nvim_create_autocmd("VimLeavePre", {
+				callback = function()
+					-- Kill all tracked PIDs
+					for _, pid in pairs(_G._terminal_pids or {}) do
+						if pid and pid > 0 then
+							os.execute("kill -9 " .. pid .. " 2>/dev/null")
+						end
+					end
+					-- Fallback: kill any claude processes that are children of this nvim
+					local nvim_pid = vim.fn.getpid()
+					os.execute("pkill -9 -P " .. nvim_pid .. " -f claude 2>/dev/null")
 				end,
 				desc = "Kill all terminal processes on Neovim exit",
 			})
