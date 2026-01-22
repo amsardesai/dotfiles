@@ -9,8 +9,7 @@ return {
 		"coder/claudecode.nvim",
 		cmd = { "ClaudeCode", "ClaudeCodeSend", "ClaudeCodeAdd" },
 		keys = {
-			{ "<leader>a", "<cmd>ClaudeCode<cr>", mode = { "n", "t" }, desc = "Toggle Claude Code" },
-			{ "<leader>a", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
+			{ "<leader>a", "<cmd>ClaudeCode<cr>", mode = { "n", "v", "t" }, desc = "Toggle Claude Code" },
 		},
 		init = function()
 			-- Define highlight groups for Claude Code winbar (orange theme)
