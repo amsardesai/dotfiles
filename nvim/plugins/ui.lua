@@ -66,17 +66,6 @@ return {
 				desc = "Toggle Terminal X",
 			},
 			{
-				"<leader>t",
-				function()
-					if not _G.bottom_drawers then
-						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
-					end
-					_G.bottom_drawers.toggle_trouble()
-				end,
-				mode = { "n", "v" },
-				desc = "Toggle Diagnostics",
-			},
-			{
 				"<leader>q",
 				function()
 					if not _G.bottom_drawers then

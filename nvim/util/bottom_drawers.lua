@@ -1,6 +1,6 @@
 -- Bottom Drawers: Dynamic side-by-side drawers at bottom of screen
 -- Order is based on when drawers are opened (left-to-right = first-to-last opened)
--- ,z = Terminal Z, ,x = Terminal X, ,t = Trouble
+-- ,z = Terminal Z, ,x = Terminal X
 
 -- Cache module to preserve state across dofile() calls
 if _G._bottom_drawers then
@@ -24,12 +24,6 @@ local function set_drawer_highlights()
 	vim.api.nvim_set_hl(0, "TerminalXTitleNC", { fg = "#ffffff", bg = "#6b21a8", bold = false })
 	vim.api.nvim_set_hl(0, "TerminalXLabel", { fg = "#ffffff", bg = "#9333ea", bold = false, italic = true })
 	vim.api.nvim_set_hl(0, "TerminalXLabelNC", { fg = "#ffffff", bg = "#6b21a8", bold = false, italic = true })
-
-	-- Trouble (red) - focused=600, unfocused=800 (darker)
-	vim.api.nvim_set_hl(0, "TroubleTitle", { fg = "#ffffff", bg = "#dc2626", bold = true })
-	vim.api.nvim_set_hl(0, "TroubleTitleNC", { fg = "#ffffff", bg = "#991b1b", bold = false })
-	vim.api.nvim_set_hl(0, "TroubleLabel", { fg = "#ffffff", bg = "#dc2626", bold = false, italic = true })
-	vim.api.nvim_set_hl(0, "TroubleLabelNC", { fg = "#ffffff", bg = "#991b1b", bold = false, italic = true })
 end
 set_drawer_highlights()
 vim.api.nvim_create_autocmd("ColorScheme", { callback = set_drawer_highlights })
@@ -58,13 +52,12 @@ M.config = {
 -- State tracks open order and drawer-specific data
 M.state = {
 	-- Ordered list of open drawer IDs (in open order, left-to-right)
-	open_order = {}, -- e.g., {"primary", "trouble"}
+	open_order = {}, -- e.g., {"primary", "secondary"}
 
 	-- Drawer-specific data
 	drawers = {
 		primary = { buf = nil, job_id = nil },
 		secondary = { buf = nil, job_id = nil },
-		trouble = {},
 	},
 }
 
@@ -74,7 +67,6 @@ M.state = {
 local drawer_meta = {
 	primary = { bold_title = nil, label = ",z", hl_title = "TerminalZTitle", hl_label = "TerminalZLabel" },
 	secondary = { bold_title = nil, label = ",x", hl_title = "TerminalXTitle", hl_label = "TerminalXLabel" },
-	trouble = { bold_title = "Trouble.nvim Diagnostics", label = ",t", hl_title = "TroubleTitle", hl_label = "TroubleLabel" },
 }
 
 -- =============================================================================
@@ -171,9 +163,6 @@ local function find_drawer_window(slot)
 		if slot == "primary" and buf == M.state.drawers.primary.buf then
 			return win
 		elseif slot == "secondary" and buf == M.state.drawers.secondary.buf then
-			return win
-		-- Trouble drawer
-		elseif slot == "trouble" and vim.bo[buf].filetype == "trouble" then
 			return win
 		end
 
@@ -317,72 +306,6 @@ function M.toggle_secondary()
 	end
 end
 
--- Toggle trouble drawer (,t)
-function M.toggle_trouble()
-	local ok, trouble = pcall(require, "trouble")
-	if not ok then
-		vim.notify("trouble.nvim not installed", vim.log.levels.ERROR)
-		return
-	end
-
-	if is_drawer_open("trouble") then
-		trouble.close()
-		remove_from_open_order("trouble")
-		rebalance_drawers()
-	else
-		local open_wins = get_open_drawer_windows()
-
-		if #open_wins == 0 then
-			-- No drawers open, open trouble at bottom
-			trouble.open({
-				mode = "diagnostics",
-				focus = true,
-				win = {
-					type = "split",
-					relative = "editor",
-					position = "bottom",
-					size = get_height(),
-				},
-			})
-		else
-			-- Open trouble relative to rightmost drawer
-			local rightmost = open_wins[#open_wins]
-			vim.api.nvim_set_current_win(rightmost.win)
-			trouble.open({
-				mode = "diagnostics",
-				focus = true,
-				win = {
-					type = "split",
-					relative = "win",
-					position = "right",
-					size = 0.5,
-				},
-			})
-		end
-
-		add_to_open_order("trouble")
-
-		-- Apply winbar after trouble creates its window (with retry)
-		local function apply_trouble_winbar(attempts)
-			attempts = attempts or 0
-			local win = find_drawer_window("trouble")
-			if win then
-				rebalance_drawers()
-				return
-			end
-			if attempts < 10 then
-				vim.defer_fn(function()
-					apply_trouble_winbar(attempts + 1)
-				end, 10)
-			end
-		end
-
-		vim.defer_fn(function()
-			apply_trouble_winbar(0)
-		end, 10)
-	end
-end
-
 -- =============================================================================
 -- Cleanup Functions
 -- =============================================================================
@@ -397,16 +320,9 @@ function M.hide_all()
 
 	for i = #slots_to_close, 1, -1 do
 		local slot = slots_to_close[i]
-		if slot == "primary" or slot == "secondary" then
-			local win = find_drawer_window(slot)
-			if win and vim.api.nvim_win_is_valid(win) then
-				vim.api.nvim_win_close(win, false)
-			end
-		elseif slot == "trouble" then
-			local ok, trouble = pcall(require, "trouble")
-			if ok then
-				trouble.close()
-			end
+		local win = find_drawer_window(slot)
+		if win and vim.api.nvim_win_is_valid(win) then
+			vim.api.nvim_win_close(win, false)
 		end
 	end
 

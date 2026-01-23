@@ -60,7 +60,6 @@ Quick reference for all keyboard shortcuts across development tools.
 |-----|--------|-------|
 | `,z` | Toggle Terminal Z | Blue |
 | `,x` | Toggle Terminal X | Purple |
-| `,t` | Toggle Diagnostics | Red |
 | `,s` | Toggle Git Status | Yellow |
 | `,b` | Toggle Buffers | Green |
 | `,d` | Toggle Document Symbols | Brown |
