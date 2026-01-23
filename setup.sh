@@ -397,18 +397,18 @@ if [ -f "$REPO_CLAUDE_SETTINGS" ]; then
 	EXPANDED_SETTINGS=$(envsubst < "$REPO_CLAUDE_SETTINGS")
 
 	if [ -f "$CLAUDE_SETTINGS" ]; then
-		# Merge hooks into existing settings (deep merge)
+		# Merge repo settings into existing settings (deep merge)
 		MERGED=$(jq -s '.[0] * .[1]' "$CLAUDE_SETTINGS" <(echo "$EXPANDED_SETTINGS"))
 
-		# Check if hooks already match (idempotency)
-		CURRENT_HOOKS=$(jq '.hooks' "$CLAUDE_SETTINGS" 2>/dev/null || echo "null")
-		NEW_HOOKS=$(echo "$EXPANDED_SETTINGS" | jq '.hooks')
+		# Check if merged result differs from current (idempotency)
+		CURRENT_SORTED=$(jq -S '.' "$CLAUDE_SETTINGS")
+		MERGED_SORTED=$(echo "$MERGED" | jq -S '.')
 
-		if [ "$CURRENT_HOOKS" = "$NEW_HOOKS" ]; then
+		if [ "$CURRENT_SORTED" = "$MERGED_SORTED" ]; then
 			echo_success "Claude Code settings already up to date"
 		else
 			echo "$MERGED" > "$CLAUDE_SETTINGS"
-			echo_success "Merged hooks into Claude Code settings"
+			echo_success "Merged settings into Claude Code config"
 		fi
 	else
 		# Create new settings file
@@ -417,6 +417,40 @@ if [ -f "$REPO_CLAUDE_SETTINGS" ]; then
 	fi
 else
 	echo_warn "claude-settings.json not found in repo"
+fi
+
+# =============================================================================
+# Claude Code MCP Servers
+# =============================================================================
+echo_section "CLAUDE CODE MCP SERVERS"
+
+CLAUDE_JSON="$HOME/.claude.json"
+REPO_MCP_SETTINGS="$SCRIPTPATH/claude-mcp.json"
+
+if [ -f "$REPO_MCP_SETTINGS" ]; then
+	if [ -f "$CLAUDE_JSON" ]; then
+		# Deep merge mcpServers into existing file
+		CURRENT_MCP=$(jq '.mcpServers // {}' "$CLAUDE_JSON" 2>/dev/null)
+		NEW_MCP=$(jq '.mcpServers // {}' "$REPO_MCP_SETTINGS")
+
+		# Check if MCP servers already match
+		MERGED_MCP=$(jq -s '.[0] * .[1]' <(echo "$CURRENT_MCP") <(echo "$NEW_MCP"))
+
+		if [ "$CURRENT_MCP" = "$MERGED_MCP" ]; then
+			echo_success "MCP servers already configured"
+		else
+			# Merge into full file preserving all other settings
+			MERGED=$(jq --argjson mcp "$MERGED_MCP" '.mcpServers = $mcp' "$CLAUDE_JSON")
+			echo "$MERGED" > "$CLAUDE_JSON"
+			echo_success "Merged MCP servers into Claude Code config"
+		fi
+	else
+		# Create new file with just mcpServers
+		cp -f "$REPO_MCP_SETTINGS" "$CLAUDE_JSON"
+		echo_success "Created Claude Code config with MCP servers"
+	fi
+else
+	echo_warn "claude-mcp.json not found in repo"
 fi
 
 # =============================================================================

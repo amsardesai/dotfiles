@@ -12,8 +12,9 @@
     ]
   },
   "enabledPlugins": {
-    "ralph-wiggum@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "explanatory-output-style@claude-plugins-official": true
-  }
+    "typescript-lsp@claude-plugins-official": true
+  },
+  "allowedTools": [
+    "mcp__chrome-devtools__*"
+  ]
 }
