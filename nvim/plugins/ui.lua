@@ -17,6 +17,15 @@ return {
 		lazy = false,
 		priority = 1000,
 		config = function()
+			-- Make window separator more visible (autocmd ensures it persists after colorscheme loads)
+			local function set_win_separator_hl()
+				vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#3b4261" })
+			end
+			vim.api.nvim_create_autocmd("ColorScheme", {
+				pattern = "tokyonight*",
+				callback = set_win_separator_hl,
+				desc = "Make window separator more visible",
+			})
 			vim.cmd.colorscheme("tokyonight")
 		end,
 	},
