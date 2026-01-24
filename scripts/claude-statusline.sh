@@ -158,8 +158,8 @@ build_output() {
 	local git_section=""
 	local git_section_plain=""
 	if [[ -n "$BRANCH" ]]; then
-		git_section=" ⎇ $BRANCH"
-		git_section_plain=" ⎇ $BRANCH"
+		git_section=" → $BRANCH"
+		git_section_plain=" → $BRANCH"
 		if [[ -n "$GIT_STATUS_DISPLAY" ]]; then
 			git_section="$git_section ${SEP} $GIT_STATUS_DISPLAY"
 			git_section_plain="$git_section_plain │ $(echo "$GIT_STATUS_DISPLAY" | sed 's/\x1b\[[0-9;]*m//g')"
@@ -189,7 +189,7 @@ build_output() {
 
 	# Narrow layout: path + branch only (no git status) + no dots
 	if [[ -n "$BRANCH" ]]; then
-		git_section=" ⎇ $BRANCH"
+		git_section=" → $BRANCH"
 		git_len=$((${#BRANCH} + 3))
 	else
 		git_section=""
