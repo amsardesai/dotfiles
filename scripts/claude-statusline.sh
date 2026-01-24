@@ -20,18 +20,11 @@
 # Read JSON from stdin
 input=$(cat)
 
-# Get terminal width - try multiple methods since subprocess may not have TTY
-if [[ -n "$COLUMNS" ]]; then
-	TERM_WIDTH=$COLUMNS
-elif [[ -r /dev/tty ]]; then
-	TERM_WIDTH=$(tput cols </dev/tty 2>/dev/null) || TERM_WIDTH=0
-fi
-if [[ -z "$TERM_WIDTH" ]] || [[ "$TERM_WIDTH" -eq 0 ]]; then
-	TERM_WIDTH=$(stty size 2>/dev/null | cut -d' ' -f2 || echo 0)
-fi
-if [[ -z "$TERM_WIDTH" ]] || [[ "$TERM_WIDTH" -eq 0 ]]; then
-	TERM_WIDTH=60
-fi
+# Get terminal width for Claude Code statusline
+# IMPORTANT: Claude Code's statusline area is often narrower than the terminal.
+# The COLUMNS env var reflects terminal width, not statusline width.
+# Use CLAUDE_STATUSLINE_WIDTH env var to override, or default to conservative 40.
+TERM_WIDTH=${CLAUDE_STATUSLINE_WIDTH:-40}
 
 # Parse JSON fields
 CWD=$(echo "$input" | jq -r '.workspace.current_dir // empty')
