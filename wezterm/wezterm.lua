@@ -135,7 +135,8 @@ config.font_rules = {
 }
 
 -- Window appearance
-config.window_decorations = "RESIZE"
+-- INTEGRATED_BUTTONS puts traffic lights in tab bar & enables double-click-to-maximize
+config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 config.window_padding = {
 	left = 5,
 	right = 5,
@@ -559,7 +560,29 @@ config.keys = {
 		mods = "ALT|SHIFT",
 		action = wezterm.action.SendString("\x1b[13;4u"),
 	},
+
+	-- Toggle window maximize (also works via double-click on tab bar empty space)
+	{
+		key = "m",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.EmitEvent("toggle-maximize"),
+	},
 }
+
+-- Toggle window maximize handler
+-- Track maximized state per window (WezTerm doesn't expose is_maximized)
+local maximized_windows = {}
+
+wezterm.on("toggle-maximize", function(window, _pane)
+	local window_id = tostring(window:window_id())
+	if maximized_windows[window_id] then
+		window:restore()
+		maximized_windows[window_id] = false
+	else
+		window:maximize()
+		maximized_windows[window_id] = true
+	end
+end)
 
 -- =============================================================================
 -- Mouse Bindings
