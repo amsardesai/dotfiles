@@ -134,6 +134,9 @@ zle -N backward-20-chars
 bindkey "^[[1;7C" forward-20-chars  # Option-Ctrl-Right
 bindkey "^[[1;7D" backward-20-chars # Option-Ctrl-Left
 
+# Export COLUMNS to subprocesses (for Claude Code statusline width detection)
+export COLUMNS
+
 # Force colors
 export CLICOLOR_FORCE=1
 
