@@ -1,4 +1,9 @@
 {
+  "statusLine": {
+    "type": "command",
+    "command": "$HOME/.dotfiles/scripts/claude-statusline.sh",
+    "padding": 0
+  },
   "hooks": {
     "Stop": [
       {
