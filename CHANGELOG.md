@@ -2,6 +2,30 @@
 
 All notable changes and discoveries in this dotfiles repository.
 
+## 2026-01-24
+
+### Features
+- **Custom Claude Code statusline** - Rich statusline showing context tokens, git branch, session cost, and model name. Uses progressive truncation based on terminal width. Script at `scripts/claude-statusline.sh`, configured via `claude-settings.json` (`scripts/claude-statusline.sh`, `claude-settings.json`)
+- **MCP server auto-install** - `setup.sh` now merges `claude-mcp.json` into `~/.claude.json` to auto-configure MCP servers. Currently installs `chrome-devtools-mcp` (`setup.sh`, `claude-mcp.json`)
+- **WezTerm double-click maximize** - Double-clicking the tab bar toggles window maximization (`wezterm/wezterm.lua`)
+
+### Improvements
+- **Enhanced `difc` alias** - Now uses `git show HEAD` instead of `git diff HEAD~ HEAD`, displaying commit message alongside the diff (`.profile`, `.zshrc`)
+- **Visible window separators** - TokyoNight colorscheme now has more visible window separators (`#3b4261`) for better split visibility (`nvim/plugins/ui.lua`)
+- **Simplified terminal cleanup** - Tracks terminal PIDs at TermOpen and kills them at VimLeavePre, more reliable than querying buffer channels at exit (`nvim/plugins/tools.lua`)
+- **Per-drawer terminal activity icons** - Claude status shows one 🖥️ icon per active drawer (max 2) instead of single combined icon (`nvim/util/claude_status.lua`)
+- **`,Q` enhanced** - Now kills Claude processes in current directory, closes neo-tree sidebar, and properly cleans up claudecode.nvim terminal (`nvim/plugins/ui.lua`)
+
+### Configuration
+- **COLUMNS export** - Shell now exports COLUMNS to subprocesses for Claude Code statusline width detection (`.zshrc`)
+- **Simplified Claude keybinding** - `,a` now toggles Claude Code in normal, visual, and terminal modes (previously visual mode sent selection) (`nvim/plugins/tools.lua`)
+
+### Bug Fixes
+- **Statusline width detection** - Multiple fixes for statusline truncation and wrapping in narrow terminals
+- **Branch icon compatibility** - Uses arrow (→) instead of branch icon for better terminal font support
+
+---
+
 ## 2026-01-21
 
 ### Features
