@@ -92,8 +92,8 @@ alias add='git add'
 alias pushme='git push origin HEAD'
 alias pushmef='git push -f origin HEAD'
 alias reb='git rebase'
-alias lg="git log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%an]%Creset %C(magenta)%ar%Creset %C(black):%Creset %s%Cred%d%Creset' --abbrev-commit"
-alias lgh="git log --graph --pretty=format:'%C(yellow)%h%Creset %C(bold blue)[%an]%Creset %C(magenta)%ar%Creset %C(black):%Creset %s%Cred%d%Creset' --abbrev-commit --max-count=10 | cat && echo"
+# NOTE: lg, lf, lgm functions are defined in zsh/git-log.zsh (for zsh)
+# For bash, use: git log --graph --oneline
 alias gg='git grep'
 alias blame='git blame -w'
 
@@ -104,7 +104,7 @@ __git_complete dif _git_diff
 __git_complete difs _git_diff
 __git_complete add _git_add
 __git_complete reb _git_rebase
-__git_complete lg _git_log
+# lg completion removed - now a function in zsh/git-log.zsh
 __git_complete gg _git_grep
 __git_complete com _git_commit
 __git_complete cam _git_commit
