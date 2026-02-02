@@ -252,8 +252,32 @@ config.quick_select_patterns = {
 	"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", -- UUIDs
 }
 
--- Hyperlink detection - custom rules + defaults
-config.hyperlink_rules = wezterm.default_hyperlink_rules()
+-- Hyperlink detection - start fresh (default rules are too permissive with parentheses)
+config.hyperlink_rules = {}
+
+-- HTTP/HTTPS URLs - balanced parentheses handling
+-- Matches URL chars, then optionally (balanced content) + more URL chars
+-- Examples:
+--   http://www.google.com/)              → http://www.google.com/     (excludes trailing ))
+--   (see http://example.com)             → http://example.com         (excludes surrounding parens)
+--   http://en.wikipedia.org/wiki/Ex_(band) → full URL with (band)     (includes balanced parens)
+--   "https://github.com/path":           → https://github.com/path    (excludes quotes)
+table.insert(config.hyperlink_rules, {
+	regex = [[\bhttps?://[^\s<>()"']*(?:\([^\s()]*\)[^\s<>()"']*)*]],
+	format = "$0",
+})
+
+-- Email addresses → mailto: links
+table.insert(config.hyperlink_rules, {
+	regex = [[\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b]],
+	format = "mailto:$0",
+})
+
+-- file:// URLs
+table.insert(config.hyperlink_rules, {
+	regex = [[\bfile://\S+]],
+	format = "$0",
+})
 
 -- File path charset: [\w./@\-] supports @ (path aliases like @/components)
 -- Matches: src/file.ts:10, ./file.ts:10, @/components/Button.tsx:10
@@ -322,6 +346,7 @@ table.insert(config.hyperlink_rules, 10, {
 	regex = [[(~/[\w./@\-]+\.\w+)\b]],
 	format = "EDIT:$1",
 })
+
 
 -- Bypass mouse reporting for CMD key (allows CMD+Click links even in tmux/vim)
 config.bypass_mouse_reporting_modifiers = "SUPER"
