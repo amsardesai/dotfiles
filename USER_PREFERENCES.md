@@ -124,7 +124,7 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 | ------------------------- | --------------------------- | --------------------- |
 | `git commit`              | `gt create -a -m "msg"`     | New branch + commit   |
 | `git commit --amend`      | `gt modify -a`              | Amend current commit  |
-| `git push`                | `gt submit`                 | Push to remote        |
+| `git push`                | `gt submit --draft`         | Push to remote (draft)|
 | `git pull`                | `gt sync`                   | Sync with trunk       |
 | `git fetch && git rebase` | `gt sync` then `gt restack` | Update and restack    |
 | `git rebase`              | `gt restack`                | Rebase stack on trunk |
@@ -184,6 +184,14 @@ OK to use `gh` for read/info operations:
      ```
 
 4. Run: `gt create -a -m "FULL_COMMIT_MESSAGE"`
+
+5. Run: `gt submit --draft` to push as a draft PR
+
+**Submitting PRs:**
+
+- **ALWAYS use `--draft`** when running `gt submit` (i.e., `gt submit --draft`)
+- **NEVER use `--publish`** unless explicitly requested by the user
+- Draft PRs allow for review before marking ready
 
 **Commit rules:**
 
