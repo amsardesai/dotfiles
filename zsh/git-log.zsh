@@ -1,11 +1,11 @@
 # Git Log Functions
 # Provides: lg (short log), lf (full log with pager), lgm (my commits)
-# Features: HEAD marker (👉), unpushed marker (✏️)
+# Features: HEAD marker (=> cyan), unpushed marker (-- red)
 
 # Format: full SHA (for unpushed detection) + tab + display content
 GIT_LOG_FORMAT='tformat:%H	%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset) %C(italic)%s%C(reset)%C(auto)%d%C(reset) %C(green)%G?%C(reset)'
 
-# Add 👉 (HEAD) and ✏️ (unpushed) markers
+# Add => (HEAD, cyan) and -- (unpushed, red) markers
 _git_log_enhance() {
   # Get commits not on any remote (subshell isolates from pipeline stdin)
   local unpushed
@@ -26,10 +26,10 @@ _git_log_enhance() {
         print; next  # no SHA found, pass through
       }
 
-      # Determine icon: 👉 for HEAD, ✏️ for unpushed
+      # Determine icon: => (cyan) for HEAD, -- (red) for unpushed
       icon = ""
-      if (rest ~ /\([^\/]*HEAD/) icon = "👉 "
-      else if (sha in unpushed) icon = "✏️ "
+      if (rest ~ /\([^\/]*HEAD/) icon = "\033[96m=>\033[0m "
+      else if (sha in unpushed) icon = "\033[91m--\033[0m "
 
       # Insert icon after "* " if present
       if (icon) sub(/\* /, "* " icon, prefix)
