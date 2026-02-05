@@ -27,8 +27,9 @@ _git_log_enhance() {
       }
 
       # Determine icon: => (cyan) for HEAD, -- (red) for unpushed
+      # Match bold cyan HEAD from git %C(auto)%d, not HEAD in commit messages
       icon = ""
-      if (rest ~ /\([^\/]*HEAD/) icon = "\033[96m=>\033[0m "
+      if (rest ~ /\[1;36mHEAD/) icon = "\033[96m=>\033[0m "
       else if (sha in unpushed) icon = "\033[91m--\033[0m "
 
       # Insert icon after "* " if present
