@@ -186,10 +186,11 @@ OK to use `gh` for read/info operations:
 
 Follow the global "Creating commits" workflow above, with these additions:
 
-1. Also read the PR template: `cat .github/pull_request_template.md`
-2. Check at least one `[x]` box in each checkbox section (testing and feature gate)
-3. Use `gt create -a -m "FULL_COMMIT_MESSAGE"` (not `git commit`)
-4. Run `gt submit --draft` to push as a draft PR
+1. Read the PR template: `cat .github/pull_request_template.md`
+2. **Structure the commit message to match the PR template exactly** - tooling validates this format
+3. Check at least one `[x]` box in each checkbox section (testing and feature gate)
+4. Use `gt create -a -m "FULL_COMMIT_MESSAGE"` (not `git commit`)
+5. Run `gt submit --draft` to push as a draft PR
 
 **Submitting PRs:**
 
