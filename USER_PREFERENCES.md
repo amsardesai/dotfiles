@@ -96,9 +96,36 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 **Commit practices (all repos):**
 
 - Keep changes **atomic** - one logical change per commit
-- Keep commit messages **detailed and descriptive**
-- Follow the repository's commit message template if one exists
-- Provide thorough **test plans** in commit messages or PR descriptions
+- Use **Conventional Commits** format for all commit messages
+
+**Creating commits (when user says "create commit", "commit this", etc.):**
+
+1. Gather context by running these commands:
+   - `git status --short` - changed files
+   - `git diff` - full diff
+   - `git log --oneline -5` - recent commits for style reference
+
+2. Determine the **type** and **scope** (for Conventional Commits):
+   - **Type** (required): `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`
+   - **Scope** (in parentheses, one word):
+     - Component name (e.g., `Button`, `Modal`, `Sidebar`)
+     - Product area (e.g., `onboarding`, `billing`, `search`)
+     - Category (e.g., `a11y`, `i18n`, `deps`)
+
+3. Generate commit message using **Conventional Commits** format:
+   - **Title:** `type(scope): description` (lowercase type, no period at end)
+   - **Description:** Clear, concise explanation of **why** the change is being made (not just what changed)
+   - **Reviewer notes:** Important context reviewers should know (only if not already covered by description)
+   - **Test plan:** Only include if confident in testing approach; omit rather than show low-confidence plans
+   - Add at the end:
+
+     ```
+     👨🏽‍💻 Generated with a coding agent
+
+     Co-Authored-By: Claude <noreply@anthropic.com>
+     ```
+
+4. Create the commit using `git commit` (or `gt create` in notion-next)
 
 **PR descriptions:**
 
@@ -120,16 +147,16 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 
 **Prohibited git commands → Use Graphite instead:**
 
-| ❌ NEVER Use              | ✅ Use Instead              | Purpose               |
-| ------------------------- | --------------------------- | --------------------- |
-| `git commit`              | `gt create -a -m "msg"`     | New branch + commit   |
-| `git commit --amend`      | `gt modify -a`              | Amend current commit  |
-| `git push`                | `gt submit --draft`         | Push to remote (draft)|
-| `git pull`                | `gt sync`                   | Sync with trunk       |
-| `git fetch && git rebase` | `gt sync` then `gt restack` | Update and restack    |
-| `git rebase`              | `gt restack`                | Rebase stack on trunk |
-| `git checkout -b`         | `gt create`                 | Create new branch     |
-| `git merge`               | Never (Graphite handles)    | Merge branches        |
+| ❌ NEVER Use              | ✅ Use Instead              | Purpose                |
+| ------------------------- | --------------------------- | ---------------------- |
+| `git commit`              | `gt create -a -m "msg"`     | New branch + commit    |
+| `git commit --amend`      | `gt modify -a`              | Amend current commit   |
+| `git push`                | `gt submit --draft`         | Push to remote (draft) |
+| `git pull`                | `gt sync`                   | Sync with trunk        |
+| `git fetch && git rebase` | `gt sync` then `gt restack` | Update and restack     |
+| `git rebase`              | `gt restack`                | Rebase stack on trunk  |
+| `git checkout -b`         | `gt create`                 | Create new branch      |
+| `git merge`               | Never (Graphite handles)    | Merge branches         |
 
 **One commit per branch (strictly enforced):**
 
@@ -153,49 +180,16 @@ OK to use `gh` for read/info operations:
 - `gh pr view`, `gh pr checks`, `gh pr comment`, `gh pr list`
 - `gh api`, `gh issue`, `gh repo view`
 
-**Notion monorepo context:**
+**Creating commits (notion-next specific):**
 
-- The **Notion Dev MCP server** is a goldmine of reference for what to do in Notion
-- Use it liberally, alongside web searches, when figuring out tasks
+Follow the global "Creating commits" workflow above, with these additions:
 
-**Creating commits (when user says "create commit", "commit this", etc.):**
-
-1. First, gather context by running these commands:
-   - `git branch --show-current` - current branch
-   - `git status --short` - changed files
-   - `git diff --stat` - diff summary
-   - `git diff` - full diff
-   - `cat .github/pull_request_template.md` - PR template
-
-2. Analyze the diff and determine the **Area** (one word):
-   - Component name (e.g., `Button`, `Modal`, `Sidebar`)
-   - Product area (e.g., `onboarding`, `billing`, `search`)
-   - Category (e.g., `a11y`, `perf`, `refactor`, `fix`, `feat`)
-
-3. Generate commit message following the **exact** structure from the PR template (read in step 1):
-   - Start with `Area: specific change description` as the title
-   - Fill in each section from the template
-   - Add at the end:
-
-     ```
-     🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-     Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
-     ```
-
-4. Run: `gt create -a -m "FULL_COMMIT_MESSAGE"`
-
-5. Run: `gt submit --draft` to push as a draft PR
+1. Also read the PR template: `cat .github/pull_request_template.md`
+2. Check at least one `[x]` box in each checkbox section (testing and feature gate)
+3. Use `gt create -a -m "FULL_COMMIT_MESSAGE"` (not `git commit`)
+4. Run `gt submit --draft` to push as a draft PR
 
 **Submitting PRs:**
 
 - **ALWAYS use `--draft`** when running `gt submit` (i.e., `gt submit --draft`)
 - **NEVER use `--publish`** unless explicitly requested by the user
-- Draft PRs allow for review before marking ready
-
-**Commit rules:**
-
-- Check at least one `[x]` box in each checkbox section (testing and feature gate)
-- 1 commit per branch (amend if needed with `gt modify -a --amend`)
-- Be specific - explain WHAT changed and WHY
-- Infer testing approach from the changes made
