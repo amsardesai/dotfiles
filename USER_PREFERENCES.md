@@ -98,7 +98,7 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 - Keep changes **atomic** - one logical change per commit
 - Use **Conventional Commits** format for all commit messages
 
-**Creating commits (when user says "create commit", "commit this", etc.):**
+**Creating commits:**
 
 1. Gather context by running these commands:
    - `git status --short` - changed files
