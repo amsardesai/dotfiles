@@ -106,11 +106,13 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
    - `git log --oneline -5` - recent commits for style reference
 
 2. Determine the **type** and **scope** (for Conventional Commits):
-   - **Type** (required): `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`
-   - **Scope** (in parentheses, one word):
+   - **Type** (required, MUST be one of these exact values):
+     `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`
+   - **Scope** (in parentheses, one word) - this is where component names, areas, and categories go:
      - Component name (e.g., `Button`, `Modal`, `Sidebar`)
      - Product area (e.g., `onboarding`, `billing`, `search`)
      - Category (e.g., `a11y`, `i18n`, `deps`)
+   - ⚠️ **Common mistake:** `a11y`, `perf`, `i18n` are **scopes**, not types. Use `feat(a11y)` or `fix(a11y)`, never `a11y(component)`
 
 3. Generate commit message using **Conventional Commits** format:
    - **Title:** `type(scope): description` (lowercase type, no period at end)
