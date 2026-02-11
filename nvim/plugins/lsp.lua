@@ -201,9 +201,6 @@ return {
 				sources = {
 					-- Diagnostics
 					null_ls.builtins.diagnostics.hadolint,
-					null_ls.builtins.diagnostics.markdownlint.with({
-						extra_args = { "--disable", "MD013" },
-					}),
 					null_ls.builtins.diagnostics.yamllint,
 					null_ls.builtins.diagnostics.actionlint,
 					require("none-ls.diagnostics.eslint_d"),
@@ -278,7 +275,6 @@ return {
 				"biome",
 				"eslint_d",
 				"hadolint",
-				"markdownlint",
 				"prettier",
 				"shellcheck",
 				"shfmt",
