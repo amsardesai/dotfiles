@@ -58,8 +58,8 @@ _git_log() {
 
   # Run git log with enhancement
   if $use_pager; then
-    # -R: colors, -F: quit if one screen, -X: don't clear screen
-    git --no-pager log --color=always --graph --pretty="$GIT_LOG_FORMAT" --abbrev-commit --date=relative "${args[@]}" | _git_log_enhance | less -RFX
+    # -R: colors, -F: quit if one screen (uses alternate screen buffer for restoration)
+    git --no-pager log --color=always --graph --pretty="$GIT_LOG_FORMAT" --abbrev-commit --date=relative "${args[@]}" | _git_log_enhance | less -RF
   else
     git --no-pager log --color=always --graph --pretty="$GIT_LOG_FORMAT" --abbrev-commit --date=relative "${args[@]}" | _git_log_enhance
   fi
