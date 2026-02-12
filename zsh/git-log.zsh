@@ -3,13 +3,13 @@
 # Features: HEAD marker (=> cyan), unpushed marker (-- red)
 
 # Format: full SHA (for unpushed detection) + tab + display content
-GIT_LOG_FORMAT='tformat:%H	%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset) %C(italic)%s%C(reset)%C(auto)%d%C(reset) %C(green)%G?%C(reset)'
+GIT_LOG_FORMAT='tformat:%H	%C(yellow)%h%C(reset) %C(italic magenta)%cd%C(reset) %C(bold blue)[%aN]%C(reset) %C(italic)%s%C(reset)%C(auto)%d%C(reset)'
 
 # Add => (HEAD, cyan) and -- (unpushed, red) markers
 _git_log_enhance() {
   # Get commits not on any remote (subshell isolates from pipeline stdin)
   local unpushed
-  unpushed=$( (git log --format=%H HEAD --not --remotes 2>/dev/null) | tr '\n' '|' | sed 's/|$//')
+  unpushed=$( (git log --format=%H HEAD --not --remotes --max-count=100 2>/dev/null) | tr '\n' '|' | sed 's/|$//')
 
   # Fast awk processing (BSD awk compatible)
   awk -F'\t' -v up="$unpushed" '
