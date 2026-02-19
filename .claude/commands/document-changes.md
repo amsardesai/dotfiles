@@ -110,7 +110,7 @@ Updated [other files if changed]:
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-Co-Authored-By: Claude <model> <noreply@anthropic.com>
+Co-Authored-By: Claude <YOUR_MODEL_NAME> <noreply@anthropic.com>
 EOF
 )"
 ```
