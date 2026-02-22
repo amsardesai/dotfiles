@@ -384,7 +384,7 @@ fi
 # =============================================================================
 # Claude Code Settings
 # =============================================================================
-echo_section "CLAUDE CODE SETTINGS"
+echo_section "🪄 Configuring AI tools..."
 
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 REPO_CLAUDE_SETTINGS="$SCRIPTPATH/claude-settings.json"
@@ -422,7 +422,6 @@ fi
 # =============================================================================
 # Claude Code MCP Servers
 # =============================================================================
-echo_section "CLAUDE CODE MCP SERVERS"
 
 CLAUDE_JSON="$HOME/.claude.json"
 REPO_MCP_SETTINGS="$SCRIPTPATH/claude-mcp.json"
