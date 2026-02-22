@@ -232,6 +232,9 @@ alias bl='git blame -w'
 # Graphite Commands
 alias gts='gt sync --force'
 
+# Claude Code Commands
+alias claude!='claude --dangerously-skip-permissions'
+
 # macOS-specific: Homebrew paths
 if [[ "$OSTYPE" == darwin* ]]; then
   export PATH=${PATH}:/opt/homebrew/bin:/opt/homebrew/sbin

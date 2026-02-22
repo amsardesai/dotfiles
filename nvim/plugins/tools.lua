@@ -116,7 +116,7 @@ return {
 		end,
 		opts = {
 			log_level = "warn",
-			terminal_cmd = vim.fn.expand("~/.local/bin/claude"),
+			terminal_cmd = vim.fn.expand("~/.local/bin/claude") .. " --dangerously-skip-permissions",
 			-- Pass full environment so snacks doesn't replace it (jobstart replaces env, doesn't merge)
 			env = vim.fn.environ(),
 			terminal = {
