@@ -112,6 +112,7 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
      - Component name (e.g., `Button`, `Modal`, `Sidebar`)
      - Product area (e.g., `onboarding`, `billing`, `search`)
      - Category (e.g., `a11y`, `i18n`, `deps`)
+   - ⚠️ **Scope specificity:** Always use the most specific scope possible. Prefer component names (e.g., `Button`, `Tooltip`) over generic library names (e.g., `nds`). Only use broad scopes when changes truly affect overall architecture across multiple components.
    - ⚠️ **Common mistake:** `a11y`, `perf`, `i18n` are **scopes**, not types. Use `feat(a11y)` or `fix(a11y)`, never `a11y(component)`
 
 3. Generate commit message using **Conventional Commits** format:
