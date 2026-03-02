@@ -6,7 +6,7 @@
 # Always shows all components - no progressive truncation.
 # Branch names are center-truncated to max 20 characters.
 #
-# Format: ~/project → main │ ✓2 ✗1 │ ●●○○○ 42% │ opus │ $0.23
+# Format: ~/project → main │ ✓2 ✗1 │ ●●○○○ 42% │ opus 1m │ $0.23
 #
 # Receives JSON from Claude Code via stdin.
 # =============================================================================
@@ -17,6 +17,10 @@ input=$(cat)
 # Parse JSON fields
 CWD=$(echo "$input" | jq -r '.workspace.current_dir // empty')
 MODEL=$(echo "$input" | jq -r '.model.display_name // "unknown"' | awk '{print tolower($1)}')
+CONTEXT_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size // 0')
+if [[ $CONTEXT_SIZE -ge 1000000 ]]; then
+	MODEL="${MODEL} 1m"
+fi
 COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 CONTEXT_PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0')
 
