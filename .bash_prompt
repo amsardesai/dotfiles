@@ -6,10 +6,8 @@ source "$SCRIPT_SOURCE/svn-prompt.bash"
 # SVN
 SVNP_HUGE_REPO_EXCLUDE_PATH="nufw-svn$|/tags$|/branches$"
 
-# Shell prompt based on the Solarized Dark theme.
-# Screenshot: http://i.imgur.com/EkEtphC.png
+# Shell prompt styled after the steeef oh-my-zsh theme, using Solarized colors.
 # Heavily inspired by @necolas’s prompt: https://github.com/necolas/dotfiles
-# iTerm → Profiles → Text → use 13pt Monaco with 1.1 vertical spacing.
 
 if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
   export TERM='gnome-256color';
@@ -19,6 +17,8 @@ fi;
 
 prompt_git() {
   local s='';
+  # SOH/STX markers for readline (can't use \[...\] inside command substitution).
+  local SOH=$'\001' STX=$'\002';
 
   # Check if the current directory is in a Git repository.
   if [ $(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}") == '0' ]; then
@@ -26,31 +26,27 @@ prompt_git() {
     # check if the current directory is in .git before running git checks
     if [ "$(git rev-parse --is-inside-git-dir 2> /dev/null)" == 'false' ]; then
 
-      # Check for uncommitted changes in the index.
-      if ! $(git diff --quiet --ignore-submodules --cached); then
-	s+='+';
-      fi;
-
-      # Check for unstaged changes.
+      # Check for unstaged changes (orange ●).
       if ! $(git diff-files --quiet --ignore-submodules --); then
-	s+='!';
+        s+="${SOH}${orange}${STX}●";
       fi;
 
-      # Check for untracked files.
+      # Check for staged changes (green ●).
+      if ! $(git diff --quiet --ignore-submodules --cached); then
+        s+="${SOH}${green}${STX}●";
+      fi;
+
+      # Check for untracked files (red ●).
       if [ -n "$(git ls-files --others --exclude-standard)" ]; then
-	s+='?';
-      fi;
-
-      # Check for stashed files.
-      if $(git rev-parse --verify refs/stash &>/dev/null); then
-	s+='$';
+        s+="${SOH}${red}${STX}●";
       fi;
 
     fi;
 
-    [ -n "${s}" ] && s=" [${s}]";
-
-    printf "$(__git_ps1)${1}${s}";
+    # Get bare branch name and output: (branch●●●)
+    local branch;
+    branch="$(__git_ps1 '%s')";
+    printf "(%s%s%s%s)" "${SOH}${cyan}${STX}" "$branch" "$s" "${SOH}${reset}${STX}";
 
   else
     return;
@@ -59,24 +55,26 @@ prompt_git() {
 
 prompt_svn() {
   local s='';
+  local SOH=$'\001' STX=$'\002';
 
   # Get name of current branch
-  svn=$(parse_svn_branch)
-  if [[ ! -z "${svn}" ]]; then
+  local svn_branch;
+  svn_branch=$(parse_svn_branch)
+  if [[ -n "${svn_branch}" ]]; then
 
-    # Check if repository has uncommitted changes
-    if [[ ! -z $(svn status -q) ]]; then
-      s+='!';
+    # Check if repository has uncommitted changes (orange ●).
+    if [[ -n $(svn status -q) ]]; then
+      s+="${SOH}${orange}${STX}●";
     fi;
 
-    [ -n "${s}" ] && s=" [${s}]";
-
-    printf "${svn}${1}${s}";
+    # parse_svn_branch returns " (branchname) " — extract just the name.
+    local branch;
+    branch=$(echo "$svn_branch" | sed 's/^ *(//;s/).*$//');
+    printf "(%s%s%s%s)" "${SOH}${cyan}${STX}" "$branch" "$s" "${SOH}${reset}${STX}";
 
   else
     return;
   fi;
-
 }
 
 tput sgr0; # reset colors
@@ -99,7 +97,7 @@ user_style() {
   if [[ "${USER}" == "root" ]]; then
     printf "${bold}${red}";
   else
-    printf "${bold}${orange}";
+    printf "${violet}";
   fi;
 }
 
@@ -113,28 +111,20 @@ host_style() {
 }
 
 dir_style() {
-  if [[ $(ls -ld "$PWD" | awk '{print $3}') == "${USER}" ]]; then
-    printf "${green}";
-  else
-    printf "${bold}${cyan}";
-  fi;
+  printf "${green}";
 }
 
 # Set the terminal title to the current working directory.
 PS1="\n";
 PS1+="\[\033]0;\w\007\]";
-PS1+="\$(user_style)\u"; # username
-PS1+="\[${reset}${black}\] @ ";
-PS1+="\$(host_style)\h"; # host
-PS1+="\[${reset}${black}\] : ";
-PS1+="\$(dir_style)\w"; # working directory
-PS1+="\[${reset}${violet}\]\$(prompt_git \"\[${blue}\]\")"; # Git repository details
-PS1+="\[${reset}${purple}\]\$(prompt_svn \"\[${blue}\]\")"; # SVN repository details
-PS1+="\[${reset}${black}\] (\@)"; # time
+PS1+="\[\$(user_style)\]\u"; # username
+PS1+="\[${reset}\] at ";
+PS1+="\[\$(host_style)\]\h"; # host
+PS1+="\[${reset}\] in ";
+PS1+="\[\$(dir_style)\]\w"; # working directory
+PS1+="\[${reset}\] \$(prompt_git)\$(prompt_svn)"; # git/svn status
 PS1+="\n";
-PS1+="\[${white}\]"
-PS1+='\$'
-PS1+=" \[${reset}\]"; # `$` (and reset color)
+PS1+="\[${white}\]\$ \[${reset}\]";
 export PS1;
 
 PS2="\[${yellow}\]→ \[${reset}\]";
