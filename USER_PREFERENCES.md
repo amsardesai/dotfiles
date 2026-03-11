@@ -98,6 +98,20 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 - Keep changes **atomic** - one logical change per commit
 - Use **Conventional Commits** format for all commit messages
 
+**Branch naming:**
+
+- **Prefix:** Always start branch names with `amsardesai--` (e.g., `amsardesai--fix-popup-render-prop`)
+- **Max length:** Keep branch names under 60 characters total (including prefix)
+- **Format:** Use kebab-case after the prefix: `amsardesai--short-description-here`
+- **Be concise:** Describe the change in 3-6 words, not the full commit message
+- ⚠️ **NEVER** include commit descriptions, test plans, or full sentences in branch names
+- **Good examples:**
+  - `amsardesai--fix-popup-render-prop`
+  - `amsardesai--migrate-modal-content-api`
+  - `amsardesai--update-sidebar-a11y`
+- **Bad examples:**
+  - `amsardesai--refactor_defaultpopupormodal_rename_render_prop_to_content_description_part_b1.5...` (way too long, includes description)
+
 **Creating commits:**
 
 1. Gather context by running these commands:
