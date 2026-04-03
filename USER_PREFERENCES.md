@@ -235,3 +235,9 @@ Follow the global "Creating commits" workflow above, with these additions:
 
 - **ALWAYS use `--draft`** when running `gt submit` (i.e., `gt submit --draft`)
 - **NEVER use `--publish`** unless explicitly requested by the user
+
+**Reordering stacked PRs:**
+
+- ⚠️ **NEVER close a PR and open a new one** to reorder a stack — actually reorder the branches using Graphite commands (`gt upstack onto`, `gt move`, etc.)
+- Closing and reopening PRs for the same changes loses review comments, approvals, and CI history
+- Use Graphite's native stack manipulation to move branches to the correct position in the stack
