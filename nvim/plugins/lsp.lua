@@ -107,6 +107,7 @@ return {
 					"html",
 					"jsonls",
 					"lua_ls",
+					"oxlint",
 					"pylsp",
 					"terraformls",
 					"vimls",
@@ -117,8 +118,6 @@ return {
 					default_setup,
 					-- Disable ts_ls since typescript-tools.nvim handles TypeScript
 					ts_ls = function() end,
-					-- Disable eslint LSP since eslint_d via none-ls is faster
-					eslint = function() end,
 				},
 			})
 		end,
@@ -178,7 +177,7 @@ return {
 	{
 		"nvimtools/none-ls.nvim",
 		event = "BufReadPre",
-		dependencies = { "nvim-lua/plenary.nvim", "nvimtools/none-ls-extras.nvim" },
+		dependencies = { "nvim-lua/plenary.nvim" },
 		config = function()
 			local null_ls = require("null-ls")
 			null_ls.setup({
@@ -203,7 +202,6 @@ return {
 					null_ls.builtins.diagnostics.hadolint,
 					null_ls.builtins.diagnostics.yamllint,
 					null_ls.builtins.diagnostics.actionlint,
-					require("none-ls.diagnostics.eslint_d"),
 					-- Formatting
 					null_ls.builtins.formatting.terraform_fmt,
 					null_ls.builtins.formatting.prettier.with({
@@ -230,7 +228,6 @@ return {
 					}),
 					null_ls.builtins.formatting.stylua,
 					null_ls.builtins.formatting.shfmt,
-					require("none-ls.formatting.eslint_d"),
 				},
 			})
 
@@ -263,8 +260,6 @@ return {
 		end,
 	},
 
-	{ "nvimtools/none-ls-extras.nvim", lazy = true },
-
 	{
 		"jay-babu/mason-null-ls.nvim",
 		event = "BufReadPre",
@@ -273,7 +268,6 @@ return {
 			ensure_installed = {
 				"actionlint",
 				"biome",
-				"eslint_d",
 				"hadolint",
 				"prettier",
 				"shellcheck",
