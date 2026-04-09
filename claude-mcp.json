@@ -4,10 +4,6 @@
       "command": "npx",
       "args": ["-y", "chrome-devtools-mcp@latest"]
     },
-    "codex": {
-      "command": "codex",
-      "args": ["mcp-server"]
-    },
     "notion": {
       "type": "http",
       "url": "https://mcp.notion.com/mcp"
