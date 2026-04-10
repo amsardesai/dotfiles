@@ -6,9 +6,7 @@
 set background=dark " Use dark background for color scheme
 " let base16colorspace=256
 
-if has('nvim')
-  colorscheme tokyonight-night
-else
+if !has('nvim')
   colorscheme hybrid_reverse
 endif
 
@@ -248,4 +246,3 @@ if !has('nvim')
   let g:gitgutter_realtime = 0
   let g:gitgutter_eager = 0
 endif
-

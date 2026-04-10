@@ -67,7 +67,7 @@ end
 
 local function get_bottom_drawer_sessions()
 	local sessions = {}
-	local drawers = _G._bottom_drawers
+	local drawers = package.loaded["util.bottom_drawers"]
 
 	if not drawers or not drawers.state or not drawers.state.drawers then
 		return sessions
@@ -177,6 +177,18 @@ function M.force_update()
 	M._update_title()
 end
 
+local function has_managed_terminals()
+	return #get_terminal_sessions() > 0
+end
+
+local function refresh_polling_state()
+	if has_managed_terminals() then
+		M.start()
+	else
+		M.stop()
+	end
+end
+
 function M.start()
 	if poll_timer then
 		return
@@ -208,7 +220,6 @@ function M.setup()
 	end
 
 	vim.g._terminal_title_setup_done = true
-	M.start()
 
 	local group = vim.api.nvim_create_augroup("TerminalTitleStatus", { clear = true })
 
@@ -233,12 +244,14 @@ function M.setup()
 		group = group,
 		callback = function()
 			vim.defer_fn(function()
+				refresh_polling_state()
 				M.force_update()
 			end, 50)
 		end,
 		desc = "Refresh terminal title when managed terminals change",
 	})
 
+	refresh_polling_state()
 	M.force_update()
 	return M
 end

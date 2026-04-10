@@ -2,6 +2,7 @@
 -- Updates zoomed floating window border color based on current Vim mode
 
 local M = {}
+local setup_done = false
 
 -- Tokyonight palette colors (matching lualine mode colors)
 local COLORS = {
@@ -74,6 +75,11 @@ end
 
 -- Setup module (idempotent)
 function M.setup()
+	if setup_done then
+		return
+	end
+	setup_done = true
+
 	setup_highlights()
 
 	-- Create autocommand group

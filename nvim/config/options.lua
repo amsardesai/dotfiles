@@ -1,6 +1,10 @@
 -- Neovim Global Options
 -- Settings for vim.g and vim.o
 
+local M = {}
+
+function M.setup()
+
 -- Keep netrw available so Neo-tree can hijack directory opens cleanly.
 -- Neo-tree disables the FileExplorer autocmds itself when hijacking.
 
@@ -133,3 +137,9 @@ vim.api.nvim_create_autocmd("TermOpen", {
 		vim.opt_local.list = false
 	end,
 })
+
+end
+
+M.setup()
+
+return M

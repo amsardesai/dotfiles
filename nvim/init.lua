@@ -22,10 +22,14 @@ vim.g.maplocalleader = ";"
 
 -- Config directory path
 local config_dir = vim.fn.stdpath("config")
+package.path = table.concat({
+	config_dir .. "/?.lua",
+	config_dir .. "/?/init.lua",
+	package.path,
+}, ";")
 
 -- Load plugins via lazy.nvim
--- Use dofile to load plugin specs (handles nested dofile calls properly)
-require("lazy").setup(dofile(config_dir .. "/plugins/init.lua"), {
+require("lazy").setup(require("plugins"), {
 	-- Plugin installation directory
 	root = vim.fn.stdpath("data") .. "/lazy",
 	-- Don't notify on config changes
@@ -53,8 +57,8 @@ require("lazy").setup(dofile(config_dir .. "/plugins/init.lua"), {
 })
 
 -- Load shared vim/nvim configuration (VimScript)
-vim.cmd("source ~/.dotfiles/vimconfig/main.vim")
+vim.cmd("source " .. config_dir .. "/vimconfig/main.vim")
 
 -- Load Neovim-specific Lua configuration
-dofile(config_dir .. "/config/options.lua")
-dofile(config_dir .. "/config/keymaps.lua")
+require("config.options")
+require("config.keymaps")

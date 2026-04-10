@@ -2,11 +2,6 @@
 -- Order is based on when drawers are opened (left-to-right = first-to-last opened)
 -- ,z = Terminal Z, ,x = Terminal X
 
--- Cache module to preserve state across dofile() calls
-if _G._bottom_drawers then
-	return _G._bottom_drawers
-end
-
 local M = {}
 
 -- Define highlight groups for drawer winbars (persist across colorscheme changes)
@@ -26,13 +21,17 @@ local function set_drawer_highlights()
 	vim.api.nvim_set_hl(0, "TerminalXLabelNC", { fg = "#ffffff", bg = "#6b21a8", bold = false, italic = true })
 end
 set_drawer_highlights()
-vim.api.nvim_create_autocmd("ColorScheme", { callback = set_drawer_highlights })
+vim.api.nvim_create_autocmd("ColorScheme", {
+	group = vim.api.nvim_create_augroup("BottomDrawerHighlights", { clear = true }),
+	callback = set_drawer_highlights,
+})
 
 -- Debounced redraw on window focus changes to update dynamic winbar expressions
 -- Uses vim.schedule() to coalesce rapid WinEnter/WinLeave events into single redraw
 -- This also handles agent terminal winbar updates (removed duplicate autocmd)
 local redraw_pending = false
 vim.api.nvim_create_autocmd({ "WinEnter", "WinLeave" }, {
+	group = vim.api.nvim_create_augroup("BottomDrawerWinbarRedraw", { clear = true }),
 	callback = function()
 		if not redraw_pending then
 			redraw_pending = true
@@ -357,8 +356,5 @@ function M.close_all()
 	end
 	rebalance_drawers()
 end
-
--- Store in global for caching
-_G._bottom_drawers = M
 
 return M

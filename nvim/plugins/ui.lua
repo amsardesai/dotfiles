@@ -22,11 +22,12 @@ return {
 				vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#3b4261" })
 			end
 			vim.api.nvim_create_autocmd("ColorScheme", {
+				group = vim.api.nvim_create_augroup("TokyonightWinSeparator", { clear = true }),
 				pattern = "tokyonight*",
 				callback = set_win_separator_hl,
 				desc = "Make window separator more visible",
 			})
-			vim.cmd.colorscheme("tokyonight")
+			vim.cmd.colorscheme("tokyonight-night")
 		end,
 	},
 
@@ -45,7 +46,10 @@ return {
 				vim.api.nvim_set_hl(0, "AgentTitleNC", { fg = "#ffffff", bg = "#7b3b25", bold = false })
 			end
 			set_agent_hl()
-			vim.api.nvim_create_autocmd("ColorScheme", { callback = set_agent_hl })
+			vim.api.nvim_create_autocmd("ColorScheme", {
+				group = vim.api.nvim_create_augroup("AgentTerminalHighlights", { clear = true }),
+				callback = set_agent_hl,
+			})
 
 			-- Dynamic winbar for agent terminal (re-evaluates on each redraw)
 			function _G._agent_terminal_winbar()
@@ -86,7 +90,11 @@ return {
 
 			-- Auto-open agent terminal when launching with a directory (or no args)
 			vim.api.nvim_create_autocmd("VimEnter", {
+				group = vim.api.nvim_create_augroup("AgentTerminalStartup", { clear = true }),
 				callback = function(data)
+					if #vim.api.nvim_list_uis() == 0 then
+						return
+					end
 					local argc = vim.fn.argc()
 					local is_directory = argc == 1 and vim.fn.isdirectory(data.file) == 1
 					if argc ~= 0 and not is_directory then
@@ -141,10 +149,7 @@ return {
 			{
 				"<leader>z",
 				function()
-					if not _G.bottom_drawers then
-						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
-					end
-					_G.bottom_drawers.toggle_primary()
+					require("util.bottom_drawers").toggle_primary()
 				end,
 				mode = { "n", "v", "t" },
 				desc = "Toggle Terminal Z",
@@ -152,10 +157,7 @@ return {
 			{
 				"<leader>x",
 				function()
-					if not _G.bottom_drawers then
-						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
-					end
-					_G.bottom_drawers.toggle_secondary()
+					require("util.bottom_drawers").toggle_secondary()
 				end,
 				mode = { "n", "v", "t" },
 				desc = "Toggle Terminal X",
@@ -163,11 +165,8 @@ return {
 			{
 				"<leader>q",
 				function()
-					if not _G.bottom_drawers then
-						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
-					end
 					-- Hide terminal windows (preserve buffers, don't kill processes)
-					_G.bottom_drawers.hide_all()
+					require("util.bottom_drawers").hide_all()
 
 					-- Close neo-tree sidebar (if open)
 					pcall(vim.cmd, "Neotree close")
@@ -184,10 +183,7 @@ return {
 				"<leader>Q",
 				function()
 					-- Close bottom drawer terminals (kills processes)
-					if not _G.bottom_drawers then
-						_G.bottom_drawers = dofile(vim.fn.stdpath("config") .. "/util/bottom_drawers.lua")
-					end
-					_G.bottom_drawers.close_all()
+					require("util.bottom_drawers").close_all()
 
 					-- Close neo-tree sidebar
 					pcall(vim.cmd, "Neotree close")
@@ -297,10 +293,7 @@ return {
 					{
 						"branch",
 						fmt = function(name)
-							-- Lazy-load and cache text utils (only reads file once)
-							_G._text_utils = _G._text_utils
-								or dofile(vim.fn.stdpath("config") .. "/util/text.lua")
-							return _G._text_utils.truncate_middle(name, 20)
+							return require("util.text").truncate_middle(name, 20)
 						end,
 					},
 					"diff",

@@ -1,6 +1,10 @@
 -- Neovim Global Keymaps
 -- All keybindings that aren't tied to specific plugins
 
+local M = {}
+
+function M.setup()
+
 -- =============================================================================
 -- GENERAL
 -- =============================================================================
@@ -102,11 +106,7 @@ vim.keymap.set("n", "<Leader>rd", "<cmd>redraw!<cr>", { desc = "Redraw screen" }
 
 -- Reload config (re-source all config files)
 vim.keymap.set("n", "<Leader>r", function()
-	local config_dir = vim.fn.stdpath("config")
-	vim.cmd("source " .. config_dir .. "/vimconfig/main.vim")
-	dofile(config_dir .. "/nvim/config/options.lua")
-	dofile(config_dir .. "/nvim/config/keymaps.lua")
-	vim.notify("Config reloaded", vim.log.levels.INFO)
+	require("util.reload").reload()
 end, { desc = "Reload config" })
 
 -- Fix whitespace (using mini.trailspace)
@@ -137,7 +137,10 @@ vim.keymap.set("n", "<Leader>gh", function()
 end, { desc = "Switch .cc/.h" })
 
 -- Filetype detection autocmds
+local filetype_group = vim.api.nvim_create_augroup("UserConfigFiletypes", { clear = true })
+
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+	group = filetype_group,
 	pattern = { "Rakefile", "Capfile", "Gemfile", ".autotest", ".irbrc", "*.treetop", "*.tt" },
 	callback = function()
 		vim.bo.filetype = "ruby"
@@ -146,6 +149,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 })
 
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+	group = filetype_group,
 	pattern = { ".jshintrc", ".eslintrc" },
 	callback = function()
 		vim.bo.filetype = "json"
@@ -182,22 +186,22 @@ vim.keymap.set("t", "<Leader>ls", "<C-\\><C-n><cmd>buffers<cr>", { desc = "List 
 -- Terminal utility (reload config - exits terminal mode first)
 vim.keymap.set("t", "<Leader>r", function()
 	vim.cmd("stopinsert")
-	local config_dir = vim.fn.stdpath("config")
-	vim.cmd("source " .. config_dir .. "/vimconfig/main.vim")
-	dofile(config_dir .. "/nvim/config/options.lua")
-	dofile(config_dir .. "/nvim/config/keymaps.lua")
-	vim.notify("Config reloaded", vim.log.levels.INFO)
+	require("util.reload").reload()
 end, { desc = "Reload config" })
 vim.keymap.set("t", "<Leader>rd", "<C-\\><C-n><cmd>redraw!<cr>", { desc = "Redraw screen" })
 
 -- Auto-insert on terminal enter, normal on leave
+local terminal_group = vim.api.nvim_create_augroup("UserConfigTerminalMode", { clear = true })
+
 vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter" }, {
+	group = terminal_group,
 	pattern = "term://*",
 	command = "startinsert",
 	desc = "Auto-insert in terminal",
 })
 
 vim.api.nvim_create_autocmd("BufLeave", {
+	group = terminal_group,
 	pattern = "term://*",
 	command = "stopinsert",
 	desc = "Stop insert on terminal leave",
@@ -205,6 +209,7 @@ vim.api.nvim_create_autocmd("BufLeave", {
 
 -- Terminal mouse: single click enters terminal mode, drag allows visual selection
 vim.api.nvim_create_autocmd("TermOpen", {
+	group = terminal_group,
 	callback = function()
 		-- Track click position to distinguish clicks from drags
 		vim.keymap.set({ "n", "v" }, "<LeftMouse>", function()
@@ -233,8 +238,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
 -- CONTEXT MENU
 -- =============================================================================
 
-local config_dir = vim.fn.stdpath("config")
-local context_menu = dofile(config_dir .. "/util/context_menu.lua")
+local context_menu = require("util.context_menu")
 vim.keymap.set({ "n", "v" }, "<RightMouse>", context_menu.show, { desc = "Context menu" })
 
 -- =============================================================================
@@ -275,7 +279,7 @@ end, { desc = "Copy selection with context to clipboard" })
 -- Keep the terminal title in sync with managed terminal activity
 -- =============================================================================
 
-dofile(config_dir .. "/util/terminal_title.lua").setup()
+require("util.terminal_title").setup()
 
 -- =============================================================================
 -- LEGACY VIMSCRIPT
@@ -283,3 +287,9 @@ dofile(config_dir .. "/util/terminal_title.lua").setup()
 
 -- BehaveZZ (calls VimScript function from helpers/behave_zz.vim)
 vim.keymap.set("n", "ZZ", "<cmd>call BehaveZZ()<cr>", { desc = "BehaveZZ" })
+
+end
+
+M.setup()
+
+return M

@@ -8,7 +8,6 @@ end
 -- Helper: perform the actual zoom operation
 local function do_zoom()
 	local MiniMisc = require("mini.misc")
-	MiniMisc.setup()
 	MiniMisc.zoom(0, {
 		width = vim.o.columns,
 		height = vim.o.lines,
@@ -24,7 +23,7 @@ local function do_zoom()
 	vim.w[win].is_zoomed = true
 
 	-- Setup mode-aware border colors
-	local zoom_border = dofile(get_config_dir() .. "/util/zoom_border.lua")
+	local zoom_border = require("util.zoom_border")
 	zoom_border.setup()
 	vim.wo[win].winhighlight = zoom_border.get_winhighlight()
 end
@@ -91,7 +90,11 @@ return {
 			vim.api.nvim_set_hl(0, "NeoTreeFloatTitle", { fg = "#ffffff", bg = "#ca8a04", bold = true })
 
 			vim.api.nvim_create_autocmd("VimEnter", {
+				group = vim.api.nvim_create_augroup("NeoTreeStartup", { clear = true }),
 				callback = function(data)
+					if #vim.api.nvim_list_uis() == 0 then
+						return
+					end
 					-- Auto-open Neo-tree when launched with no args or a directory arg.
 					local argc = vim.fn.argc()
 					local is_directory = argc == 1 and vim.fn.isdirectory(data.file) == 1
@@ -274,7 +277,7 @@ return {
 						query = query:gsub("\n", "")
 					end
 
-					local file_cache = dofile(get_config_dir() .. "/util/file_cache.lua")
+					local file_cache = require("util.file_cache")
 					local fzf = require("fzf-lua")
 					local files = file_cache.get()
 					if files and #files > 0 then
@@ -313,7 +316,7 @@ return {
 			{
 				"<leader>ll",
 				function()
-					local file_cache = dofile(get_config_dir() .. "/util/file_cache.lua")
+					local file_cache = require("util.file_cache")
 					local fzf = require("fzf-lua")
 					local files = file_cache.get()
 					if files and #files > 0 then
@@ -333,7 +336,7 @@ return {
 			{
 				"<leader>lr",
 				function()
-					local file_cache = dofile(get_config_dir() .. "/util/file_cache.lua")
+					local file_cache = require("util.file_cache")
 					file_cache.force_refresh()
 				end,
 				desc = "Refresh file cache",
@@ -385,7 +388,7 @@ return {
 			fzf.register_ui_select()
 
 			-- Setup file cache
-			local file_cache = dofile(get_config_dir() .. "/util/file_cache.lua")
+			local file_cache = require("util.file_cache")
 			file_cache.setup()
 		end,
 	},
@@ -396,6 +399,10 @@ return {
 
 	{
 		"echasnovski/mini.misc",
+		config = function()
+			require("mini.misc").setup()
+			require("util.zoom_border").setup()
+		end,
 		keys = {
 			{
 				"<M-S-CR>",
