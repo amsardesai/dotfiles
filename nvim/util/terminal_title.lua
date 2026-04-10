@@ -50,42 +50,15 @@ local function get_job_pid(job_id)
 	return pid
 end
 
-local function get_agent_terminal_session()
-	for _, session in ipairs(require("util.panes").list_terminal_sessions()) do
-		if session.kind == "agent" then
-			local pid = get_job_pid(session.job_id)
-			if pid then
-				return { kind = "agent", pid = pid }
-			end
-		end
-	end
-
-	return nil
-end
-
-local function get_bottom_drawer_sessions()
-	local sessions = {}
-	for _, session in ipairs(require("util.panes").list_terminal_sessions()) do
-		if session.kind ~= "agent" then
-			local pid = get_job_pid(session.job_id)
-			if pid then
-				table.insert(sessions, { kind = session.kind, pid = pid })
-			end
-		end
-	end
-
-	return sessions
-end
-
 local function get_terminal_sessions()
 	local sessions = {}
-	local agent = get_agent_terminal_session()
-
-	if agent then
-		table.insert(sessions, agent)
+	for _, session in ipairs(require("util.panes").list_terminal_sessions()) do
+		local pid = get_job_pid(session.job_id)
+		if pid then
+			table.insert(sessions, { kind = session.kind, pid = pid })
+		end
 	end
 
-	vim.list_extend(sessions, get_bottom_drawer_sessions())
 	return sessions
 end
 

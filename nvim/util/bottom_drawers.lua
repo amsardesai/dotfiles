@@ -353,21 +353,6 @@ function M.hide_all()
 	M.state.open_order = {}
 end
 
--- Close ALL drawer windows (including killing terminal processes)
-function M.close_all_drawer_windows()
-	M.hide_all()
-
-	-- Also kill terminal processes
-	for _, slot in ipairs({ "primary", "secondary" }) do
-		local state = M.state.drawers[slot]
-		if state.buf and vim.api.nvim_buf_is_valid(state.buf) then
-			vim.api.nvim_buf_delete(state.buf, { force = true })
-		end
-		state.buf = nil
-		state.job_id = nil
-	end
-end
-
 -- Kill all terminal processes (doesn't affect other drawers)
 function M.close_all()
 	for _, slot in ipairs({ "primary", "secondary" }) do
