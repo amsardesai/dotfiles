@@ -1,9 +1,8 @@
 -- Neovim Global Options
 -- Settings for vim.g and vim.o
 
--- Disable netrw (nvim-tree replaces it)
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+-- Keep netrw available so Neo-tree can hijack directory opens cleanly.
+-- Neo-tree disables the FileExplorer autocmds itself when hijacking.
 
 -- =============================================================================
 -- RPC SERVER (for WezTerm file path clicking)
