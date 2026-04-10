@@ -238,11 +238,37 @@ local context_menu = dofile(config_dir .. "/util/context_menu.lua")
 vim.keymap.set({ "n", "v" }, "<RightMouse>", context_menu.show, { desc = "Context menu" })
 
 -- =============================================================================
--- CLAUDE CODE STATUS
+-- AI CONTEXT COPY (,y)
+-- Copy current line or visual selection to clipboard, formatted with file path
+-- and line numbers as a markdown code block — paste into any AI agent terminal
 -- =============================================================================
 
--- Terminal title status indicator (🤖 awaiting, 🟢 connected)
-dofile(config_dir .. "/util/claude_status.lua").setup()
+-- Normal mode: copy current line
+vim.keymap.set("n", "<leader>y", function()
+	local line = vim.fn.line(".")
+	local content = vim.api.nvim_buf_get_lines(0, line - 1, line, false)[1] or ""
+	local filepath = vim.fn.expand("%:.")
+	local ft = vim.bo.filetype
+	local formatted = "# " .. filepath .. ":" .. line .. "\n```" .. ft .. "\n" .. content .. "\n```"
+	vim.fn.setreg("+", formatted)
+	vim.notify("Copied " .. filepath .. ":" .. line, vim.log.levels.INFO)
+end, { desc = "Copy line with context to clipboard" })
+
+-- Visual mode: copy selected lines
+vim.keymap.set("v", "<leader>y", function()
+	local start_line = vim.fn.line("v")
+	local end_line = vim.fn.line(".")
+	if start_line > end_line then
+		start_line, end_line = end_line, start_line
+	end
+	local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+	local filepath = vim.fn.expand("%:.")
+	local ft = vim.bo.filetype
+	local range = start_line == end_line and tostring(start_line) or (start_line .. "-" .. end_line)
+	local formatted = "# " .. filepath .. ":" .. range .. "\n```" .. ft .. "\n" .. table.concat(lines, "\n") .. "\n```"
+	vim.fn.setreg("+", formatted)
+	vim.notify("Copied " .. filepath .. ":" .. range, vim.log.levels.INFO)
+end, { desc = "Copy selection with context to clipboard" })
 
 -- =============================================================================
 -- LEGACY VIMSCRIPT

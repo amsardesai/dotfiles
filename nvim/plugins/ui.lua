@@ -37,7 +37,93 @@ return {
 	{
 		"folke/snacks.nvim",
 		event = "VeryLazy",
+		init = function()
+			-- Highlight groups for agent terminal winbar (orange theme, matches old Claude Code)
+			-- NC variants for unfocused windows (darker bg, non-bold title)
+			local function set_agent_hl()
+				vim.api.nvim_set_hl(0, "AgentTitle", { fg = "#ffffff", bg = "#c15f3c", bold = true })
+				vim.api.nvim_set_hl(0, "AgentTitleNC", { fg = "#ffffff", bg = "#7b3b25", bold = false })
+			end
+			set_agent_hl()
+			vim.api.nvim_create_autocmd("ColorScheme", { callback = set_agent_hl })
+
+			-- Dynamic winbar for agent terminal (re-evaluates on each redraw)
+			function _G._agent_terminal_winbar()
+				local bufnr = vim.api.nvim_get_current_buf()
+				local title = vim.b[bufnr].term_title or ""
+				if title == "" or title:match("^term://") then
+					title = "Agent"
+				end
+				local win = vim.fn.bufwinid(bufnr)
+				local width = win > 0 and vim.api.nvim_win_get_width(win) or 80
+				if width >= 30 then
+					return " " .. title .. " %=,a "
+				else
+					return " " .. title .. " "
+				end
+			end
+
+			-- Shared toggle function (used by keymap and auto-open)
+			function _G._toggle_agent_terminal()
+				local term = require("snacks").terminal.toggle(nil, {
+					id = "agent",
+					win = {
+						position = "right",
+						width = function()
+							return math.min(math.floor(vim.o.columns * 0.40), 75)
+						end,
+						wo = {
+							winbar = "%{%v:lua._agent_terminal_winbar()%}",
+							winhighlight = "WinBar:AgentTitle,WinBarNC:AgentTitleNC",
+							number = false,
+							relativenumber = false,
+						},
+					},
+				})
+				_G._agent_terminal = term
+				return term
+			end
+
+			-- Auto-open agent terminal when launching with a directory (or no args)
+			vim.api.nvim_create_autocmd("VimEnter", {
+				callback = function(data)
+					local argc = vim.fn.argc()
+					local is_directory = argc == 1 and vim.fn.isdirectory(data.file) == 1
+					if argc ~= 0 and not is_directory then
+						return
+					end
+					vim.defer_fn(function()
+						require("lazy").load({ plugins = { "snacks.nvim" } })
+						_G._toggle_agent_terminal()
+						-- Focus the agent terminal after opening
+						vim.defer_fn(function()
+							local max_col, target_win = -1, nil
+							for _, win in ipairs(vim.api.nvim_list_wins()) do
+								if vim.api.nvim_win_is_valid(win) then
+									local col = vim.api.nvim_win_get_position(win)[2]
+									if col > max_col then
+										max_col, target_win = col, win
+									end
+								end
+							end
+							if target_win then
+								vim.api.nvim_set_current_win(target_win)
+								vim.cmd("startinsert")
+							end
+						end, 100)
+					end, 100)
+				end,
+			})
+		end,
 		keys = {
+			{
+				"<leader>a",
+				function()
+					_G._toggle_agent_terminal()
+				end,
+				mode = { "n", "v", "t" },
+				desc = "Toggle Agent Terminal",
+			},
 			{
 				"]]",
 				function()
@@ -86,19 +172,9 @@ return {
 					-- Close neo-tree sidebar (if open)
 					pcall(vim.cmd, "Neotree close")
 
-					-- Close Claude Code panel (only if open)
-					local ok, terminal = pcall(require, "claudecode.terminal")
-					if ok and terminal and terminal.get_active_terminal_bufnr then
-						local bufnr = terminal.get_active_terminal_bufnr()
-						if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
-							-- Find window containing this buffer and close it
-							for _, win in ipairs(vim.api.nvim_list_wins()) do
-								if vim.api.nvim_win_get_buf(win) == bufnr then
-									vim.api.nvim_win_close(win, false)
-									break
-								end
-							end
-						end
+					-- Hide agent terminal if open
+					if _G._agent_terminal then
+						_G._agent_terminal:hide()
 					end
 				end,
 				mode = { "n", "v", "t" },
@@ -116,35 +192,10 @@ return {
 					-- Close neo-tree sidebar
 					pcall(vim.cmd, "Neotree close")
 
-					-- Kill claudecode.nvim terminal
-					local ok, terminal = pcall(require, "claudecode.terminal")
-					if ok and terminal then
-						local bufnr = terminal.get_active_terminal_bufnr and terminal.get_active_terminal_bufnr()
-						if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
-							local channel = vim.bo[bufnr].channel
-							if channel and channel > 0 then
-								pcall(vim.fn.jobstop, channel)
-							end
-							pcall(vim.api.nvim_buf_delete, bufnr, { force = true })
-						end
-					end
-
-					-- Kill stray claude processes in current directory
-					local cwd = vim.fn.getcwd()
-					local handle = io.popen("pgrep -x claude 2>/dev/null")
-					if handle then
-						local pids = handle:read("*a")
-						handle:close()
-						for pid in pids:gmatch("%d+") do
-							local lsof = io.popen("lsof -p " .. pid .. " 2>/dev/null | grep cwd | awk '{print $NF}'")
-							if lsof then
-								local proc_cwd = lsof:read("*a"):gsub("%s+$", "")
-								lsof:close()
-								if proc_cwd == cwd then
-									os.execute("kill -9 " .. pid .. " 2>/dev/null")
-								end
-							end
-						end
+					-- Kill agent terminal
+					if _G._agent_terminal then
+						_G._agent_terminal:close()
+						_G._agent_terminal = nil
 					end
 				end,
 				mode = { "n", "v", "t" },

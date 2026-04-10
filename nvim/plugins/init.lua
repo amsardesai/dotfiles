@@ -19,6 +19,5 @@ return merge_specs(
 	dofile(config_dir .. "/ui.lua"),
 	dofile(config_dir .. "/editor.lua"),
 	dofile(config_dir .. "/lsp.lua"),
-	dofile(config_dir .. "/lang.lua"),
-	dofile(config_dir .. "/tools.lua")
+	dofile(config_dir .. "/lang.lua")
 )
