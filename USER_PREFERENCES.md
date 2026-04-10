@@ -145,12 +145,13 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
      **Commit message attribution format:**
      - Use: `Co-Authored-By: <Harness Name> (<Exact Model Name>) <noreply@...>`
      - Always include both the harness name and the exact model name when the harness exposes it
-     - Do not collapse attribution to just the harness name like `Codex <...>` or `Cursor <...>`
-     - Examples:
-       - `Claude Code (Claude Opus 4.6) <noreply@anthropic.com>`
-       - `Codex (GPT-5.4) <noreply@openai.com>`
-       - `Cursor (Claude Sonnet 4.6) <noreply@cursor.com>`
-       - `OpenCode (GPT-5.4) <noreply@...>`
+      - Do not collapse attribution to just the harness name like `Codex <...>` or `Cursor <...>`
+      - Examples:
+        - `Claude Code (Claude Opus 4.6) <noreply@anthropic.com>`
+        - `Codex (GPT-5.4) <noreply@openai.com>`
+        - `Cursor (Claude Sonnet 4.6) <noreply@cursor.com>`
+        - `OpenCode (GPT-5.4) <noreply@opencode.ai>`
+      - When using OpenCode specifically, attribute commits and PRs to `OpenCode (GPT-5.4) <noreply@opencode.ai>`, not the model vendor domain
 
 4. Create the commit using `git commit` (or `gt create` in notion-next)
 
