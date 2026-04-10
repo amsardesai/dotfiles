@@ -51,34 +51,25 @@ local function get_job_pid(job_id)
 end
 
 local function get_agent_terminal_session()
-	local terminal = _G._agent_terminal
-	if not terminal or not terminal.buf or not vim.api.nvim_buf_is_valid(terminal.buf) then
-		return nil
+	for _, session in ipairs(require("util.panes").list_terminal_sessions()) do
+		if session.kind == "agent" then
+			local pid = get_job_pid(session.job_id)
+			if pid then
+				return { kind = "agent", pid = pid }
+			end
+		end
 	end
 
-	local channel = vim.bo[terminal.buf].channel
-	local pid = get_job_pid(channel)
-	if not pid then
-		return nil
-	end
-
-	return { kind = "agent", pid = pid }
+	return nil
 end
 
 local function get_bottom_drawer_sessions()
 	local sessions = {}
-	local drawers = package.loaded["util.bottom_drawers"]
-
-	if not drawers or not drawers.state or not drawers.state.drawers then
-		return sessions
-	end
-
-	for _, slot in ipairs({ "primary", "secondary" }) do
-		local state = drawers.state.drawers[slot]
-		if state and state.buf and vim.api.nvim_buf_is_valid(state.buf) then
-			local pid = get_job_pid(state.job_id)
+	for _, session in ipairs(require("util.panes").list_terminal_sessions()) do
+		if session.kind ~= "agent" then
+			local pid = get_job_pid(session.job_id)
 			if pid then
-				table.insert(sessions, { kind = slot, pid = pid })
+				table.insert(sessions, { kind = session.kind, pid = pid })
 			end
 		end
 	end

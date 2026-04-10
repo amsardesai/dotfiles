@@ -92,35 +92,7 @@ return {
 			vim.api.nvim_create_autocmd("VimEnter", {
 				group = vim.api.nvim_create_augroup("NeoTreeStartup", { clear = true }),
 				callback = function(data)
-					if #vim.api.nvim_list_uis() == 0 then
-						return
-					end
-					-- Auto-open Neo-tree when launched with no args or a directory arg.
-					local argc = vim.fn.argc()
-					local is_directory = argc == 1 and vim.fn.isdirectory(data.file) == 1
-
-					if argc ~= 0 and not is_directory then
-						return -- Opening specific file(s), don't auto-open tree/picker
-					end
-
-					local dir = is_directory and vim.fn.fnamemodify(data.file, ":p") or nil
-
-					-- Load neo-tree and show sidebar
-					require("lazy").load({ plugins = { "neo-tree.nvim" } })
-
-					-- Replace the initial netrw directory buffer with an empty buffer
-					-- before opening Neo-tree so `nvim <dir>` doesn't leave netrw visible.
-					if is_directory then
-						local initial_buf = vim.api.nvim_get_current_buf()
-						vim.cmd("enew")
-						pcall(vim.api.nvim_buf_delete, initial_buf, { force = true })
-					end
-
-					if dir then
-						vim.cmd("Neotree action=show dir=" .. vim.fn.fnameescape(dir))
-					else
-						vim.cmd("Neotree action=show")
-					end
+					require("util.panes").startup_tree(data)
 				end,
 			})
 		end,

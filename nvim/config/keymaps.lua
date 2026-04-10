@@ -96,7 +96,7 @@ end
 -- Close quickfix, preview, and location windows
 vim.keymap.set(
 	"n",
-	"<Leader>q",
+	"<Leader>qq",
 	"<cmd>cclose<cr><cmd>pclose<cr><cmd>lclose<cr>",
 	{ desc = "Close quickfix/preview/location" }
 )

@@ -69,57 +69,14 @@ return {
 
 			-- Shared toggle function (used by keymap and auto-open)
 			function _G._toggle_agent_terminal()
-				local term = require("snacks").terminal.toggle(nil, {
-					id = "agent",
-					win = {
-						position = "right",
-						width = function()
-							return math.min(math.floor(vim.o.columns * 0.40), 75)
-						end,
-						wo = {
-							winbar = "%{%v:lua._agent_terminal_winbar()%}",
-							winhighlight = "WinBar:AgentTitle,WinBarNC:AgentTitleNC",
-							number = false,
-							relativenumber = false,
-						},
-					},
-				})
-				_G._agent_terminal = term
-				return term
+				return require("util.panes").toggle_agent()
 			end
 
 			-- Auto-open agent terminal when launching with a directory (or no args)
 			vim.api.nvim_create_autocmd("VimEnter", {
 				group = vim.api.nvim_create_augroup("AgentTerminalStartup", { clear = true }),
 				callback = function(data)
-					if #vim.api.nvim_list_uis() == 0 then
-						return
-					end
-					local argc = vim.fn.argc()
-					local is_directory = argc == 1 and vim.fn.isdirectory(data.file) == 1
-					if argc ~= 0 and not is_directory then
-						return
-					end
-					vim.defer_fn(function()
-						require("lazy").load({ plugins = { "snacks.nvim" } })
-						_G._toggle_agent_terminal()
-						-- Focus the agent terminal after opening
-						vim.defer_fn(function()
-							local max_col, target_win = -1, nil
-							for _, win in ipairs(vim.api.nvim_list_wins()) do
-								if vim.api.nvim_win_is_valid(win) then
-									local col = vim.api.nvim_win_get_position(win)[2]
-									if col > max_col then
-										max_col, target_win = col, win
-									end
-								end
-							end
-							if target_win then
-								vim.api.nvim_set_current_win(target_win)
-								vim.cmd("startinsert")
-							end
-						end, 100)
-					end, 100)
+					require("util.panes").startup_agent(data)
 				end,
 			})
 		end,
@@ -127,7 +84,7 @@ return {
 			{
 				"<leader>a",
 				function()
-					_G._toggle_agent_terminal()
+					require("util.panes").toggle_agent()
 				end,
 				mode = { "n", "v", "t" },
 				desc = "Toggle Agent Terminal",
@@ -149,7 +106,7 @@ return {
 			{
 				"<leader>z",
 				function()
-					require("util.bottom_drawers").toggle_primary()
+					require("util.panes").toggle_drawer("primary")
 				end,
 				mode = { "n", "v", "t" },
 				desc = "Toggle Terminal Z",
@@ -157,7 +114,7 @@ return {
 			{
 				"<leader>x",
 				function()
-					require("util.bottom_drawers").toggle_secondary()
+					require("util.panes").toggle_drawer("secondary")
 				end,
 				mode = { "n", "v", "t" },
 				desc = "Toggle Terminal X",
@@ -165,16 +122,7 @@ return {
 			{
 				"<leader>q",
 				function()
-					-- Hide terminal windows (preserve buffers, don't kill processes)
-					require("util.bottom_drawers").hide_all()
-
-					-- Close neo-tree sidebar (if open)
-					pcall(vim.cmd, "Neotree close")
-
-					-- Hide agent terminal if open
-					if _G._agent_terminal then
-						_G._agent_terminal:hide()
-					end
+					require("util.panes").hide_all()
 				end,
 				mode = { "n", "v", "t" },
 				desc = "Hide all drawers",
@@ -182,17 +130,7 @@ return {
 			{
 				"<leader>Q",
 				function()
-					-- Close bottom drawer terminals (kills processes)
-					require("util.bottom_drawers").close_all()
-
-					-- Close neo-tree sidebar
-					pcall(vim.cmd, "Neotree close")
-
-					-- Kill agent terminal
-					if _G._agent_terminal then
-						_G._agent_terminal:close()
-						_G._agent_terminal = nil
-					end
+					require("util.panes").close_all()
 				end,
 				mode = { "n", "v", "t" },
 				desc = "Kill all panels and terminal processes",
