@@ -67,11 +67,6 @@ return {
 				end
 			end
 
-			-- Shared toggle function (used by keymap and auto-open)
-			function _G._toggle_agent_terminal()
-				return require("util.panes").toggle_agent()
-			end
-
 			require("util.panes").setup()
 		end,
 		keys = {

@@ -3,6 +3,9 @@
 
 local M = {}
 local setup_done = false
+local state = {
+	agent_terminal = nil,
+}
 
 local function has_ui()
 	return #vim.api.nvim_list_uis() > 0
@@ -21,11 +24,11 @@ local function get_startup_context(data)
 end
 
 local function get_agent_terminal()
-	return _G._agent_terminal
+	return state.agent_terminal
 end
 
 local function set_agent_terminal(term)
-	_G._agent_terminal = term
+	state.agent_terminal = term
 	return term
 end
 
