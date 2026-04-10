@@ -67,12 +67,7 @@ function M.close_agent()
 end
 
 function M.toggle_drawer(slot)
-	local drawers = require("util.bottom_drawers")
-	if slot == "primary" then
-		drawers.toggle_primary()
-	elseif slot == "secondary" then
-		drawers.toggle_secondary()
-	end
+	require("util.bottom_drawers").toggle(slot)
 end
 
 function M.hide_all()
@@ -99,17 +94,8 @@ function M.list_terminal_sessions()
 	end
 
 	local drawers = package.loaded["util.bottom_drawers"]
-	if drawers and drawers.state and drawers.state.drawers then
-		for _, slot in ipairs({ "primary", "secondary" }) do
-			local state = drawers.state.drawers[slot]
-			if state and state.buf and vim.api.nvim_buf_is_valid(state.buf) then
-				table.insert(sessions, {
-					kind = slot,
-					job_id = state.job_id,
-					buf = state.buf,
-				})
-			end
-		end
+	if drawers then
+		vim.list_extend(sessions, drawers.list_terminal_sessions())
 	end
 
 	return sessions

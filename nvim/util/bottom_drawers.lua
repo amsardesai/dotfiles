@@ -305,6 +305,31 @@ function M.toggle_secondary()
 	end
 end
 
+function M.toggle(slot)
+	if slot == "primary" then
+		return M.toggle_primary()
+	elseif slot == "secondary" then
+		return M.toggle_secondary()
+	end
+end
+
+function M.list_terminal_sessions()
+	local sessions = {}
+
+	for _, slot in ipairs({ "primary", "secondary" }) do
+		local state = M.state.drawers[slot]
+		if state and state.buf and vim.api.nvim_buf_is_valid(state.buf) then
+			table.insert(sessions, {
+				kind = slot,
+				job_id = state.job_id,
+				buf = state.buf,
+			})
+		end
+	end
+
+	return sessions
+end
+
 -- =============================================================================
 -- Cleanup Functions
 -- =============================================================================
