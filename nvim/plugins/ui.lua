@@ -51,22 +51,6 @@ return {
 				callback = set_agent_hl,
 			})
 
-			-- Dynamic winbar for agent terminal (re-evaluates on each redraw)
-			function _G._agent_terminal_winbar()
-				local bufnr = vim.api.nvim_get_current_buf()
-				local title = vim.b[bufnr].term_title or ""
-				if title == "" or title:match("^term://") then
-					title = "Agent"
-				end
-				local win = vim.fn.bufwinid(bufnr)
-				local width = win > 0 and vim.api.nvim_win_get_width(win) or 80
-				if width >= 30 then
-					return " " .. title .. " %=,a "
-				else
-					return " " .. title .. " "
-				end
-			end
-
 			require("util.panes").setup()
 		end,
 		keys = {

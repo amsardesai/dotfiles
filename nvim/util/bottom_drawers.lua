@@ -49,7 +49,7 @@ M.config = {
 }
 
 -- State tracks open order and drawer-specific data
-M.state = {
+local state = {
 	-- Ordered list of open drawer IDs (in open order, left-to-right)
 	open_order = {}, -- e.g., {"primary", "secondary"}
 
@@ -74,7 +74,7 @@ local drawer_meta = {
 
 -- Check if a slot is in the open_order
 local function is_drawer_open(slot)
-	for _, s in ipairs(M.state.open_order) do
+	for _, s in ipairs(state.open_order) do
 		if s == slot then
 			return true
 		end
@@ -85,15 +85,15 @@ end
 -- Add slot to end of open_order (rightmost position)
 local function add_to_open_order(slot)
 	if not is_drawer_open(slot) then
-		table.insert(M.state.open_order, slot)
+		table.insert(state.open_order, slot)
 	end
 end
 
 -- Remove slot from open_order
 local function remove_from_open_order(slot)
-	for i, s in ipairs(M.state.open_order) do
+	for i, s in ipairs(state.open_order) do
 		if s == slot then
-			table.remove(M.state.open_order, i)
+			table.remove(state.open_order, i)
 			return
 		end
 	end
@@ -159,9 +159,9 @@ local function find_drawer_window(slot)
 		local buf = vim.api.nvim_win_get_buf(win)
 
 		-- Terminal drawers
-		if slot == "primary" and buf == M.state.drawers.primary.buf then
+		if slot == "primary" and buf == state.drawers.primary.buf then
 			return win
-		elseif slot == "secondary" and buf == M.state.drawers.secondary.buf then
+		elseif slot == "secondary" and buf == state.drawers.secondary.buf then
 			return win
 		end
 
@@ -173,7 +173,7 @@ end
 -- Get all open drawer windows in order
 local function get_open_drawer_windows()
 	local result = {}
-	for _, slot in ipairs(M.state.open_order) do
+	for _, slot in ipairs(state.open_order) do
 		local win = find_drawer_window(slot)
 		if win then
 			table.insert(result, { slot = slot, win = win })
@@ -184,24 +184,24 @@ end
 
 -- Create or get terminal buffer for a slot
 local function ensure_terminal(slot)
-	local state = M.state.drawers[slot]
+	local drawer = state.drawers[slot]
 
 	-- Check if buffer is still valid
-	if state.buf and vim.api.nvim_buf_is_valid(state.buf) then
-		return state.buf
+	if drawer.buf and vim.api.nvim_buf_is_valid(drawer.buf) then
+		return drawer.buf
 	end
 
 	-- Create new terminal buffer
 	local buf = vim.api.nvim_create_buf(false, true)
 	vim.bo[buf].filetype = "terminal"
-	state.buf = buf
+	drawer.buf = buf
 
 	-- Start shell in the buffer
 	vim.api.nvim_buf_call(buf, function()
-		state.job_id = vim.fn.termopen(vim.o.shell, {
+		drawer.job_id = vim.fn.termopen(vim.o.shell, {
 			on_exit = function()
-				state.buf = nil
-				state.job_id = nil
+				drawer.buf = nil
+				drawer.job_id = nil
 			end,
 		})
 	end)
@@ -317,12 +317,13 @@ function M.list_terminal_sessions()
 	local sessions = {}
 
 	for _, slot in ipairs({ "primary", "secondary" }) do
-		local state = M.state.drawers[slot]
-		if state and state.buf and vim.api.nvim_buf_is_valid(state.buf) then
+		local drawer = state.drawers[slot]
+		if drawer and drawer.buf and vim.api.nvim_buf_is_valid(drawer.buf)
+			and drawer.job_id and drawer.job_id > 0 then
 			table.insert(sessions, {
 				kind = slot,
-				job_id = state.job_id,
-				buf = state.buf,
+				job_id = drawer.job_id,
+				buf = drawer.buf,
 			})
 		end
 	end
@@ -338,7 +339,7 @@ end
 function M.hide_all()
 	-- Close in reverse order to avoid layout issues
 	local slots_to_close = {}
-	for _, slot in ipairs(M.state.open_order) do
+	for _, slot in ipairs(state.open_order) do
 		table.insert(slots_to_close, slot)
 	end
 
@@ -350,21 +351,20 @@ function M.hide_all()
 		end
 	end
 
-	M.state.open_order = {}
+	state.open_order = {}
 end
 
 -- Kill all terminal processes (doesn't affect other drawers)
 function M.close_all()
 	for _, slot in ipairs({ "primary", "secondary" }) do
-		local state = M.state.drawers[slot]
-		if state.buf and vim.api.nvim_buf_is_valid(state.buf) then
-			vim.api.nvim_buf_delete(state.buf, { force = true })
+		local drawer = state.drawers[slot]
+		if drawer.buf and vim.api.nvim_buf_is_valid(drawer.buf) then
+			vim.api.nvim_buf_delete(drawer.buf, { force = true })
 		end
-		state.buf = nil
-		state.job_id = nil
+		drawer.buf = nil
+		drawer.job_id = nil
 		remove_from_open_order(slot)
 	end
-	rebalance_drawers()
 end
 
 return M

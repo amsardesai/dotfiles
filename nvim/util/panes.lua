@@ -7,6 +7,24 @@ local state = {
 	agent_terminal = nil,
 }
 
+-- Global function for agent terminal winbar (called by winbar %{} expression).
+-- Defined at module scope so it's registered unconditionally on require, surviving
+-- :Lazy reload cycles without depending on the setup_done guard in M.setup().
+function _G._agent_terminal_winbar()
+	local bufnr = vim.api.nvim_get_current_buf()
+	local title = vim.b[bufnr].term_title or ""
+	if title == "" or title:match("^term://") then
+		title = "Agent"
+	end
+	local win = vim.fn.bufwinid(bufnr)
+	local width = win > 0 and vim.api.nvim_win_get_width(win) or 80
+	if width >= 30 then
+		return " " .. title .. " %=,a "
+	else
+		return " " .. title .. " "
+	end
+end
+
 local function has_ui()
 	return #vim.api.nvim_list_uis() > 0
 end
@@ -115,21 +133,13 @@ local function startup_agent(data)
 	end
 
 	vim.defer_fn(function()
-		M.toggle_agent()
+		local term = M.toggle_agent()
 
-		-- Focus the rightmost pane (the agent terminal) after opening.
+		-- Focus the agent terminal window directly using the snacks.win handle.
+		-- snacks.win stores the nvim window ID in term.win (nil when hidden).
 		vim.defer_fn(function()
-			local max_col, target_win = -1, nil
-			for _, win in ipairs(vim.api.nvim_list_wins()) do
-				if vim.api.nvim_win_is_valid(win) then
-					local col = vim.api.nvim_win_get_position(win)[2]
-					if col > max_col then
-						max_col, target_win = col, win
-					end
-				end
-			end
-			if target_win then
-				vim.api.nvim_set_current_win(target_win)
+			if term and term.win and vim.api.nvim_win_is_valid(term.win) then
+				vim.api.nvim_set_current_win(term.win)
 				vim.cmd("startinsert")
 			end
 		end, 100)
