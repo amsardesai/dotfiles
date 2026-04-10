@@ -72,13 +72,7 @@ return {
 				return require("util.panes").toggle_agent()
 			end
 
-			-- Auto-open agent terminal when launching with a directory (or no args)
-			vim.api.nvim_create_autocmd("VimEnter", {
-				group = vim.api.nvim_create_augroup("AgentTerminalStartup", { clear = true }),
-				callback = function(data)
-					require("util.panes").startup_agent(data)
-				end,
-			})
+			require("util.panes").setup()
 		end,
 		keys = {
 			{

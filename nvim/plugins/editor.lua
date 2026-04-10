@@ -88,13 +88,6 @@ return {
 		init = function()
 			-- Set float title highlight (yellow background like git status)
 			vim.api.nvim_set_hl(0, "NeoTreeFloatTitle", { fg = "#ffffff", bg = "#ca8a04", bold = true })
-
-			vim.api.nvim_create_autocmd("VimEnter", {
-				group = vim.api.nvim_create_augroup("NeoTreeStartup", { clear = true }),
-				callback = function(data)
-					require("util.panes").startup_tree(data)
-				end,
-			})
 		end,
 		keys = {
 			{

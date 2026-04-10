@@ -2,6 +2,7 @@
 -- This preserves the current pane backends while centralizing the public API.
 
 local M = {}
+local setup_done = false
 
 local function has_ui()
 	return #vim.api.nvim_list_uis() > 0
@@ -114,7 +115,7 @@ function M.list_terminal_sessions()
 	return sessions
 end
 
-function M.startup_agent(data)
+local function startup_agent(data)
 	if not has_ui() then
 		return
 	end
@@ -146,7 +147,7 @@ function M.startup_agent(data)
 	end, 100)
 end
 
-function M.startup_tree(data)
+local function startup_tree(data)
 	if not has_ui() then
 		return
 	end
@@ -171,6 +172,28 @@ function M.startup_tree(data)
 	else
 		vim.cmd("Neotree action=show")
 	end
+end
+
+function M.startup_layout(data)
+	startup_tree(data)
+	startup_agent(data)
+end
+
+function M.setup()
+	if setup_done then
+		return M
+	end
+
+	setup_done = true
+
+	vim.api.nvim_create_autocmd("VimEnter", {
+		group = vim.api.nvim_create_augroup("PaneStartupLayout", { clear = true }),
+		callback = function(data)
+			M.startup_layout(data)
+		end,
+	})
+
+	return M
 end
 
 return M
