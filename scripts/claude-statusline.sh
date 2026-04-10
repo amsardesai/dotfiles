@@ -6,7 +6,8 @@
 # Always shows all components - no progressive truncation.
 # Branch names are center-truncated to max 20 characters.
 #
-# Format: ~/project → main │ ✓2 ✗1 │ ●●○○○ 42% │ opus 1m │ $0.23
+# Format: ~/project → main │ ✓2 ✗1 │ ●●○○○ 42% │ opus 1m │ $0.23 │ 5h 23% │ 7d 41%
+# Note: 5h/7d segments only appear on Claude.ai Pro/Max (absent on API billing)
 #
 # Receives JSON from Claude Code via stdin.
 # =============================================================================
@@ -23,6 +24,8 @@ if [[ $CONTEXT_SIZE -ge 1000000 ]]; then
 fi
 COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 CONTEXT_PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0')
+FIVE_HOUR=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+SEVEN_DAY=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 
 # ANSI color codes
 RESET=$'\033[0m'
@@ -55,6 +58,27 @@ DOTS="${CTX_COLOR}${FILLED_DOTS}${EMPTY_DOTS}${RESET}"
 
 # Context display
 CTX_WITH_DOTS="$DOTS ${CTX_COLOR}${CONTEXT_INT}%${RESET}"
+
+# Rate limit displays (only set if data is present — absent on API billing)
+rate_color() {
+	local pct=$1
+	if [[ $pct -ge 80 ]]; then echo $'\033[31m'
+	elif [[ $pct -ge 50 ]]; then echo $'\033[33m'
+	else echo $'\033[32m'
+	fi
+}
+FIVE_HOUR_DISPLAY=""
+SEVEN_DAY_DISPLAY=""
+if [[ -n "$FIVE_HOUR" ]]; then
+	FIVE_HOUR_INT=${FIVE_HOUR%.*}
+	COLOR=$(rate_color "$FIVE_HOUR_INT")
+	FIVE_HOUR_DISPLAY="${COLOR}5h ${FIVE_HOUR_INT}%${RESET}"
+fi
+if [[ -n "$SEVEN_DAY" ]]; then
+	SEVEN_DAY_INT=${SEVEN_DAY%.*}
+	COLOR=$(rate_color "$SEVEN_DAY_INT")
+	SEVEN_DAY_DISPLAY="${COLOR}7d ${SEVEN_DAY_INT}%${RESET}"
+fi
 
 # Format cost
 COST_FMT=$(printf '$%.2f' "$COST")
@@ -113,6 +137,8 @@ build_output() {
 	output="${output} ${SEP} $CTX_WITH_DOTS"
 	output="${output} ${SEP} $MODEL"
 	output="${output} ${SEP} $COST_FMT"
+	[[ -n "$FIVE_HOUR_DISPLAY" ]] && output="${output} ${SEP} $FIVE_HOUR_DISPLAY"
+	[[ -n "$SEVEN_DAY_DISPLAY" ]] && output="${output} ${SEP} $SEVEN_DAY_DISPLAY"
 	echo "$output"
 }
 
