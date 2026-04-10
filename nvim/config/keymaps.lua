@@ -271,6 +271,13 @@ vim.keymap.set("v", "<leader>y", function()
 end, { desc = "Copy selection with context to clipboard" })
 
 -- =============================================================================
+-- TERMINAL TITLE
+-- Keep the terminal title in sync with managed terminal activity
+-- =============================================================================
+
+dofile(config_dir .. "/util/terminal_title.lua").setup()
+
+-- =============================================================================
 -- LEGACY VIMSCRIPT
 -- =============================================================================
 

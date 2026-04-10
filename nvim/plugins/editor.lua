@@ -91,13 +91,12 @@ return {
 			vim.api.nvim_set_hl(0, "NeoTreeFloatTitle", { fg = "#ffffff", bg = "#ca8a04", bold = true })
 
 			vim.api.nvim_create_autocmd("VimEnter", {
-				callback = function(data)
-					-- Only auto-open when launched with no args or a directory arg
+				callback = function()
+					-- Only auto-open when launched with no args.
+					-- Directory args are already handled by Neo-tree's netrw hijack.
 					local argc = vim.fn.argc()
-					local is_directory = argc == 1 and vim.fn.isdirectory(data.file) == 1
-					local should_auto_open = argc == 0 or is_directory
 
-					if not should_auto_open then
+					if argc ~= 0 then
 						return -- Opening specific file(s), don't auto-open tree/picker
 					end
 

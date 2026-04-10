@@ -199,7 +199,7 @@ return {
 					end
 				end,
 				mode = { "n", "v", "t" },
-				desc = "Kill all panels and Claude processes",
+				desc = "Kill all panels and terminal processes",
 			},
 			{
 				"<leader>gg",
