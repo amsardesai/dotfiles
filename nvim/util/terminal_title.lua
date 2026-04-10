@@ -10,8 +10,11 @@ vim.g._terminal_title_setup_done = vim.g._terminal_title_setup_done or false
 
 local poll_timer = nil
 local update_in_progress = false
+local icon_cache = {}
+local refresh_polling_state
 
 local POLL_INTERVAL_MS = 1000
+local ICON_CACHE_TTL_MS = 2000
 local ICON_IDLE = "💤"
 local ICON_ACTIVE = "🖥️"
 local ICON_AGENT = "🤖"
@@ -50,15 +53,70 @@ local function get_job_pid(job_id)
 	return pid
 end
 
+local function now_ms()
+	return vim.uv.now()
+end
+
+local function prune_cache(active_job_ids)
+	for job_id, _ in pairs(icon_cache) do
+		if not active_job_ids[job_id] then
+			icon_cache[job_id] = nil
+		end
+	end
+end
+
+local function invalidate_job(job_id)
+	if job_id and icon_cache[job_id] then
+		icon_cache[job_id].dirty = true
+	end
+end
+
+local function invalidate_all()
+	for _, entry in pairs(icon_cache) do
+		entry.dirty = true
+	end
+end
+
+local function cache_icon(session, icon)
+	icon_cache[session.job_id] = {
+		icon = icon,
+		pid = session.pid,
+		checked_at_ms = now_ms(),
+		dirty = false,
+	}
+end
+
+local function get_cached_icon(session)
+	local entry = icon_cache[session.job_id]
+	if not entry or entry.dirty then
+		return nil
+	end
+	if entry.pid ~= session.pid then
+		return nil
+	end
+	if (now_ms() - entry.checked_at_ms) > ICON_CACHE_TTL_MS then
+		return nil
+	end
+	return entry.icon
+end
+
 local function get_terminal_sessions()
 	local sessions = {}
+	local active_job_ids = {}
+
 	for _, session in ipairs(require("util.panes").list_terminal_sessions()) do
 		local pid = get_job_pid(session.job_id)
 		if pid then
-			table.insert(sessions, { kind = session.kind, pid = pid })
+			table.insert(sessions, {
+				kind = session.kind,
+				job_id = session.job_id,
+				pid = pid,
+			})
+			active_job_ids[session.job_id] = true
 		end
 	end
 
+	prune_cache(active_job_ids)
 	return sessions
 end
 
@@ -105,17 +163,28 @@ local function detect_icons_async(callback)
 	end
 
 	local icons = {}
-	local pending = #sessions
+	local pending = 0
 
 	for index, session in ipairs(sessions) do
-		classify_terminal_async(session, function(icon)
-			icons[index] = icon
-			pending = pending - 1
+		local cached_icon = get_cached_icon(session)
+		if cached_icon then
+			icons[index] = cached_icon
+		else
+			pending = pending + 1
+			classify_terminal_async(session, function(icon)
+				cache_icon(session, icon)
+				icons[index] = icon
+				pending = pending - 1
 
-			if pending <= 0 then
-				callback(icons)
-			end
-		end)
+				if pending <= 0 then
+					callback(icons)
+				end
+			end)
+		end
+	end
+
+	if pending == 0 then
+		callback(icons)
 	end
 end
 
@@ -141,11 +210,24 @@ function M.force_update()
 	M._update_title()
 end
 
+function M.notify_terminals_changed(job_id)
+	if job_id then
+		invalidate_job(job_id)
+	else
+		invalidate_all()
+	end
+
+	vim.defer_fn(function()
+		refresh_polling_state()
+		M.force_update()
+	end, 50)
+end
+
 local function has_managed_terminals()
 	return #get_terminal_sessions() > 0
 end
 
-local function refresh_polling_state()
+refresh_polling_state = function()
 	if has_managed_terminals() then
 		M.start()
 	else
@@ -191,6 +273,7 @@ function M.setup()
 		group = group,
 		callback = function()
 			M.stop()
+			icon_cache = {}
 			set_terminal_title(get_base_title(), true)
 		end,
 		desc = "Reset terminal title on exit",
@@ -207,10 +290,7 @@ function M.setup()
 	vim.api.nvim_create_autocmd({ "TermOpen", "TermClose", "BufDelete", "BufWipeout" }, {
 		group = group,
 		callback = function()
-			vim.defer_fn(function()
-				refresh_polling_state()
-				M.force_update()
-			end, 50)
+			M.notify_terminals_changed()
 		end,
 		desc = "Refresh terminal title when managed terminals change",
 	})

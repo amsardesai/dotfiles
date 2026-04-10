@@ -7,6 +7,13 @@ local state = {
 	agent_terminal = nil,
 }
 
+local function notify_terminal_title_change()
+	local ok, terminal_title = pcall(require, "util.terminal_title")
+	if ok and terminal_title.notify_terminals_changed then
+		terminal_title.notify_terminals_changed()
+	end
+end
+
 -- Global function for agent terminal winbar (called by winbar %{} expression).
 -- Defined at module scope so it's registered unconditionally on require, surviving
 -- :Lazy reload cycles without depending on the setup_done guard in M.setup().
@@ -69,7 +76,9 @@ function M.toggle_agent()
 		},
 	})
 
-	return set_agent_terminal(term)
+	set_agent_terminal(term)
+	notify_terminal_title_change()
+	return term
 end
 
 function M.hide_agent()
@@ -77,6 +86,7 @@ function M.hide_agent()
 	if term then
 		term:hide()
 	end
+	notify_terminal_title_change()
 end
 
 function M.close_agent()
@@ -85,10 +95,12 @@ function M.close_agent()
 		term:close()
 		set_agent_terminal(nil)
 	end
+	notify_terminal_title_change()
 end
 
 function M.toggle_drawer(slot)
 	require("util.bottom_drawers").toggle(slot)
+	notify_terminal_title_change()
 end
 
 function M.hide_all()
