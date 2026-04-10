@@ -2,7 +2,7 @@
 -- Shows one icon per managed Neovim terminal:
 --   🤖 - claude or codex is running
 --   🖥️ - some other program is running
---   -  - terminal exists but shell is idle
+--   💤 - terminal exists but shell is idle
 
 local M = {}
 
@@ -12,7 +12,7 @@ local poll_timer = nil
 local update_in_progress = false
 
 local POLL_INTERVAL_MS = 1000
-local ICON_IDLE = "-"
+local ICON_IDLE = "💤"
 local ICON_ACTIVE = "🖥️"
 local ICON_AGENT = "🤖"
 
