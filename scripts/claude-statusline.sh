@@ -6,7 +6,7 @@
 # Always shows all components - no progressive truncation.
 # Branch names are center-truncated to max 20 characters.
 #
-# Format: ~/project → main │ ✓2 ✗1 │ ●●○○○ 42% │ opus 1m │ $0.23 │ 5h 23% │ 7d 41%
+# Format: ~/project → main │ ✓2 ✗1 │ ●●○○○ 42% │ 5h 23% │ 7d 41% │ opus 1m │ $0.23
 # Note: 5h/7d segments only appear on Claude.ai Pro/Max (absent on API billing)
 #
 # Receives JSON from Claude Code via stdin.
@@ -135,10 +135,10 @@ build_output() {
 	[[ -n "$BRANCH" ]] && output="${output}${BRANCH}"
 	[[ -n "$GIT_STATUS_DISPLAY" ]] && output="${output} ${SEP} $GIT_STATUS_DISPLAY"
 	output="${output} ${SEP} $CTX_WITH_DOTS"
-	output="${output} ${SEP} $MODEL"
-	output="${output} ${SEP} $COST_FMT"
 	[[ -n "$FIVE_HOUR_DISPLAY" ]] && output="${output} ${SEP} $FIVE_HOUR_DISPLAY"
 	[[ -n "$SEVEN_DAY_DISPLAY" ]] && output="${output} ${SEP} $SEVEN_DAY_DISPLAY"
+	output="${output} ${SEP} $MODEL"
+	output="${output} ${SEP} $COST_FMT"
 	echo "$output"
 }
 
