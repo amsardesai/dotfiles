@@ -6,7 +6,7 @@
 # Always shows all components - no progressive truncation.
 # Branch names are center-truncated to max 20 characters.
 #
-# Format: ~/project → main │ ✓2 ✗1 │ ●●○○○ 42% │ 5h 23% │ 7d 41% │ opus 1m │ $0.23
+# Format: ~/project → main │ ✓2 ✗1 │ ●●○○○ 42% │ 5h 77% │ 7d 59% │ opus 1m │ $0.23
 # Note: 5h/7d segments only appear on Claude.ai Pro/Max (absent on API billing)
 #
 # Receives JSON from Claude Code via stdin.
@@ -60,10 +60,11 @@ DOTS="${CTX_COLOR}${FILLED_DOTS}${EMPTY_DOTS}${RESET}"
 CTX_WITH_DOTS="$DOTS ${CTX_COLOR}${CONTEXT_INT}%${RESET}"
 
 # Rate limit displays (only set if data is present — absent on API billing)
+# pct is % remaining (higher = more left = greener)
 rate_color() {
 	local pct=$1
-	if [[ $pct -ge 80 ]]; then echo $'\033[31m'
-	elif [[ $pct -ge 50 ]]; then echo $'\033[33m'
+	if [[ $pct -le 20 ]]; then echo $'\033[31m'
+	elif [[ $pct -le 50 ]]; then echo $'\033[33m'
 	else echo $'\033[32m'
 	fi
 }
@@ -71,13 +72,15 @@ FIVE_HOUR_DISPLAY=""
 SEVEN_DAY_DISPLAY=""
 if [[ -n "$FIVE_HOUR" ]]; then
 	FIVE_HOUR_INT=${FIVE_HOUR%.*}
-	COLOR=$(rate_color "$FIVE_HOUR_INT")
-	FIVE_HOUR_DISPLAY="${COLOR}5h ${FIVE_HOUR_INT}%${RESET}"
+	FIVE_HOUR_REM=$((100 - FIVE_HOUR_INT))
+	COLOR=$(rate_color "$FIVE_HOUR_REM")
+	FIVE_HOUR_DISPLAY="${COLOR}5h ${FIVE_HOUR_REM}%${RESET}"
 fi
 if [[ -n "$SEVEN_DAY" ]]; then
 	SEVEN_DAY_INT=${SEVEN_DAY%.*}
-	COLOR=$(rate_color "$SEVEN_DAY_INT")
-	SEVEN_DAY_DISPLAY="${COLOR}7d ${SEVEN_DAY_INT}%${RESET}"
+	SEVEN_DAY_REM=$((100 - SEVEN_DAY_INT))
+	COLOR=$(rate_color "$SEVEN_DAY_REM")
+	SEVEN_DAY_DISPLAY="${COLOR}7d ${SEVEN_DAY_REM}%${RESET}"
 fi
 
 # Format cost
