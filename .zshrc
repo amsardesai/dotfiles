@@ -234,6 +234,7 @@ alias gts='gt sync --force'
 
 # Claude Code Commands
 alias claude!='claude --dangerously-skip-permissions'
+alias codex!='codex --dangerously-bypass-approvals-and-sandbox'
 
 # macOS-specific: Homebrew paths
 if [[ "$OSTYPE" == darwin* ]]; then
@@ -260,4 +261,3 @@ if [[ "$OSTYPE" == darwin* ]]; then
   export PATH="$PATH:$HOME/.lmstudio/bin"
   # End of LM Studio CLI section
 fi
-
