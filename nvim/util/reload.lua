@@ -5,7 +5,6 @@ local M = {}
 local modules_to_reload = {
 	"config.options",
 	"config.keymaps",
-	"util.context_menu",
 }
 
 function M.reload()

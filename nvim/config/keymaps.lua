@@ -235,13 +235,6 @@ vim.api.nvim_create_autocmd("TermOpen", {
 })
 
 -- =============================================================================
--- CONTEXT MENU
--- =============================================================================
-
-local context_menu = require("util.context_menu")
-vim.keymap.set({ "n", "v" }, "<RightMouse>", context_menu.show, { desc = "Context menu" })
-
--- =============================================================================
 -- AI CONTEXT COPY (,y)
 -- Copy current line or visual selection to clipboard, formatted with file path
 -- and line numbers as a markdown code block — paste into any AI agent terminal
