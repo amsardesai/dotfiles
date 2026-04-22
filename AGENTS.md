@@ -87,6 +87,8 @@
 - `scripts/claude-statusline.sh` - Custom Claude Code statusline (context, git, cost, model)
 - `claude-settings.json` - Claude Code hooks and statusline (merged into ~/.claude/settings.json by setup.sh)
 - `claude-mcp.json` - MCP server configs (merged into ~/.claude.json by setup.sh)
+- `codex-mcp.toml` - Codex MCP server config (merged into ~/.codex/config.toml by setup.sh)
+- `codex-rules/default.rules` - Codex shell command approval allowlist (merged into ~/.codex/rules/default.rules by setup.sh)
 
 **Vim:**
 - `init-vim.vim` → symlinked to `~/.vimrc`

@@ -100,7 +100,11 @@ nvim
 
 6. **Creates symlinks** to dotfiles (see Symlink Map below)
 
-7. **Updates shell configs** to source dotfiles
+7. **Configures AI tools**:
+   - Claude Code hooks, TypeScript plugin, and MCP servers
+   - Codex MCP servers and default approval rules
+
+8. **Updates shell configs** to source dotfiles
 
 **Idempotency guarantee:** Running `setup.sh` multiple times is safe and fast (~5 seconds). It skips already-completed operations.
 
@@ -117,6 +121,7 @@ nvim
 | `.gitconfig` | `~/.gitconfig` |
 | `themes.gitconfig` | `~/.themes.gitconfig` |
 | `USER_PREFERENCES.md` | `~/.claude/CLAUDE.md` (Claude Code) |
+| `USER_PREFERENCES.md` | `~/.codex/AGENTS.md` (Codex) |
 | `AGENTS.md` | `.claude/CLAUDE.md` (repo-specific AI context) |
 | `kitty.conf` | `~/.config/kitty/kitty.conf` |
 | `wezterm/` | `~/.config/wezterm` |
@@ -153,6 +158,17 @@ nvim
 - `c='clear'`, `rmswaps`, `rebash` (reload shell), `psg` (grep processes)
 
 **For complete keyboard shortcuts, see [KEYBINDINGS.md](KEYBINDINGS.md).**
+
+### AI Tools
+
+**Claude Code** is configured via `claude-settings.json` and `claude-mcp.json`, which `setup.sh` merges into `~/.claude/settings.json` and `~/.claude.json`.
+
+**Codex** is configured via `codex-mcp.toml` and `codex-rules/default.rules`, which `setup.sh` merges into `~/.codex/config.toml` and `~/.codex/rules/default.rules`.
+
+**Codex defaults included in this repo:**
+- `chrome-devtools`, `notion`, and `figma` MCP servers
+- Preapproved `chrome-devtools` MCP tools
+- Default allow-rules for common `git`, `gh`, and `gt` commands
 
 ### Vim/Neovim
 

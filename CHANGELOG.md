@@ -2,6 +2,12 @@
 
 All notable changes and discoveries in this dotfiles repository.
 
+## 2026-04-22
+
+### Features
+- **Codex MCP auto-config** - `setup.sh` now merges `codex-mcp.toml` into `~/.codex/config.toml`, configuring `chrome-devtools`, `notion`, and `figma` for Codex. `chrome-devtools` is preapproved to mirror the existing Claude workflow (`setup.sh`, `codex-mcp.toml`)
+- **Codex approval rules in dotfiles** - `setup.sh` now merges repo-managed `codex-rules/default.rules` into `~/.codex/rules/default.rules`, allowing common `git`, `gh`, and `gt` commands by default across machines (`setup.sh`, `codex-rules/default.rules`)
+
 ## 2026-01-24
 
 ### Features
