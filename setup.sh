@@ -39,8 +39,6 @@ DOTBOT_ARCHIVE="$DOTBOT_CACHE/dotbot-${DOTBOT_VERSION}.tar.gz"
 # Counters for summary output
 DOWNLOAD_COUNT=0
 DOWNLOAD_SKIP=0
-LINK_COUNT=0
-LINK_SKIP=0
 
 # Colors
 GREEN=2
@@ -91,24 +89,6 @@ download_file_quiet() {
 		fi
 	else
 		return 1
-	fi
-}
-
-LINK_FAIL=0
-
-link_file_quiet() {
-	if ! mkdir -p "$(dirname "$2")" 2>/dev/null; then
-		LINK_FAIL=$((LINK_FAIL + 1))
-		return 1
-	fi
-	if [ -L "$2" ] && [ "$(readlink "$2")" = "$1" ]; then
-		LINK_SKIP=$((LINK_SKIP + 1))
-	else
-		if ln -sfn "$1" "$2" 2>/dev/null; then
-			LINK_COUNT=$((LINK_COUNT + 1))
-		else
-			LINK_FAIL=$((LINK_FAIL + 1))
-		fi
 	fi
 }
 
@@ -175,25 +155,6 @@ merge_codex_rules() {
 	done <"$SOURCE_FILE"
 
 	return $UPDATED
-}
-
-reset_link_counters() {
-	LINK_COUNT=0
-	LINK_SKIP=0
-	LINK_FAIL=0
-}
-
-print_link_summary() {
-	if [ $LINK_FAIL -gt 0 ]; then
-		echo_warn "Some symlinks failed ($LINK_FAIL failed, $LINK_COUNT created)"
-	elif [ $LINK_COUNT -gt 0 ] && [ $LINK_SKIP -gt 0 ]; then
-		echo_success "Created $LINK_COUNT symlinks ($LINK_SKIP unchanged)"
-	elif [ $LINK_COUNT -gt 0 ]; then
-		echo_success "Created $LINK_COUNT symlinks"
-	elif [ $LINK_SKIP -gt 0 ]; then
-		echo_success "All symlinks exist"
-	fi
-	reset_link_counters
 }
 
 ensure_dotbot() {
@@ -383,40 +344,6 @@ elif [ $SHELL_UPDATED -gt 0 ]; then
 else
 	echo_success "Shell profiles configured"
 fi
-
-# =============================================================================
-# Symlinks
-# =============================================================================
-echo_section "🔗 Creating symlinks..."
-
-# General config files
-link_file_quiet "$SCRIPTPATH/.inputrc" "$HOME/.inputrc"
-link_file_quiet "$SCRIPTPATH/.lesskey" "$HOME/.lesskey"
-link_file_quiet "$SCRIPTPATH/.tern-config" "$HOME/.tern-config"
-link_file_quiet "$SCRIPTPATH/.tmux.conf" "$HOME/.tmux.conf"
-link_file_quiet "$SCRIPTPATH/.markdownlintrc" "$HOME/.markdownlintrc"
-link_file_quiet "$SCRIPTPATH/USER_PREFERENCES.md" "$HOME/.claude/CLAUDE.md"
-# USER_PREFERENCES.md symlinks for cross-agent compatibility
-link_file_quiet "$SCRIPTPATH/USER_PREFERENCES.md" "$HOME/.codex/AGENTS.md"
-link_file_quiet "$SCRIPTPATH/USER_PREFERENCES.md" "$HOME/.gemini/GEMINI.md"
-link_file_quiet "$SCRIPTPATH/kitty.conf" "$HOME/.config/kitty/kitty.conf"
-link_file_quiet "$SCRIPTPATH/wezterm" "$HOME/.config/wezterm"
-
-# Vim
-link_file_quiet "$SCRIPTPATH/init-vim.vim" "$HOME/.vimrc"
-link_file_quiet "$SCRIPTPATH/init-gvim.vim" "$HOME/.gvimrc"
-link_file_quiet "$SCRIPTPATH/ftplugin" "$HOME/.vim/ftplugin"
-link_file_quiet "$SCRIPTPATH/vimconfig" "$HOME/.vim/vimconfig"
-
-# Neovim
-link_file_quiet "$SCRIPTPATH/nvim/init.lua" "$HOME/.config/nvim/init.lua"
-link_file_quiet "$SCRIPTPATH/ftplugin" "$HOME/.config/nvim/ftplugin"
-link_file_quiet "$SCRIPTPATH/vimconfig" "$HOME/.config/nvim/vimconfig"
-link_file_quiet "$SCRIPTPATH/nvim/plugins" "$HOME/.config/nvim/plugins"
-link_file_quiet "$SCRIPTPATH/nvim/config" "$HOME/.config/nvim/config"
-link_file_quiet "$SCRIPTPATH/nvim/util" "$HOME/.config/nvim/util"
-
-print_link_summary
 
 # =============================================================================
 # Git Configuration

@@ -1,8 +1,40 @@
 # install.conf.yaml
-# Dotbot setup manifest — this becomes the primary setup graph.
-# Tasks are being migrated from setup.sh incrementally (Phases 2–4).
+# Dotbot setup manifest — tasks being migrated from setup.sh incrementally.
 # See: https://github.com/anishathalye/dotbot
+
+- defaults:
+    link:
+      create: true    # create parent directories for link destinations
+      relink: true    # replace existing wrong-target symlinks; won't touch real files
+      # force: false (default) — never remove real files or directories
+
+- link:
+    # General config
+    ~/.inputrc: .inputrc
+    ~/.lesskey: .lesskey
+    ~/.tern-config: .tern-config
+    ~/.tmux.conf: .tmux.conf
+    ~/.markdownlintrc: .markdownlintrc
+    # AI agent user preferences (cross-agent compatibility)
+    ~/.claude/CLAUDE.md: USER_PREFERENCES.md
+    ~/.codex/AGENTS.md: USER_PREFERENCES.md
+    ~/.gemini/GEMINI.md: USER_PREFERENCES.md
+    # Terminal
+    ~/.config/kitty/kitty.conf: kitty.conf
+    ~/.config/wezterm: wezterm
+    # Vim
+    ~/.vimrc: init-vim.vim
+    ~/.gvimrc: init-gvim.vim
+    ~/.vim/ftplugin: ftplugin
+    ~/.vim/vimconfig: vimconfig
+    # Neovim
+    ~/.config/nvim/init.lua: nvim/init.lua
+    ~/.config/nvim/ftplugin: ftplugin
+    ~/.config/nvim/vimconfig: vimconfig
+    ~/.config/nvim/plugins: nvim/plugins
+    ~/.config/nvim/config: nvim/config
+    ~/.config/nvim/util: nvim/util
 
 - shell:
     - command: "true"
-      description: "Placeholder — tasks not yet migrated to Dotbot"
+      description: "Placeholder — remaining tasks not yet migrated to Dotbot"
