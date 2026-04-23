@@ -35,6 +35,16 @@
     ~/.config/nvim/config: nvim/config
     ~/.config/nvim/util: nvim/util
 
+- clean:
+    - "~"
+    - ~/.config
+    - ~/.config/nvim
+    - ~/.config/kitty
+    - ~/.vim
+    - ~/.claude
+    - ~/.codex
+    - ~/.gemini
+
 - shell:
     - command: "true"
       description: "Placeholder — remaining tasks not yet migrated to Dotbot"
