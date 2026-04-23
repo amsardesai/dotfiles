@@ -1,0 +1,8 @@
+# install.conf.yaml
+# Dotbot setup manifest — this becomes the primary setup graph.
+# Tasks are being migrated from setup.sh incrementally (Phases 2–4).
+# See: https://github.com/anishathalye/dotbot
+
+- shell:
+    - command: "true"
+      description: "Placeholder — tasks not yet migrated to Dotbot"

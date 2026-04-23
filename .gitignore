@@ -4,3 +4,4 @@ git-prompt.bash
 wezterm.terminfo
 .ycm_extra_conf.py
 .DS_Store
+.cache/
