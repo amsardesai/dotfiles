@@ -28,7 +28,7 @@
 
 | Rule | Details |
 |------|---------|
-| **Idempotency** | `setup.sh` MUST work identically run 1x or 1000x. Use `grep -Fq` (substring), NOT `grep -Fxq` (whole line) |
+| **Idempotency** | `setup.sh` and `setup/tasks/*.sh` MUST work identically run 1x or 1000x. Use `grep -Fq` (substring), NOT `grep -Fxq` (whole line) |
 | **Unicode** | Preserve box-drawing chars: `│ ─ ┌ └ ├ ┤ ┬ ┴ ┼` - NEVER replace with ASCII `\| - +` |
 | **Vim/Neovim** | Distinct configs, NOT sharing code. Neovim=Lua+lazy.nvim, Vim=VimScript+vim-plug |
 | **Leader Keys** | `,` (leader), `;` (local leader) |
@@ -42,9 +42,15 @@
 
 ### Configuration Strategy
 
-**Symlinks:** FROM `~/.dotfiles/` TO standard locations (`~/.vimrc`, `~/.config/nvim/`, etc.) - not reverse.
+**Dotbot bootstrap:** `setup.sh` only bootstraps pinned Dotbot and delegates to `install.conf.yaml`. Do not add setup behavior back into `setup.sh`.
 
-**Idempotency:** Check before change. Use `ln -sfn`, `mkdir -p`, `grep -Fq` (substring match, NOT `-Fxq` whole line). Never append without checking if content exists first.
+**Dotbot pinning:** Dotbot version and SHA256 live in `setup.sh`. Dotbot is cached under `.cache/dotbot/`, verified before extraction, and not installed globally. No Dotbot plugins or git submodules.
+
+**Symlinks:** Dotbot `link` directives point FROM `~/.dotfiles/` TO standard locations (`~/.vimrc`, `~/.config/nvim/`, etc.) - not reverse.
+
+**Task scripts:** Stateful setup lives in `setup/tasks/*.sh` and is orchestrated by the `shell` block in `install.conf.yaml`. Each task must be directly runnable, compute `DOTFILES_DIR` via `setup/lib/paths.sh`, and stay idempotent.
+
+**Idempotency:** Check before change. Use Dotbot link defaults for symlinks, `mkdir -p`, `grep -Fq` (substring match, NOT `-Fxq` whole line), and managed-section replacement for structured config. Never append without checking if content exists first.
 
 **Shell Sourcing:** `.zshrc` and `.bash_profile` both source `~/.profile`, which loads modular configs.
 
@@ -69,7 +75,11 @@
 ### Entry Points
 
 **Setup Scripts:**
-- `setup.sh` - Install script (creates symlinks, downloads deps, updates shell configs)
+- `setup.sh` - Dotbot-only bootstrapper (pinned version + SHA256 verification)
+- `install.conf.yaml` - Dotbot setup graph for links, cleanup, and task orchestration
+- `setup/lib/paths.sh` - Shared `DOTFILES_DIR` detection for task scripts
+- `setup/lib/output.sh` - Shared task output helpers
+- `setup/tasks/` - Focused setup tasks for packages, downloads, terminfo, profile/git mutation, bat theme, and AI tool config
 - `clean.sh` - Uninstall script (removes all symlinks)
 
 **Shell:**
@@ -83,12 +93,14 @@
 - `nvim/util/` - Utilities (file_cache, context_menu, bottom_drawers, claude_status, zoom_border)
 
 **Scripts:**
+- `scripts/test-setup-fixtures.sh` - Temp-`HOME` idempotency checks for setup tasks
+- `scripts/verify-setup.sh` - Static setup verification plus fixture test entrypoint
 - `scripts/claude-stop-hook.sh` - Claude Code stop hook that blocks if incomplete todos or uncommitted changes
 - `scripts/claude-statusline.sh` - Custom Claude Code statusline (context, git, cost, model)
-- `claude-settings.json` - Claude Code hooks and statusline (merged into ~/.claude/settings.json by setup.sh)
-- `claude-mcp.json` - MCP server configs (merged into ~/.claude.json by setup.sh)
-- `codex-mcp.toml` - Codex MCP server config (merged into ~/.codex/config.toml by setup.sh)
-- `codex-rules/default.rules` - Codex shell command approval allowlist (merged into ~/.codex/rules/default.rules by setup.sh)
+- `claude-settings.json` - Claude Code hooks and statusline (merged into ~/.claude/settings.json by setup/tasks/claude.sh)
+- `claude-mcp.json` - MCP server configs (merged into ~/.claude.json by setup/tasks/claude.sh)
+- `codex-mcp.toml` - Codex MCP server config (merged into ~/.codex/config.toml by setup/tasks/codex.sh)
+- `codex-rules/default.rules` - Codex shell command approval allowlist (merged into ~/.codex/rules/default.rules by setup/tasks/codex.sh)
 
 **Vim:**
 - `init-vim.vim` → symlinked to `~/.vimrc`
@@ -115,17 +127,20 @@
 - **npm global packages required:** `typescript-language-server`, `vscode-langservers-extracted`, `vim-language-server`
 - **none-ls** provides linters/formatters via LSP: eslint_d, prettier, shellcheck, stylua
 - **Homebrew** manages macOS packages declaratively via `Brewfile`
+- **Dotbot** is pinned in `setup.sh` and cached locally under `.cache/dotbot/`
 
 ---
 
 ## Conventions
 
 **Idempotency Rules:**
-- `setup.sh` must work identically whether run 1x or 1000x
+- `setup.sh` must remain a Dotbot-only bootstrapper
+- `install.conf.yaml` is the primary setup manifest
+- `setup/tasks/*.sh` must work identically whether run 1x or 1000x
 - Always check before making changes
 - Use `grep -Fq "substring"` for substring matching (NOT `grep -Fxq` which matches whole lines)
 - Never append to files without checking if content already exists
-- See `setup.sh` header comments for full idempotency rules
+- Run `./scripts/verify-setup.sh` and `./scripts/test-setup-fixtures.sh` after setup changes
 
 **Unicode Preservation:**
 - Repository uses box-drawing characters: `│ ─ ┌ └ ├ ┤ ┬ ┴ ┼`
@@ -141,6 +156,12 @@
 **Symlink Direction:**
 - Always FROM `~/.dotfiles/` TO standard locations (like `~/.vimrc`)
 - Never create symlinks in the reverse direction
+
+**Adding Setup Behavior:**
+- Add new symlinks to `install.conf.yaml`
+- Add stateful behavior as a focused script in `setup/tasks/`
+- Wire task scripts through the `shell` block in `install.conf.yaml`
+- Do not use Dotbot plugins unless the architecture explicitly changes
 
 **Naming Conventions:**
 - Config files use lowercase with dashes (`.tmux.conf`, `.bash_profile`)

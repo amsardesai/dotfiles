@@ -11,10 +11,11 @@ Personal configuration files for shell, vim/neovim, tmux, and development tools.
 
 ## Architecture Overview
 
-This dotfiles repository uses a **symlink-based** approach for configuration management:
+This dotfiles repository uses **Dotbot plus focused task scripts** for configuration management:
 
 - **All configs live in `~/.dotfiles/`** and are version-controlled via git
-- **Symlinks connect** configs to standard locations (`~/.vimrc`, `~/.config/nvim/`, etc.)
+- **Dotbot owns symlinks and cleanup** via `install.conf.yaml`
+- **Task scripts handle stateful setup** that Dotbot core cannot express safely
 - **Idempotent setup/teardown** - `setup.sh` can be run repeatedly without side effects
 - **Dual editor system** - Vim (VimScript + vim-plug) and Neovim (Lua + lazy.nvim) are **distinct, separate configs**
 
@@ -23,8 +24,11 @@ This dotfiles repository uses a **symlink-based** approach for configuration man
 | Decision | Rationale |
 |----------|-----------|
 | **Symlinks vs Copying** | Changes reflect immediately, easy version control |
+| **Pinned Dotbot Bootstrap** | `setup.sh` downloads Dotbot `1.24.1` into `.cache/dotbot/`, verifies SHA256, and never requires submodules or global Dotbot installation |
+| **Dotbot Manifest** | `install.conf.yaml` is the readable setup graph for links, cleanup, and task order |
+| **Focused Setup Tasks** | `setup/tasks/*.sh` contains stateful behavior like package installation, downloads, and config merges |
 | **Vim/Neovim Separation** | Neovim uses modern Lua stack (lazy.nvim, native LSP, 37ms startup). Vim uses VimScript (vim-plug, async plugins). Only `vimconfig/options.vim` and `ftplugin/*.vim` are shared. |
-| **Idempotent Scripts** | Uses `grep -Fq` (substring match), `ln -sfn`, `mkdir -p` patterns to ensure setup.sh works identically run 1x or 1000x |
+| **Idempotent Setup** | Dotbot manages links declaratively; task scripts use `grep -Fq` substring checks, managed-section replacement, and `mkdir -p` patterns |
 | **Layered Shell Sourcing** | `.zshrc`/`.bash_profile` → `.profile` → modular configs |
 | **Safety Aliases** | All destructive commands (`mv`/`cp`/`rm`) aliased with `-i` flag |
 
@@ -84,29 +88,63 @@ nvim
 
 ### What setup.sh Does
 
-1. **Installs Brewfile packages** (macOS only):
+`setup.sh` is intentionally small: it bootstraps a pinned, checksum-verified Dotbot release into `.cache/dotbot/`, then delegates to `install.conf.yaml`.
+
+Dotbot then runs the setup graph:
+
+1. **Creates symlinks and cleans managed broken links** from `install.conf.yaml`
+
+2. **Installs Brewfile packages** (macOS only):
    - Core: git, neovim, tmux, node
    - Terminal tools: bat, fd, fzf, git-delta, ripgrep
    - Linters: shellcheck, tflint
    - Apps: wezterm
 
-2. **Downloads git completion files** from official git repository
-
 3. **Installs npm packages globally** (LSP servers from `npm-global-packages.txt`)
 
-4. **Compiles WezTerm terminfo** for proper cursor/undercurl support
+4. **Downloads git completion files** from official git repository
 
-5. **Installs bat Tokyo Night theme** for syntax-highlighted previews
+5. **Compiles WezTerm terminfo** for proper cursor/undercurl support
 
-6. **Creates symlinks** to dotfiles (see Symlink Map below)
+6. **Updates shell configs** to source dotfiles
 
-7. **Configures AI tools**:
+7. **Configures git** by adding an include for this repo's `.gitconfig`
+
+8. **Installs bat Tokyo Night theme** for syntax-highlighted previews
+
+9. **Configures AI tools**:
    - Claude Code hooks, TypeScript plugin, and MCP servers
    - Codex MCP servers and default approval rules
 
-8. **Updates shell configs** to source dotfiles
+**Idempotency guarantee:** Running `setup.sh` multiple times is safe. Dotbot converges symlinks, and task scripts skip or merge already-completed operations.
 
-**Idempotency guarantee:** Running `setup.sh` multiple times is safe and fast (~5 seconds). It skips already-completed operations.
+### Dotbot Workflow
+
+Useful setup commands:
+
+```bash
+./setup.sh                 # Full setup
+./setup.sh --dry-run       # Show what Dotbot would do
+./setup.sh --only link     # Run only Dotbot link directives
+./setup.sh --except shell  # Run links/cleanup without task scripts
+```
+
+To update Dotbot:
+
+1. Change `DOTBOT_VERSION` in `setup.sh`.
+2. Download the matching release archive from GitHub.
+3. Run `shasum -a 256 <archive>`.
+4. Update `DOTBOT_SHA256` in `setup.sh`.
+5. Run `./setup.sh --dry-run` and `./scripts/verify-setup.sh`.
+
+Dotbot is intentionally not installed globally and this repo intentionally does not use Dotbot plugins or git submodules.
+
+To add setup behavior:
+
+- Add new symlinks under the `link` block in `install.conf.yaml`.
+- Add new stateful behavior as a focused executable script in `setup/tasks/`.
+- Wire task scripts into the `shell` block in `install.conf.yaml`.
+- Keep task scripts runnable directly and idempotent when run more than once.
 
 ---
 
@@ -118,17 +156,17 @@ nvim
 | `.lesskey` | `~/.lesskey` |
 | `.tern-config` | `~/.tern-config` |
 | `.tmux.conf` | `~/.tmux.conf` |
-| `.gitconfig` | `~/.gitconfig` |
-| `themes.gitconfig` | `~/.themes.gitconfig` |
 | `USER_PREFERENCES.md` | `~/.claude/CLAUDE.md` (Claude Code) |
 | `USER_PREFERENCES.md` | `~/.codex/AGENTS.md` (Codex) |
-| `AGENTS.md` | `.claude/CLAUDE.md` (repo-specific AI context) |
+| `USER_PREFERENCES.md` | `~/.gemini/GEMINI.md` (Gemini) |
 | `kitty.conf` | `~/.config/kitty/kitty.conf` |
 | `wezterm/` | `~/.config/wezterm` |
 | `init-vim.vim` | `~/.vimrc` |
 | `init-gvim.vim` | `~/.gvimrc` |
 | `nvim/` | `~/.config/nvim/` (init.lua, plugins/, config/, util/) |
 | `vimconfig/`, `ftplugin/` | `~/.vim/` and `~/.config/nvim/` |
+
+Git config is not symlinked directly; `setup/tasks/git-config.sh` adds an `[include]` entry in `~/.gitconfig` that points at this repo's `.gitconfig`, which then includes `themes.gitconfig`.
 
 ---
 
@@ -161,9 +199,9 @@ nvim
 
 ### AI Tools
 
-**Claude Code** is configured via `claude-settings.json` and `claude-mcp.json`, which `setup.sh` merges into `~/.claude/settings.json` and `~/.claude.json`.
+**Claude Code** is configured via `claude-settings.json` and `claude-mcp.json`, which `setup/tasks/claude.sh` merges into `~/.claude/settings.json` and `~/.claude.json`.
 
-**Codex** is configured via `codex-mcp.toml` and `codex-rules/default.rules`, which `setup.sh` merges into `~/.codex/config.toml` and `~/.codex/rules/default.rules`.
+**Codex** is configured via `codex-mcp.toml` and `codex-rules/default.rules`, which `setup/tasks/codex.sh` merges into `~/.codex/config.toml` and `~/.codex/rules/default.rules`.
 
 **Codex defaults included in this repo:**
 - `chrome-devtools`, `notion`, and `figma` MCP servers
@@ -243,7 +281,7 @@ Comprehensive configuration (2,800+ lines) in `kitty.conf` with custom fonts, co
 ```
 
 **What clean.sh does:**
-- Removes all symlinks created by setup.sh
+- Removes symlinks created by setup
 - Cleans git completion files
 - Removes vim/neovim configuration directories
 - Prompts to manually clean shell config files
@@ -268,8 +306,15 @@ git pull
 ### Adding New Configurations
 
 1. Edit files in `~/.dotfiles/` (changes reflect immediately via symlinks)
-2. Test changes: `rebash` (shell), `,r` (vim/neovim)
-3. Commit and push:
+2. Add symlinks to `install.conf.yaml` or focused setup behavior to `setup/tasks/`
+3. Test setup changes:
+   ```bash
+   ./setup.sh --dry-run
+   ./scripts/verify-setup.sh
+   ./scripts/test-setup-fixtures.sh
+   ```
+4. Test editor/shell changes: `rebash` (shell), `,r` (vim/neovim)
+5. Commit and push:
    ```bash
    git add .
    git commit -m "Add feature X"
@@ -333,4 +378,5 @@ This repository includes specialized documentation files:
 - Filetypes: `ftplugin/*.vim` (shared)
 - Tmux: `.tmux.conf`
 - Terminal: `kitty.conf`, `wezterm/`
-- Scripts: `setup.sh`, `clean.sh`
+- Setup: `setup.sh`, `install.conf.yaml`, `setup/tasks/`
+- Scripts: `scripts/`, `clean.sh`
