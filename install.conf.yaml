@@ -1,5 +1,5 @@
 # install.conf.yaml
-# Dotbot setup manifest — tasks being migrated from setup.sh incrementally.
+# Dotbot setup manifest.
 # See: https://github.com/anishathalye/dotbot
 
 - defaults:

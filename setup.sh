@@ -1,30 +1,14 @@
 #!/bin/bash
 # =============================================================================
-# DOTFILES SETUP SCRIPT
+# DOTFILES SETUP BOOTSTRAPPER
 # =============================================================================
 #
-# IMPORTANT: This script MUST be idempotent (deterministic).
-#
-# Running this script 1 time or 1000 times MUST produce the same result.
-# Every operation must check if work is needed before making changes:
-#   - Downloads: Skip if file exists
-#   - Symlinks: Skip if link already points to correct target
-#   - Shell config: Skip if source line already present (use substring match!)
-#   - Git config: Skip if include path already present
-#
-# When adding new operations, ALWAYS:
-#   1. Check if the operation has already been done
-#   2. Only perform the operation if needed
-#   3. Use idempotent commands (ln -sfn, mkdir -p, etc.)
-#
-# NEVER:
-#   - Append to files without checking if content exists (use grep -Fq, NOT -Fxq)
-#   - Assume the script is running for the first time
-#   - Use commands that fail if run twice
+# This script only bootstraps a pinned Dotbot release and delegates setup to
+# install.conf.yaml. Put setup behavior in Dotbot directives or setup/tasks/.
 #
 # =============================================================================
 
-SCRIPTPATH=$(pwd -P)
+SCRIPTPATH="$(cd "$(dirname "$0")" && pwd -P)"
 
 # Dotbot bootstrap constants
 # To update: download the new release, run `shasum -a 256 <archive>`, update both values.
@@ -35,33 +19,43 @@ DOTBOT_CACHE="$SCRIPTPATH/.cache/dotbot"
 DOTBOT_DIR="$DOTBOT_CACHE/dotbot-$DOTBOT_VERSION"
 DOTBOT_ARCHIVE="$DOTBOT_CACHE/dotbot-${DOTBOT_VERSION}.tar.gz"
 
-# Colors
 GREEN=2
-YELLOW=3
 CYAN=6
+
+set_color() {
+	if command -v tput >/dev/null 2>&1 && [ -n "${TERM:-}" ]; then
+		tput setaf "$1" 2>/dev/null || true
+	fi
+}
+
+reset_color() {
+	if command -v tput >/dev/null 2>&1 && [ -n "${TERM:-}" ]; then
+		tput sgr0 2>/dev/null || true
+	fi
+}
 
 echo_section() {
 	printf "\n"
-	tput setaf $CYAN && printf "$1"
-	tput sgr0 && printf "\n"
+	set_color "$CYAN"
+	printf "%s" "$1"
+	reset_color
+	printf "\n"
 }
 
 echo_success() {
 	printf "   "
-	tput setaf $GREEN && printf "✓ $1"
-	tput sgr0 && printf "\n"
-}
-
-echo_warn() {
-	printf "   "
-	tput setaf $YELLOW && printf "⚠ $1"
-	tput sgr0 && printf "\n"
+	set_color "$GREEN"
+	printf "✓ %s" "$1"
+	reset_color
+	printf "\n"
 }
 
 echo_error() {
 	printf "   "
-	tput setaf 1 && printf "✗ $1"
-	tput sgr0 && printf "\n"
+	set_color 1
+	printf "✗ %s" "$1"
+	reset_color
+	printf "\n"
 }
 
 ensure_dotbot() {
@@ -82,7 +76,11 @@ ensure_dotbot() {
 		return 1
 	fi
 	mv -f "${DOTBOT_ARCHIVE}.tmp" "$DOTBOT_ARCHIVE"
-	tar -xzf "$DOTBOT_ARCHIVE" -C "$DOTBOT_CACHE"
+	rm -rf "$DOTBOT_DIR"
+	if ! tar -xzf "$DOTBOT_ARCHIVE" -C "$DOTBOT_CACHE"; then
+		echo_error "Failed to extract Dotbot"
+		return 1
+	fi
 	if [ ! -x "$DOTBOT_DIR/bin/dotbot" ]; then
 		echo_error "Dotbot binary not found after extraction"
 		return 1
@@ -102,8 +100,7 @@ run_dotbot() {
 		"$@"
 }
 
-# Safety check: If current TERM's terminfo doesn't exist, use xterm-256color
-if ! infocmp "$TERM" >/dev/null 2>&1; then
+if [ -z "${TERM:-}" ] || ! infocmp "$TERM" >/dev/null 2>&1; then
 	export TERM=xterm-256color
 fi
 
