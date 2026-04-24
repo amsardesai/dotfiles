@@ -7,6 +7,7 @@ upsert_codex_mcp_sections() {
 	SOURCE_FILE="$1"
 	DEST_FILE="$2"
 	TMP_FILE=$(mktemp)
+	TRIMMED_FILE=$(mktemp)
 
 	if [ -f "$DEST_FILE" ]; then
 		awk '
@@ -27,6 +28,20 @@ upsert_codex_mcp_sections() {
 	else
 		: >"$TMP_FILE"
 	fi
+
+	awk '
+		NF {
+			for (i = 0; i < blank; i++) {
+				print ""
+			}
+			blank = 0
+			print
+			next
+		}
+
+		{ blank++ }
+	' "$TMP_FILE" >"$TRIMMED_FILE"
+	mv -f "$TRIMMED_FILE" "$TMP_FILE"
 
 	if [ -s "$TMP_FILE" ]; then
 		printf "\n" >>"$TMP_FILE"
@@ -83,9 +98,9 @@ fi
 
 if [ -f "$REPO_CODEX_RULES" ]; then
 	if merge_codex_rules "$REPO_CODEX_RULES" "$CODEX_RULES"; then
-		echo_success "Added default Codex approval rules"
-	else
 		echo_success "Codex approval rules already up to date"
+	else
+		echo_success "Added default Codex approval rules"
 	fi
 else
 	echo_warn "codex-rules/default.rules not found in repo"

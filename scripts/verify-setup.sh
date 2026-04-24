@@ -65,18 +65,19 @@ check_bash_syntax() {
 check_bash_syntax "$DOTFILES_DIR/setup.sh"
 check_bash_syntax "$DOTFILES_DIR/clean.sh"
 check_bash_syntax "$DOTFILES_DIR/scripts/verify-setup.sh"
+check_bash_syntax "$DOTFILES_DIR/scripts/test-setup-fixtures.sh"
 check_bash_syntax "$DOTFILES_DIR/scripts/claude-statusline.sh"
 check_bash_syntax "$DOTFILES_DIR/scripts/claude-stop-hook.sh"
 
 # Check setup helper scripts if they exist
-if ls "$DOTFILES_DIR/setup/lib/"*.sh 2>/dev/null | grep -q .; then
+if compgen -G "$DOTFILES_DIR/setup/lib/*.sh" >/dev/null; then
 	for lib in "$DOTFILES_DIR/setup/lib/"*.sh; do
 		check_bash_syntax "$lib"
 	done
 fi
 
 # Check task scripts if they exist (populated in later phases)
-if ls "$DOTFILES_DIR/setup/tasks/"*.sh 2>/dev/null | grep -q .; then
+if compgen -G "$DOTFILES_DIR/setup/tasks/*.sh" >/dev/null; then
 	for task in "$DOTFILES_DIR/setup/tasks/"*.sh; do
 		check_bash_syntax "$task"
 	done
@@ -184,16 +185,17 @@ if command -v shellcheck &>/dev/null; then
 	SHELLCHECK_SCRIPTS=(
 		"$DOTFILES_DIR/setup.sh"
 		"$DOTFILES_DIR/clean.sh"
+		"$DOTFILES_DIR/scripts/test-setup-fixtures.sh"
 		"$DOTFILES_DIR/scripts/claude-stop-hook.sh"
 	)
 
-	if ls "$DOTFILES_DIR/setup/lib/"*.sh 2>/dev/null | grep -q .; then
+	if compgen -G "$DOTFILES_DIR/setup/lib/*.sh" >/dev/null; then
 		for lib in "$DOTFILES_DIR/setup/lib/"*.sh; do
 			SHELLCHECK_SCRIPTS+=("$lib")
 		done
 	fi
 
-	if ls "$DOTFILES_DIR/setup/tasks/"*.sh 2>/dev/null | grep -q .; then
+	if compgen -G "$DOTFILES_DIR/setup/tasks/*.sh" >/dev/null; then
 		for task in "$DOTFILES_DIR/setup/tasks/"*.sh; do
 			SHELLCHECK_SCRIPTS+=("$task")
 		done
@@ -219,6 +221,18 @@ if command -v shellcheck &>/dev/null; then
 	fi
 else
 	echo_warn "shellcheck not found (install via Brewfile to enable)"
+fi
+
+# =============================================================================
+# Fixture Idempotency Checks
+# =============================================================================
+echo_section "🧪 Running fixture idempotency checks..."
+
+if "$DOTFILES_DIR/scripts/test-setup-fixtures.sh"; then
+	echo_success "Fixture idempotency checks passed"
+else
+	echo_error "Fixture idempotency checks failed"
+	FAIL=1
 fi
 
 # =============================================================================
