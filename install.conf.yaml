@@ -46,5 +46,21 @@
     - ~/.gemini
 
 - shell:
-    - command: "true"
-      description: "Placeholder — remaining tasks not yet migrated to Dotbot"
+    - command: "setup/tasks/homebrew.sh"
+      description: "Install Homebrew packages"
+    - command: "setup/tasks/npm.sh"
+      description: "Install npm global packages"
+    - command: "setup/tasks/downloads.sh"
+      description: "Download generated setup files"
+    - command: "setup/tasks/terminfo.sh"
+      description: "Compile WezTerm terminfo"
+    - command: "setup/tasks/shell-profiles.sh"
+      description: "Configure shell profile source lines"
+    - command: "setup/tasks/git-config.sh"
+      description: "Configure git include"
+    - command: "setup/tasks/bat-theme.sh"
+      description: "Install bat theme"
+    - command: "setup/tasks/claude.sh"
+      description: "Configure Claude Code"
+    - command: "setup/tasks/codex.sh"
+      description: "Configure Codex"

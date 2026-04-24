@@ -68,6 +68,13 @@ check_bash_syntax "$DOTFILES_DIR/scripts/verify-setup.sh"
 check_bash_syntax "$DOTFILES_DIR/scripts/claude-statusline.sh"
 check_bash_syntax "$DOTFILES_DIR/scripts/claude-stop-hook.sh"
 
+# Check setup helper scripts if they exist
+if ls "$DOTFILES_DIR/setup/lib/"*.sh 2>/dev/null | grep -q .; then
+	for lib in "$DOTFILES_DIR/setup/lib/"*.sh; do
+		check_bash_syntax "$lib"
+	done
+fi
+
 # Check task scripts if they exist (populated in later phases)
 if ls "$DOTFILES_DIR/setup/tasks/"*.sh 2>/dev/null | grep -q .; then
 	for task in "$DOTFILES_DIR/setup/tasks/"*.sh; do
@@ -103,7 +110,7 @@ done
 # =============================================================================
 echo_section "🔗 Checking symlink sources..."
 
-# All sources referenced in setup.sh link_file_quiet calls
+# All sources referenced by install.conf.yaml link directives
 SYMLINK_SOURCES=(
 	".inputrc"
 	".lesskey"
@@ -174,10 +181,25 @@ echo_section "🐚 Running shellcheck..."
 
 if command -v shellcheck &>/dev/null; then
 	SHELLCHECK_FAIL=0
-	for script in \
-		"$DOTFILES_DIR/setup.sh" \
-		"$DOTFILES_DIR/clean.sh" \
-		"$DOTFILES_DIR/scripts/claude-stop-hook.sh"; do
+	SHELLCHECK_SCRIPTS=(
+		"$DOTFILES_DIR/setup.sh"
+		"$DOTFILES_DIR/clean.sh"
+		"$DOTFILES_DIR/scripts/claude-stop-hook.sh"
+	)
+
+	if ls "$DOTFILES_DIR/setup/lib/"*.sh 2>/dev/null | grep -q .; then
+		for lib in "$DOTFILES_DIR/setup/lib/"*.sh; do
+			SHELLCHECK_SCRIPTS+=("$lib")
+		done
+	fi
+
+	if ls "$DOTFILES_DIR/setup/tasks/"*.sh 2>/dev/null | grep -q .; then
+		for task in "$DOTFILES_DIR/setup/tasks/"*.sh; do
+			SHELLCHECK_SCRIPTS+=("$task")
+		done
+	fi
+
+	for script in "${SHELLCHECK_SCRIPTS[@]}"; do
 		if shellcheck -x -S warning "$script" 2>/dev/null; then
 			echo_success "shellcheck: $(basename "$script")"
 		else
