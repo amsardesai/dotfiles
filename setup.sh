@@ -183,12 +183,32 @@ ensure_dotbot() {
 	echo_success "Dotbot $DOTBOT_VERSION bootstrapped"
 }
 
+run_dotbot() {
+	if [ ! -f "$SCRIPTPATH/install.conf.yaml" ]; then
+		echo_error "install.conf.yaml not found"
+		return 1
+	fi
+
+	"$DOTBOT_DIR/bin/dotbot" \
+		-d "$SCRIPTPATH" \
+		-c "$SCRIPTPATH/install.conf.yaml" \
+		"$@"
+}
+
 # Safety check: If current TERM's terminfo doesn't exist, use xterm-256color
 if ! infocmp "$TERM" >/dev/null 2>&1; then
 	export TERM=xterm-256color
 fi
 
-ensure_dotbot || echo_warn "Dotbot bootstrap failed (skipping Dotbot tasks)"
+ensure_dotbot || exit 1
+
+# Dotbot flags should take effect immediately during the migration.
+# If setup.sh is invoked with arguments, treat it as a Dotbot passthrough
+# instead of running the legacy monolith first.
+if [ "$#" -gt 0 ]; then
+	run_dotbot "$@"
+	exit $?
+fi
 
 # =============================================================================
 # Homebrew (macOS)
@@ -519,9 +539,4 @@ echo ""
 # Tasks are being migrated from above into install.conf.yaml incrementally.
 # In the final state (Phase 4), this will be the only logic in setup.sh.
 # =============================================================================
-if [ -x "$DOTBOT_DIR/bin/dotbot" ] && [ -f "$SCRIPTPATH/install.conf.yaml" ]; then
-	"$DOTBOT_DIR/bin/dotbot" \
-		-d "$SCRIPTPATH" \
-		-c "$SCRIPTPATH/install.conf.yaml" \
-		"$@"
-fi
+run_dotbot
