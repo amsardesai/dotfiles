@@ -50,15 +50,15 @@ CONTEXT_REM=$((100 - CONTEXT_INT))
 # Color based on remaining
 CTX_COLOR=$(rate_color "$CONTEXT_REM")
 
-# Build context dots (filled = used, grows from right)
-FILLED=$((CONTEXT_INT / 20))
+# Build context dots (filled = used, grows from left, min 1)
+FILLED=$((CONTEXT_INT / 20 + 1))
 [[ $FILLED -gt 5 ]] && FILLED=5
 EMPTY=$((5 - FILLED))
 FILLED_DOTS=""
 EMPTY_DOTS=""
 for ((i = 0; i < FILLED; i++)); do FILLED_DOTS+="●"; done
 for ((i = 0; i < EMPTY; i++)); do EMPTY_DOTS+="○"; done
-DOTS="${CTX_COLOR}${EMPTY_DOTS}${FILLED_DOTS}${RESET}"
+DOTS="${CTX_COLOR}${FILLED_DOTS}${EMPTY_DOTS}${RESET}"
 
 # Context display
 CTX_WITH_DOTS="$DOTS ${CTX_COLOR}${CONTEXT_REM}%${RESET}"
