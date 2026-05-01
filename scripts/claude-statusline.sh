@@ -34,8 +34,17 @@ GREEN=$'\033[32m'
 RED=$'\033[31m'
 SEP="${DIM}│${RESET}"
 
-# Color helper: pct is % remaining (higher = more left = greener)
-rate_color() {
+# Color helper for usage percentages (higher = more consumed = more urgent)
+usage_color() {
+	local pct=$1
+	if [[ $pct -ge 80 ]]; then echo $'\033[31m'
+	elif [[ $pct -ge 50 ]]; then echo $'\033[33m'
+	else echo $'\033[32m'
+	fi
+}
+
+# Color helper for remaining percentages (higher = more left = greener)
+remaining_color() {
 	local pct=$1
 	if [[ $pct -le 20 ]]; then echo $'\033[31m'
 	elif [[ $pct -le 50 ]]; then echo $'\033[33m'
@@ -43,12 +52,11 @@ rate_color() {
 	fi
 }
 
-# Context percentage (remove decimal, compute remaining)
+# Context percentage (remove decimal)
 CONTEXT_INT=${CONTEXT_PCT%.*}
-CONTEXT_REM=$((100 - CONTEXT_INT))
 
-# Color based on remaining
-CTX_COLOR=$(rate_color "$CONTEXT_REM")
+# Color based on usage
+CTX_COLOR=$(usage_color "$CONTEXT_INT")
 
 # Build context dots (filled = used, grows from left, min 1)
 FILLED=$((CONTEXT_INT / 20 + 1))
@@ -61,7 +69,7 @@ for ((i = 0; i < EMPTY; i++)); do EMPTY_DOTS+="○"; done
 DOTS="${CTX_COLOR}${FILLED_DOTS}${EMPTY_DOTS}${RESET}"
 
 # Context display
-CTX_WITH_DOTS="$DOTS ${CTX_COLOR}${CONTEXT_REM}%${RESET}"
+CTX_WITH_DOTS="$DOTS ${CTX_COLOR}${CONTEXT_INT}%${RESET}"
 
 # Rate limit displays (only set if data is present — absent on API billing)
 FIVE_HOUR_DISPLAY=""
@@ -69,13 +77,13 @@ SEVEN_DAY_DISPLAY=""
 if [[ -n "$FIVE_HOUR" ]]; then
 	FIVE_HOUR_INT=${FIVE_HOUR%.*}
 	FIVE_HOUR_REM=$((100 - FIVE_HOUR_INT))
-	COLOR=$(rate_color "$FIVE_HOUR_REM")
+	COLOR=$(remaining_color "$FIVE_HOUR_REM")
 	FIVE_HOUR_DISPLAY="${COLOR}5h ${FIVE_HOUR_REM}%${RESET}"
 fi
 if [[ -n "$SEVEN_DAY" ]]; then
 	SEVEN_DAY_INT=${SEVEN_DAY%.*}
 	SEVEN_DAY_REM=$((100 - SEVEN_DAY_INT))
-	COLOR=$(rate_color "$SEVEN_DAY_REM")
+	COLOR=$(remaining_color "$SEVEN_DAY_REM")
 	SEVEN_DAY_DISPLAY="${COLOR}7d ${SEVEN_DAY_REM}%${RESET}"
 fi
 
