@@ -173,10 +173,12 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 
 **PR comments:**
 
-- ⚠️ **MANDATORY — NEVER OMIT:** Every PR comment (review comments, inline comments, general comments) MUST include the following disclosure. NEVER post a comment on my behalf without it:
+- Avoid posting PR comments on my behalf unless I explicitly ask, or unless the comment is genuinely necessary to complete the task.
+- Prefer summarizing findings to me in chat over posting them on GitHub when a PR comment is optional.
+- ⚠️ **MANDATORY — NEVER OMIT:** Every PR comment (review comments, inline comments, general comments) MUST start with the following disclosure as the very first line, before any other content:
 
   ```
-  > 🤖 This comment was written by a coding agent on Ankit's behalf.
+  > 🤖 A silly coding agent posted this comment on Ankit's behalf! 🤖
   ```
 
 ---
