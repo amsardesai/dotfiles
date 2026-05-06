@@ -198,7 +198,7 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 | ------------------------- | --------------------------- | ---------------------- |
 | `git commit`              | `gt create -a -m "msg"`     | New branch + commit    |
 | `git commit --amend`      | `gt modify -a`              | Amend current commit   |
-| `git push`                | `gt submit --draft`         | Push to remote (draft) |
+| `git push`                | `gt submit`                 | Push/update PRs via Graphite |
 | `git pull`                | `gt sync`                   | Sync with trunk        |
 | `git fetch && git rebase` | `gt sync` then `gt restack` | Update and restack     |
 | `git rebase`              | `gt restack`                | Rebase stack on trunk  |
@@ -235,12 +235,15 @@ Follow the global "Creating commits" workflow above, with these additions:
 2. **Structure the commit message to match the PR template exactly** - tooling validates this format
 3. Check at least one `[x]` box in each checkbox section (testing and feature gate)
 4. Use `gt create -a -m "FULL_COMMIT_MESSAGE"` (not `git commit`)
-5. Run `gt submit --draft` to push as a draft PR
+5. If creating brand-new PR(s), run `gt submit --draft` so the new PRs start as drafts
+6. If updating an existing PR, preserve its current draft/published state; do **not** pass `--draft` or `--publish`
 
 **Submitting PRs:**
 
-- **ALWAYS use `--draft`** when running `gt submit` (i.e., `gt submit --draft`)
+- **Brand-new PRs:** Use `gt submit --draft` so newly-created PRs start as drafts.
+- **Existing PRs:** Preserve the current PR state. Never turn a published PR back into draft. When updating an existing PR, use `gt submit --update-only` if no new PRs should be created, or `gt submit` without `--draft`/`--publish` after verifying Graphite will preserve existing PR state.
 - **NEVER use `--publish`** unless explicitly requested by the user
+- **Mixed stacks:** If a stack contains both brand-new branches and existing published PRs, first verify which branches already have PRs. Do not use `--draft` on a command that could affect an already-published PR; ask me if Graphite cannot create only the new PRs as draft while preserving existing PR states.
 
 **Reordering stacked PRs:**
 
