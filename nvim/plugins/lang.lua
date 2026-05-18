@@ -7,37 +7,62 @@ return {
 
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = { "BufReadPost", "BufNewFile" },
+		branch = "main",
+		lazy = false,
 		build = ":TSUpdate",
 		config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = {
-					"bash",
-					"c",
-					"comment",
-					"cpp",
-					"css",
-					"dockerfile",
-					"git_config",
-					"git_rebase",
-					"gitignore",
-					"gitcommit",
-					"go",
-					"html",
-					"jsdoc",
-					"json",
-					"lua",
-					"markdown",
-					"markdown_inline",
-					"python",
-					"ruby",
-					"typescript",
-					"tsx",
-					"tsv",
-					"vim",
-					"vimdoc",
-					"yaml",
-				},
+			local ensure_installed = {
+				"bash",
+				"c",
+				"comment",
+				"cpp",
+				"css",
+				"dockerfile",
+				"git_config",
+				"git_rebase",
+				"gitignore",
+				"gitcommit",
+				"go",
+				"html",
+				"jsdoc",
+				"json",
+				"lua",
+				"markdown",
+				"markdown_inline",
+				"python",
+				"ruby",
+				"typescript",
+				"tsx",
+				"tsv",
+				"vim",
+				"vimdoc",
+				"yaml",
+			}
+
+			local ok, treesitter = pcall(require, "nvim-treesitter")
+			if ok and type(treesitter.install) == "function" then
+				treesitter.setup({
+					install_dir = vim.fn.stdpath("data") .. "/site",
+				})
+				treesitter.install(ensure_installed)
+
+				local group = vim.api.nvim_create_augroup("ankit.treesitter", { clear = true })
+				vim.api.nvim_create_autocmd("FileType", {
+					group = group,
+					callback = function(args)
+						pcall(vim.treesitter.start, args.buf)
+					end,
+				})
+				return
+			end
+
+			local ok_configs, configs = pcall(require, "nvim-treesitter.configs")
+			if not ok_configs then
+				return
+			end
+
+			configs.setup({
+				ensure_installed = ensure_installed,
 				highlight = { enable = true },
 			})
 		end,

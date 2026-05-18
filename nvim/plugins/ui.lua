@@ -186,7 +186,12 @@ return {
 			lazygit = { enabled = true },
 			scratch = { enabled = true },
 			dim = { enabled = true },
-			image = { enabled = true },
+			image = {
+				enabled = true,
+				-- Snacks' document image scanner currently trips over Neovim 0.12's
+				-- tree-sitter parser API when opening Markdown files.
+				doc = { enabled = false },
+			},
 		},
 	},
 
