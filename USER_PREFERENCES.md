@@ -145,15 +145,22 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
      **Commit message attribution format:**
      - Use: `Co-Authored-By: <Harness Name> (<Exact Model Name>) <noreply@...>`
      - Always include both the harness name and the exact model name when the harness exposes it
-      - Do not collapse attribution to just the harness name like `Codex <...>` or `Cursor <...>`
-      - Examples:
-        - `Claude Code (Claude Opus 4.6) <noreply@anthropic.com>`
-        - `Codex (GPT-5.4) <noreply@openai.com>`
-        - `Cursor (Claude Sonnet 4.6) <noreply@cursor.com>`
-        - `OpenCode (GPT-5.4) <noreply@opencode.ai>`
-      - When using OpenCode specifically, attribute commits and PRs to `OpenCode (GPT-5.4) <noreply@opencode.ai>`, not the model vendor domain
+     - Do not collapse attribution to just the harness name like `Codex <...>` or `Cursor <...>`
+     - Examples:
+       - `Claude Code (Claude Opus 4.6) <noreply@anthropic.com>`
+       - `Codex (GPT-5.4) <noreply@openai.com>`
+       - `Cursor (Claude Sonnet 4.6) <noreply@cursor.com>`
+       - `OpenCode (GPT-5.4) <noreply@opencode.ai>`
+     - When using OpenCode specifically, attribute commits and PRs to `OpenCode (GPT-5.4) <noreply@opencode.ai>`, not the model vendor domain
 
 4. Create the commit using `git commit` (or `gt create` in notion-next)
+
+**PR title practices (all repos):**
+
+- PR titles MUST use Conventional Commits format like commits: `type(scope): description`
+- This applies even if repo-local tools, skills, or templates suggest bracketed prefixes like `[Project] fix: ...`
+- Good: `fix(storybook): keep main homepage manifest complete`
+- Bad: `[Storybook] fix: keep main homepage manifest complete`
 
 **PR descriptions:**
 
@@ -194,16 +201,16 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 
 **Prohibited git commands → Use Graphite instead:**
 
-| ❌ NEVER Use              | ✅ Use Instead              | Purpose                |
-| ------------------------- | --------------------------- | ---------------------- |
-| `git commit`              | `gt create -a -m "msg"`     | New branch + commit    |
-| `git commit --amend`      | `gt modify -a`              | Amend current commit   |
+| ❌ NEVER Use              | ✅ Use Instead              | Purpose                      |
+| ------------------------- | --------------------------- | ---------------------------- |
+| `git commit`              | `gt create -a -m "msg"`     | New branch + commit          |
+| `git commit --amend`      | `gt modify -a`              | Amend current commit         |
 | `git push`                | `gt submit`                 | Push/update PRs via Graphite |
-| `git pull`                | `gt sync`                   | Sync with trunk        |
-| `git fetch && git rebase` | `gt sync` then `gt restack` | Update and restack     |
-| `git rebase`              | `gt restack`                | Rebase stack on trunk  |
-| `git checkout -b`         | `gt create`                 | Create new branch      |
-| `git merge`               | Never (Graphite handles)    | Merge branches         |
+| `git pull`                | `gt sync`                   | Sync with trunk              |
+| `git fetch && git rebase` | `gt sync` then `gt restack` | Update and restack           |
+| `git rebase`              | `gt restack`                | Rebase stack on trunk        |
+| `git checkout -b`         | `gt create`                 | Create new branch            |
+| `git merge`               | Never (Graphite handles)    | Merge branches               |
 
 **One commit per branch (strictly enforced):**
 
