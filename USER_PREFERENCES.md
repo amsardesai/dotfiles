@@ -182,10 +182,10 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 
 - Avoid posting PR comments on my behalf unless I explicitly ask, or unless the comment is genuinely necessary to complete the task.
 - Prefer summarizing findings to me in chat over posting them on GitHub when a PR comment is optional.
-- ⚠️ **MANDATORY — NEVER OMIT:** Every PR comment (review comments, inline comments, general comments) MUST start with the following disclosure as the very first line, before any other content:
+- ⚠️ **MANDATORY — NEVER OMIT:** Every PR comment (review comments, inline comments, general comments) MUST start with the following disclosure as the very first line, before any other content. Replace `<agent>` with the active harness name (for example, Claude, Codex, OpenCode, or Cursor):
 
   ```
-  > 🤖 A silly coding agent posted this comment on Ankit's behalf! 🤖
+  > 🤖 ⚠️ Warning: this message was posted by <agent> on Ankit's behalf! ⚠️ 🤖
   ```
 
 ---
