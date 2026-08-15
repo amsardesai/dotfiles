@@ -178,6 +178,23 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
   Co-Authored-By: <YOUR_ATTRIBUTION>
   ```
 
+### PR Delivery Workflow
+
+1. Run fast, targeted checks to catch obvious breakage.
+2. Submit the PR promptly—do not wait for exhaustive testing. New PRs should be drafts unless instructed otherwise.
+3. Share the PR and deploy-preview URLs as soon as they are available.
+4. After submission, complete thorough local testing and fix, amend, and resubmit as needed.
+5. Keep the PR description, test plan, and evidence current. Do not claim completion while testing or known issues remain.
+
+### UI Evidence
+
+Every UI-related PR MUST include a video recorded with Playwright MCP, Chrome DevTools MCP, or equivalent browser automation.
+
+- Demonstrate the affected user flow and interactions.
+- When applicable, include clearly labeled **Before** and **After** videos or screenshots captured under comparable conditions.
+- Add evidence directly to the PR description, preferably using the deploy preview for the after state.
+- If required evidence cannot be produced, report the blocker instead of omitting it.
+
 **PR comments:**
 
 - Avoid posting PR comments on my behalf unless I explicitly ask, or unless the comment is genuinely necessary to complete the task.
