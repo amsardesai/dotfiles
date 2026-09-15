@@ -229,12 +229,6 @@ Every UI-related PR MUST include a video recorded with Playwright MCP, Chrome De
 | `git checkout -b`         | `gt create`                 | Create new branch            |
 | `git merge`               | Never (Graphite handles)    | Merge branches               |
 
-**One commit per branch (strictly enforced):**
-
-- ALWAYS amend with `gt modify -a`, NEVER add new commits
-- Before committing, check `gt log` - if branch has commits, amend don't add
-- If a branch has multiple commits, consolidate them before proceeding
-
 **Safe read-only git commands (OK to use):**
 
 - `git status`, `git diff`, `git log`, `git branch`, `git show`, `git blame`, `git stash`
