@@ -165,7 +165,9 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 **PR descriptions:**
 
 - Keep descriptions **concise and casual**
-- Focus on the **"why"** behind the change
+- Always use **simple English** so someone with little project context can understand the change. Explain necessary technical terms and avoid unexplained acronyms.
+- Explain the problem, **why** it matters, and what changes after this PR.
+- Always include a **practical example** showing the effect of the change, preferably before and after. For example: "Before, pressing Escape closed both dialogs. Now it closes only the top dialog." For internal changes, use a concrete developer workflow or input/output example.
 - If the "why" isn't obvious from the code, ask me before writing the description
 - **Include links to Notion docs** when relevant (task links, important context docs)
 - **Always include a "Reviewer notes" section** — tell reviewers what they should know and what to look out for (edge cases, areas of concern, things you're unsure about, areas that need extra scrutiny)
@@ -186,14 +188,16 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 4. After submission, complete thorough local testing and fix, amend, and resubmit as needed.
 5. Keep the PR description, test plan, and evidence current. Do not claim completion while testing or known issues remain.
 
-### UI Evidence
+### PR Visuals
 
-Every UI-related PR MUST include a video recorded with Playwright MCP, Chrome DevTools MCP, or equivalent browser automation.
+Every PR MUST include an **infographic** in its description. For changes involving **UX or animations**, include a **video instead of the infographic**. This also applies to PRs that mix UX or animation changes with other work.
 
-- Demonstrate the affected user flow and interactions.
-- When applicable, include clearly labeled **Before** and **After** videos or screenshots captured under comparable conditions.
-- Add evidence directly to the PR description, preferably using the deploy preview for the after state.
-- If required evidence cannot be produced, report the blocker instead of omitting it.
+- **Infographic:** Create a concise visual explaining the problem, the change, and the practical outcome. Use simple labels and a concrete example or before/after comparison so reviewers need little context.
+- **Video:** Record the actual affected user flow and interactions with Playwright MCP, Chrome DevTools MCP, or equivalent automation. Show animation and timing changes in motion, preferably using the deploy preview for the after state.
+- When applicable, include clearly labeled **Before** and **After** views captured under comparable conditions. Screenshots may supplement a required video but do not replace it.
+- Embed or attach the infographic or video directly in the PR description so reviewers can view it. A local file path is not sufficient.
+- Keep the visual current when the PR changes.
+- If the required visual cannot be produced or attached, report the blocker instead of silently omitting it or claiming completion.
 
 **PR comments:**
 
