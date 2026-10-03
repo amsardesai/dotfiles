@@ -80,6 +80,8 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 
 **Task Execution:**
 
+- For long-running work, identify portions that can reasonably run independently and **delegate them to subagents in parallel**. Start independent work early, especially slow tasks such as generating media, and continue useful work while it runs.
+- Give each subagent a concrete scope, sufficient context, and a clear deliverable. Avoid conflicting edits or shared mutable state, and review and integrate the results before claiming completion.
 - When making multiple file changes, edits, or searches that don't depend on each other, prefer executing them in parallel (single message, multiple tool calls)
 - When debugging, run independent diagnostic commands in parallel (e.g., checking logs, inspecting state, testing hypotheses)
 - Only serialize when there's a real dependency or when sequential execution aids debugging
@@ -187,6 +189,12 @@ My `.zshrc` has these aliases to prevent accidental overwrites/deletions:
 3. Share the PR and deploy-preview URLs as soon as they are available.
 4. After submission, complete thorough local testing and fix, amend, and resubmit as needed.
 5. Keep the PR description, test plan, and evidence current. Do not claim completion while testing or known issues remain.
+
+### Parallel PR Preparation for Stacks
+
+- **Generate all PR metadata and required media in parallel subagents**, normally one per PR. Start slow media generation early.
+- Give each subagent its PR's diff against its parent, context, template, preferences, and test results.
+- The main agent reviews results and coordinates stack changes and submission.
 
 ### PR Visuals
 
