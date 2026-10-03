@@ -214,7 +214,7 @@ Every PR MUST include an **infographic** in its description. For changes involvi
 - ⚠️ **MANDATORY — NEVER OMIT:** Every PR comment (review comments, inline comments, general comments) MUST start with the following disclosure as the very first line, before any other content. Replace `<agent>` with the active harness name (for example, Claude, Codex, OpenCode, or Cursor):
 
   ```
-  > 🤖 ⚠️ Warning: this message was posted by <agent> on Ankit's behalf! ⚠️ 🤖
+  > 🤖 *written by <agent>* 🤖
   ```
 
 ---
